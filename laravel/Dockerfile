@@ -1,5 +1,5 @@
 # api開発環境用docker
-FROM php:latest
+FROM php:8.2
 
 RUN apt-get update && apt-get install -y \
     git \

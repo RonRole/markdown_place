@@ -17,3 +17,15 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
+
+/**
+ * 管理者ユーザー向け
+ */
+Route::group([
+    'prefix'     => 'admin',
+    'middleware' => ['auth:sanctum', 'admin'],
+], function(){
+    Route::get('/user', function (Request $request) {
+        return $request->user();
+    });
+});

@@ -15,10 +15,21 @@ export default function Test() {
             password_confirmation: 'test_password'
         }).then(response=>console.log(response));
     }
+    const handleLogin = () => {
+        axios.post('/api/login', {
+            email: 'testuser@example.com',
+            password: 'test_password'
+        }).then(response=>console.log(response));
+    }
     const handleGetUser = () => {
         axios.get('/api/user').then(response=>{
             console.log(response);
         });
+    }
+    const handleGetAdminUser = () => {
+        axios.get('/api/admin/user').then(response=>{
+            console.log(response);
+        })
     }
     return (
         <>
@@ -26,7 +37,9 @@ export default function Test() {
             <ol>
                 <li><button onClick={handleCSRFTest}>laravel側のcsrf保護を有効にする</button></li>
                 <li><button onClick={handleSignUp}>ユーザー登録</button></li>
+                <li><button onClick={handleLogin}>ログイン</button></li>
                 <li><button onClick={handleGetUser}>認証が必要なurlにリクエスト(/api/user)</button></li>
+                <li><button onClick={handleGetAdminUser}>adminが必要なurlにリクエスト(/api/admin/user)</button></li>
             </ol>
         </>
     )

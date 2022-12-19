@@ -12,7 +12,7 @@ export type AuthContextProviderProps = {
     children: React.ReactNode,
 }
 
-export const AppContext = React.createContext<AuthContext>({
+export const AuthContext = React.createContext<AuthContext>({
     authStatus: 'loading',
     setAuthStatus(status:AuthStatus){},
 });
@@ -24,8 +24,8 @@ export default function AuthContextProvider({children}: AuthContextProviderProps
         setAuthStatus,
     }
     return (
-        <AppContext.Provider value={context}> 
+        <AuthContext.Provider value={context}> 
             {children}
-        </AppContext.Provider>
+        </AuthContext.Provider>
     )
 }

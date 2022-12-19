@@ -4,12 +4,12 @@ import AxiosDefaultSettings from '../components/functional/AxiosDefaultSettings'
 import AuthorizationStatusChecker, { OnAuthorized, OnLoading, OnUnauthorized } from '../components/functional/AuthContextChecker'
 import React from 'react';
 import LoginFormContainer from '../components/functional/LoginFormContainer';
-import AuthContextProvider, { AppContext } from '../components/context/AuthContextProvider';
+import AuthContextProvider, { AuthContext } from '../components/context/AuthContextProvider';
 
 export default function App({ Component, pageProps }: AppProps) {
   return (
     <AuthContextProvider>
-        <AppContext.Consumer>{({authStatus, setAuthStatus})=>{
+        <AuthContext.Consumer>{({authStatus, setAuthStatus})=>{
           return (
             <AxiosDefaultSettings setAuthStatus={setAuthStatus}>
               <AuthorizationStatusChecker authStatus={authStatus} setAuthStatus={setAuthStatus}>
@@ -20,13 +20,13 @@ export default function App({ Component, pageProps }: AppProps) {
                   <Component {...pageProps} />
                 </OnAuthorized>
                 <OnUnauthorized>
-                    <LoginFormContainer setAuthStatus={setAuthStatus} />
+                  <LoginFormContainer setAuthStatus={setAuthStatus} />
                 </OnUnauthorized>
               </AuthorizationStatusChecker>
             </AxiosDefaultSettings>
           )
         }}
-        </AppContext.Consumer>
+        </AuthContext.Consumer>
     </AuthContextProvider>
   )
 }

@@ -1,10 +1,32 @@
 import '../styles/globals.css'
 import type { AppProps } from 'next/app'
-import axios from 'axios'
-
-axios.defaults.baseURL = process.env.NEXT_PUBLIC_APP_API_URL;
-axios.defaults.withCredentials = true;
+import AxiosDefaultSettings from '../components/functional/AxiosDefaultSettings'
+import AuthorizationStatusChecker, { OnAuthorized, OnLoading, OnUnauthorized } from '../components/functional/AuthContextChecker'
+import React from 'react';
+import LoginFormContainer from '../components/functional/LoginFormContainer';
+import AuthContextProvider, { AppContext } from '../components/context/AuthContextProvider';
 
 export default function App({ Component, pageProps }: AppProps) {
-  return <Component {...pageProps} />
+  return (
+    <AuthContextProvider>
+        <AppContext.Consumer>{({authStatus, setAuthStatus})=>{
+          return (
+            <AxiosDefaultSettings setAuthStatus={setAuthStatus}>
+              <AuthorizationStatusChecker authStatus={authStatus} setAuthStatus={setAuthStatus}>
+                <OnLoading>
+                  <div>Loading...</div>
+                </OnLoading>
+                <OnAuthorized>
+                  <Component {...pageProps} />
+                </OnAuthorized>
+                <OnUnauthorized>
+                    <LoginFormContainer setAuthStatus={setAuthStatus} />
+                </OnUnauthorized>
+              </AuthorizationStatusChecker>
+            </AxiosDefaultSettings>
+          )
+        }}
+        </AppContext.Consumer>
+    </AuthContextProvider>
+  )
 }

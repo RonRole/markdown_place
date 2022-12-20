@@ -1,5 +1,4 @@
 import axios, { AxiosResponse } from "axios";
-import { useRouter } from "next/router";
 import React from "react";
 import AuthStatus from "../../domains/entities/auth-status";
 

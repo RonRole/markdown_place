@@ -32,6 +32,11 @@ export default function Test() {
             console.log(response);
         })
     }
+    const sawaikei = () => {
+        axios.get('/api/all_users').then(response=>{
+            console.log(response);
+        })
+    }
     return (
         <>
             <h1>laravelとの認証テスト</h1>
@@ -41,6 +46,7 @@ export default function Test() {
                 <li><button onClick={handleLogin}>ログイン</button></li>
                 <li><button onClick={handleGetUser}>認証が必要なurlにリクエスト(/api/user)</button></li>
                 <li><button onClick={handleGetAdminUser}>adminが必要なurlにリクエスト(/api/admin/user)</button></li>
+                <li><button onClick={sawaikei}>all_users</button></li>
             </ol>
         </>
     )

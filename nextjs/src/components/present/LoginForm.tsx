@@ -22,7 +22,7 @@ export default function LoginForm({emailFieldProps, passwordFieldProps, submitBu
             email: emailInputRef.current?.value,
             password: passwordInputRef.current?.value
         });
-    },[]);
+    },[onSubmit]);
     return (
         <Card {...cardProps}>
             <form onSubmit={handleSubmit}>

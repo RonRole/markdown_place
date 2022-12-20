@@ -1,5 +1,3 @@
-import Context from "@mui/base/TabsUnstyled/TabsContext"
-import { Axios, AxiosResponse } from "axios"
 import React from "react"
 import AuthStatus from "../../domains/entities/auth-status"
 
@@ -17,6 +15,11 @@ export const AuthContext = React.createContext<AuthContext>({
     setAuthStatus(status:AuthStatus){},
 });
 
+/**
+ * AuthStatusとその更新メソッドを供給するコンポーネント
+ * @param param0 
+ * @returns 
+ */
 export default function AuthContextProvider({children}: AuthContextProviderProps) {
     const [authStatus, setAuthStatus] = React.useState<AuthStatus>('loading');
     const context: AuthContext = {

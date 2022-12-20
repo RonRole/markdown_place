@@ -1,12 +1,10 @@
 import axios, { AxiosResponse } from "axios";
 import React from "react";
 import AuthStatus from "../../domains/entities/auth-status";
-import { getStatus } from "../effects/authorization";
 
-export type AuthorizationStatusChecker = {
+export type AuthStatusSwitcherProps = {
     children: React.ReactNode,
     authStatus: AuthStatus,
-    setAuthStatus(authStatus:AuthStatus):void,
 }
 
 export function OnLoading({children}:{children: React.ReactNode}) : React.ReactElement {
@@ -27,14 +25,15 @@ export function OnUnauthorized({children}:{children: React.ReactNode}) : React.R
     )
 }
 
-export default function AuthorizationStatusChecker({children, authStatus, setAuthStatus }: AuthorizationStatusChecker) {
-    React.useEffect(()=>{
-        if(authStatus === 'authorized') {
-            return;
-        }
-        setAuthStatus('loading');
-        getStatus().then(setAuthStatus);
-    }, []);
+/**
+ * AuthStatusによって画面表示を切り替える
+ * loading: OnLoading
+ * authorized: OnAuthorized
+ * unauthorized: OnUnAuthorized
+ * @param param0 
+ * @returns 
+ */
+export default function AuthStatusSwitcher({children, authStatus }: AuthStatusSwitcherProps) {
     const childrenArray = React.Children.toArray(children);
     switch(authStatus) {
         case 'loading':

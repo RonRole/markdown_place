@@ -2,11 +2,11 @@ import '../styles/globals.css'
 import type { AppProps } from 'next/app'
 import AuthStatusSwitcher, { OnAuthorized, OnLoading, OnUnauthorized } from '../components/functional/AuthStatusSwitcher'
 import React from 'react';
-import LoginFormContainer from '../components/functional/LoginFormContainer';
 import AuthContextProvider, { AuthContext } from '../components/context/AuthContextProvider';
 import dynamic from 'next/dynamic';
 import AxiosInterceptorsSettings from '../components/functional/AxiosInterceptorsSettings';
 import axios from 'axios';
+import LoginFormContainer from '../components/container/LoginFormContainer';
 
 /**
  * 内部でwindowを使用しているため、ssrでのエラーを回避するために

@@ -1,18 +1,27 @@
 import React from "react"
 import AuthStatus from "../../domains/entities/auth-status"
+import useAuthState, { UseAuthStateFunctions, UseAuthStateItems } from "../hooks/authorization";
 
 export type AuthContext = {
-    authStatus: AuthStatus,
-    setAuthStatus(status:AuthStatus):void,
-}
+    currentAuthStatus: AuthStatus
+} & UseAuthStateFunctions;
 
 export type AuthContextProviderProps = {
     children: React.ReactNode,
 }
 
 export const AuthContext = React.createContext<AuthContext>({
-    authStatus: 'loading',
-    setAuthStatus(status:AuthStatus){},
+    currentAuthStatus: 'loading',
+    setCurrent(authStatue) {
+        console.log('now is loading...');   
+    },
+    async login(email?:string, password?:string) {
+        console.log('now is loading...');
+        return false;
+    },
+    async logout() {
+        console.log('now is loading...');
+    },
 });
 
 /**
@@ -21,13 +30,9 @@ export const AuthContext = React.createContext<AuthContext>({
  * @returns 
  */
 export default function AuthContextProvider({children}: AuthContextProviderProps) {
-    const [authStatus, setAuthStatus] = React.useState<AuthStatus>('loading');
-    const context: AuthContext = {
-        authStatus,
-        setAuthStatus,
-    }
+    const [currentAuthStatus, functions] = useAuthState();
     return (
-        <AuthContext.Provider value={context}> 
+        <AuthContext.Provider value={{currentAuthStatus, ...functions}}> 
             {children}
         </AuthContext.Provider>
     )

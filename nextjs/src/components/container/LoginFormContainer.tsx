@@ -3,7 +3,7 @@ import React from "react";
 import { useAuthorization } from "../hooks";
 import { UseAuthStateFunctions } from "../hooks/authorization";
 
-import LoginForm, { LoginFormInput } from "../present/LoginForm";
+import LoginForm, { LoginFormInput } from "./LoginForm";
 
 export type LoginFormContainerProps = {
     login: UseAuthStateFunctions['login']

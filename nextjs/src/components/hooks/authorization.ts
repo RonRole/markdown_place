@@ -27,6 +27,7 @@ export default function useAuthState() : UseAuthStateItems {
             .then((res:AxiosResponse)=>{
                 if(res?.status === 200) {
                     setCurrent('authorized');
+                    return
                 }
                 setCurrent('unauthorized');
             })

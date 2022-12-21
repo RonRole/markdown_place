@@ -23,10 +23,10 @@ axios.defaults.withCredentials = true;
 export default function App({ Component, pageProps }: AppProps) {
   return (
     <AuthContextProvider>
-      <AuthContext.Consumer>{({currentAuthStatus, setCurrent, login})=>{
+      <AuthContext.Consumer>{({currentAuthStatus, setUnauthorized, login})=>{
         return (
           <PrefersColorSchemeMuiThemeProvider>
-            <AxiosInterceptorsSettings setCurrent={setCurrent}>
+            <AxiosInterceptorsSettings setUnauthorized={setUnauthorized}>
               <AuthStatusSwitcher authStatus={currentAuthStatus}>
                 <OnLoading>
                   <div>Loading...</div>

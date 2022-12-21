@@ -12,7 +12,7 @@ export type AuthContextProviderProps = {
 
 export const AuthContext = React.createContext<AuthContext>({
     currentAuthStatus: 'loading',
-    setCurrent(authStatue) {
+    setUnauthorized() {
         console.log('now is loading...');   
     },
     async login(email?:string, password?:string) {

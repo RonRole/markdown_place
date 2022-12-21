@@ -3,10 +3,10 @@ import { UseAuthStateFunctions } from "../hooks/authorization";
 
 export type AxiosInterceptorsSettingsProps = {
     children: React.ReactNode,
-    setCurrent: UseAuthStateFunctions['setCurrent']
+    setUnauthorized: UseAuthStateFunctions['setUnauthorized']
 }
 
-export default function AxiosInterceptorsSettings({children, setCurrent}: AxiosInterceptorsSettingsProps) {
+export default function AxiosInterceptorsSettings({children, setUnauthorized}: AxiosInterceptorsSettingsProps) {
     axios.interceptors.response.use(
         (value:AxiosResponse)=> value,
         (error: any) => {
@@ -14,7 +14,7 @@ export default function AxiosInterceptorsSettings({children, setCurrent}: AxiosI
                 case 401:
                 case 419:
                 case 422:
-                    setCurrent('unauthorized');
+                    setUnauthorized();
                     return Promise.reject(error.response?.data);
             }
         });

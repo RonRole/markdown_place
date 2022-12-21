@@ -3,7 +3,7 @@ import React from "react";
 import AuthStatus from "../../domains/entities/auth-status";
 
 export type UseAuthStateFunctions = {
-    setCurrent(authStatue:AuthStatus) : void,
+    setUnauthorized() : void,
     login(email?:string, password?: string):Promise<boolean>,
     logout():Promise<void>,
 }
@@ -33,6 +33,7 @@ export default function useAuthState() : UseAuthStateItems {
             })
             .catch((error:AxiosError)=>setCurrent('unauthorized'));
     },[]);
+    const setUnauthorized = React.useCallback(() => setCurrent('unauthorized'), []);
     const login = React.useCallback(async (email:string, password:string)=>{
         await axios.get('/sanctum/csrf-cookie');
         const response = await axios.post('/api/login', {
@@ -52,7 +53,7 @@ export default function useAuthState() : UseAuthStateItems {
     return [
         current,
         {
-            setCurrent,
+            setUnauthorized,
             login,
             logout,
         }

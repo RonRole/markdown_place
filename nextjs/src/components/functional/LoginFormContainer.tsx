@@ -1,25 +1,21 @@
 import { Container } from "@mui/material";
 import React from "react";
-import AuthStatus from "../../domains/entities/auth-status";
 import { useAuthorization } from "../hooks";
+import { UseAuthStateFunctions } from "../hooks/authorization";
 
 import LoginForm, { LoginFormInput } from "../present/LoginForm";
 
 export type LoginFormContainerProps = {
-    setAuthStatus(authStatus:AuthStatus):void;
+    login: UseAuthStateFunctions['login']
 }
 
-export default function LoginFormContainer({setAuthStatus}:LoginFormContainerProps) {
+export default function LoginFormContainer({login}:LoginFormContainerProps) {
     const [submitting, setSubmitting] = React.useState<boolean>(false);
-    const {auth} = useAuthorization();
     const onSubmit = React.useCallback(async ({email, password}:LoginFormInput)=>{
         setSubmitting(true);
-        const authStatus = await auth(email, password);
+        await login(email, password);
         setSubmitting(false);
-        if(authStatus === 'authorized') {
-            setAuthStatus(authStatus);
-        }
-    }, [auth, setAuthStatus]);
+    }, [login]);
     return (
         <Container sx={{height:'100vh', display:'flex', justifyContent:'center', alignItems:'center'}}>
             <LoginForm 

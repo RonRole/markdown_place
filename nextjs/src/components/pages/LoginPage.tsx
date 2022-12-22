@@ -8,7 +8,7 @@ export type LoginFormContainerProps = {
     login: UseAuthStateFunctions['login']
 }
 
-export default function LoginFormContainer({login}:LoginFormContainerProps) {
+export default function LoginPage({login}:LoginFormContainerProps) {
     const [submitting, setSubmitting] = React.useState<boolean>(false);
     const onSubmit = React.useCallback(async ({email, password}:LoginFormInput)=>{
         setSubmitting(true);

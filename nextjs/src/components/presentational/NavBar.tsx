@@ -7,19 +7,20 @@ export type LinkSrc = {
 }
 
 export type NavBarProps = {
-    containerProps?: ContainerProps,
-} & AppBarProps;
+    children: React.ReactNode,
+}
+
 
 const links: LinkSrc[] = [
     {path:'/test', display:'TEST'}
 ]
 
-export default function NavBar({children, containerProps, ...props}: NavBarProps) {
+export default function NavBar({children}: NavBarProps) {
     return (
         <>
-            <AppBar {...props}>
+            <AppBar position='sticky'>
                 <Toolbar>
-                    <Container sx={{display:'flex'}} {...containerProps}>
+                    <Container sx={{display:'flex'}} maxWidth='xl' disableGutters>
                         <Typography sx={{mr:2}} variant="h6" component={Link} href='/'>Sawai Kei</Typography>
                         {links.map((linkSrc, i)=>(
                             <Link key={i} href={linkSrc.path} passHref>

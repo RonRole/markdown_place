@@ -1,5 +1,7 @@
 import axios from "axios"
 import React from "react";
+import RequireAuthorized from "../../components/functional/RequireAuthorized";
+import { NavBar } from "../../components/presentational";
 
 export default function Test() {
     const handleCSRFTest = () => {
@@ -38,16 +40,18 @@ export default function Test() {
         })
     }
     return (
-        <>
-            <h1>laravelとの認証テスト</h1>
-            <ol>
-                <li><button onClick={handleCSRFTest}>laravel側のcsrf保護を有効にする</button></li>
-                <li><button onClick={handleSignUp}>ユーザー登録</button></li>
-                <li><button onClick={handleLogin}>ログイン</button></li>
-                <li><button onClick={handleGetUser}>認証が必要なurlにリクエスト(/api/user)</button></li>
-                <li><button onClick={handleGetAdminUser}>adminが必要なurlにリクエスト(/api/admin/user)</button></li>
-                <li><button onClick={sawaikei}>all_users</button></li>
-            </ol>
-        </>
+        <RequireAuthorized>
+            <NavBar>
+                <h1>laravelとの認証テスト</h1>
+                <ol>
+                    <li><button onClick={handleCSRFTest}>laravel側のcsrf保護を有効にする</button></li>
+                    <li><button onClick={handleSignUp}>ユーザー登録</button></li>
+                    <li><button onClick={handleLogin}>ログイン</button></li>
+                    <li><button onClick={handleGetUser}>認証が必要なurlにリクエスト(/api/user)</button></li>
+                    <li><button onClick={handleGetAdminUser}>adminが必要なurlにリクエスト(/api/admin/user)</button></li>
+                    <li><button onClick={sawaikei}>all_users</button></li>
+                </ol>
+            </NavBar>
+        </RequireAuthorized>
     )
 }

@@ -1,9 +1,8 @@
 import { Container } from "@mui/material";
 import React from "react";
-import { useAuthorization } from "../hooks";
 import { UseAuthStateFunctions } from "../hooks/authorization";
 
-import LoginForm, { LoginFormInput } from "./LoginForm";
+import LoginForm, { LoginFormInput } from "./LoginFormCard";
 
 export type LoginFormContainerProps = {
     login: UseAuthStateFunctions['login']
@@ -17,8 +16,8 @@ export default function LoginFormContainer({login}:LoginFormContainerProps) {
         setSubmitting(false);
     }, [login]);
     return (
-        <Container sx={{height:'100vh', display:'flex', justifyContent:'center', alignItems:'center'}}>
-            <LoginForm 
+        <Container maxWidth='xl' sx={{height:'100vh', display:'flex', justifyContent:'center', alignItems:'center'}}>
+            <LoginForm
                 onSubmit={onSubmit} 
                 emailFieldProps={{fullWidth:true, margin: 'normal'}}
                 passwordFieldProps={{fullWidth:true}}

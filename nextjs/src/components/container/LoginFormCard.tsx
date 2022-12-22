@@ -1,4 +1,4 @@
-import { Button, ButtonProps, Card, CardContent, CardProps, TextField, TextFieldProps } from "@mui/material";
+import { Button, ButtonProps, Card, CardContent, CardHeader, CardHeaderProps, CardProps, TextField, TextFieldProps } from "@mui/material";
 import React from "react";
 
 export type LoginFormInput = {
@@ -25,6 +25,7 @@ export default function LoginForm({emailFieldProps, passwordFieldProps, submitBu
     },[onSubmit]);
     return (
         <Card {...cardProps}>
+            <CardHeader title='Sawai Kei'/>
             <form onSubmit={handleSubmit}>
                 <CardContent>
                     <TextField inputRef={emailInputRef} label="email" placeholder='sample@example.com' {...emailFieldProps}/>

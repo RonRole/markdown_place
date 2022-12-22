@@ -2,7 +2,7 @@ import { Container } from "@mui/material";
 import React from "react";
 import { UseAuthStateFunctions } from "../hooks/authorization";
 
-import LoginForm, { LoginFormInput } from "./LoginFormCard";
+import LoginForm, { LoginFormInput } from "../container/LoginFormCard";
 
 export type LoginFormContainerProps = {
     login: UseAuthStateFunctions['login']

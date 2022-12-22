@@ -35,24 +35,15 @@ export function OnUnauthorized({children}:{children: React.ReactNode}) : React.R
  */
 export default function AuthStatusSwitcher({children, authStatus }: AuthStatusSwitcherProps) {
     const childrenArray = React.Children.toArray(children);
+    const filterWithComponentType = React.useCallback((type: React.ReactPortal['type']): React.ReactNode => {
+        return childrenArray.filter(child=>React.isValidElement(child) && type === child.type);
+    }, [childrenArray]); 
     switch(authStatus) {
         case 'loading':
-            return (
-                <>
-                    {childrenArray.filter(child=>React.isValidElement(child) && child.type === OnLoading)}
-                </>
-            );
+            return <>{filterWithComponentType(OnLoading)}</>
         case 'authorized':
-            return ( 
-                <>
-                    {childrenArray.filter(child=>React.isValidElement(child) && child.type === OnAuthorized)}
-                </>
-            );
+            return <>{filterWithComponentType(OnAuthorized)}</>
         case 'unauthorized':
-            return ( 
-                <>
-                    {childrenArray.filter(child=>React.isValidElement(child) && child.type === OnUnauthorized)}
-                </>
-            );
+            return <>{filterWithComponentType(OnUnauthorized)}</>
     }
 }

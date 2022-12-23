@@ -40,8 +40,11 @@ export function useAuthState() : UseAuthStateItems {
             email,
             password
         }).then((value:AxiosResponse)=>{
-            setCurrent('authorized');
-            return true;
+            if(value.status === 200) {
+                setCurrent('authorized');
+                return true;
+            }
+            return false;
         }).catch((reason:any)=>{
             return false;
         });

@@ -1,4 +1,3 @@
-import axios, { AxiosResponse } from "axios";
 import React from "react";
 import AuthStatus from "../../domains/entities/auth-status";
 
@@ -33,7 +32,7 @@ export function OnUnauthorized({children}:{children: React.ReactNode}) : React.R
  * @param param0 
  * @returns 
  */
-export default function AuthStatusSwitcher({children, authStatus }: AuthStatusSwitcherProps) {
+export function AuthStatusSwitcher({children, authStatus }: AuthStatusSwitcherProps) {
     const childrenArray = React.Children.toArray(children);
     const filterWithComponentType = React.useCallback((type: React.ReactPortal['type']): React.ReactNode => {
         return childrenArray.filter(child=>React.isValidElement(child) && type === child.type);

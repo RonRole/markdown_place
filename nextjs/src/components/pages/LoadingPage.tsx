@@ -1,4 +1,4 @@
-export default function LoadingPage() {
+export function LoadingPage() {
     return (
         <div>Loading...</div>
     )

@@ -1,3 +1,3 @@
-export {default as AppLogo} from './AppLogo';
 export * from './AppLogo';
-export {default as NavBar} from './NavBar';
+export * from './AuthStatusSwitcher';
+export * from './LoginFormCard';

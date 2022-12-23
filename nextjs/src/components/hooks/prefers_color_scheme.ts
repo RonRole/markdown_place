@@ -4,7 +4,7 @@ export type UsePrefersColorSchemeReturnType = {
     current: 'light' | 'dark'
 }
 
-export default function usePrefersColorScheme() {
+export function usePrefersColorScheme() {
     const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
     const getThemeMode = React.useCallback(() => mediaQuery.matches ? 'dark' : 'light',[mediaQuery.matches]);
     const [current, setCurrent] = React.useState<UsePrefersColorSchemeReturnType['current']>(getThemeMode());

@@ -1,12 +1,13 @@
 import axios, { AxiosResponse } from "axios";
-import { UseAuthStateFunctions } from "../hooks/authorization";
+import React from "react";
+import { AuthContext } from "../context";
 
 export type AxiosInterceptorsSettingsProps = {
     children: React.ReactNode,
-    setUnauthorized: UseAuthStateFunctions['setUnauthorized']
 }
 
-export default function AxiosInterceptorsSettings({children, setUnauthorized}: AxiosInterceptorsSettingsProps) {
+export function AxiosInterceptorsSettings({children}: AxiosInterceptorsSettingsProps) {
+    const {setUnauthorized} = React.useContext(AuthContext);
     axios.interceptors.response.use(
         (value:AxiosResponse)=> value,
         (error: any) => {

@@ -19,7 +19,7 @@ axios.defaults.withCredentials = true;
  * 
  * @returns UseAuthorizationItems
  */
-export default function useAuthState() : UseAuthStateItems {
+export function useAuthState() : UseAuthStateItems {
     const [current, setCurrent] = React.useState<AuthStatus>('loading');
     React.useEffect(()=>{
         axios
@@ -36,19 +36,20 @@ export default function useAuthState() : UseAuthStateItems {
     const setUnauthorized = React.useCallback(() => setCurrent('unauthorized'), []);
     const login = React.useCallback(async (email:string, password:string)=>{
         await axios.get('/sanctum/csrf-cookie');
-        const response = await axios.post('/api/login', {
+        return await axios.post('/api/login', {
             email,
             password
-        });
-        if(response?.status === 200) {
+        }).then((value:AxiosResponse)=>{
             setCurrent('authorized');
             return true;
-        }
-        return false;
+        }).catch((reason:any)=>{
+            return false;
+        });
     }, []);
     const logout = React.useCallback(async ()=>{
-        await axios.post('/api/logout');
-        setCurrent('unauthorized');
+        await axios.post('/api/logout').finally(()=>{
+            setCurrent('unauthorized');
+        });
     }, [])
     return [
         current,

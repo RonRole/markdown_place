@@ -13,7 +13,7 @@ export type LoginFormCardProps = {
     submitButtonProps? : Omit<ButtonProps, 'type' | 'disabled'>
 } & Omit<CardProps, 'onSubmit'>
 
-export default function LoginForm({emailFieldProps, passwordFieldProps, submitButtonProps, onSubmit, ...cardProps} : LoginFormCardProps) {
+export function LoginFormCard({emailFieldProps, passwordFieldProps, submitButtonProps, onSubmit, ...cardProps} : LoginFormCardProps) {
     const [submitting, setSubmitting] = React.useState<boolean>(false);
     const emailInputRef    = React.useRef<HTMLInputElement>(null);
     const passwordInputRef = React.useRef<HTMLInputElement>(null);

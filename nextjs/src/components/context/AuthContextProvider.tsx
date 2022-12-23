@@ -1,6 +1,6 @@
 import React from "react"
 import AuthStatus from "../../domains/entities/auth-status"
-import useAuthState, { UseAuthStateFunctions, UseAuthStateItems } from "../hooks/authorization";
+import { useAuthState, UseAuthStateFunctions } from "../hooks";
 
 export type AuthContext = {
     currentAuthStatus: AuthStatus
@@ -29,7 +29,7 @@ export const AuthContext = React.createContext<AuthContext>({
  * @param param0 
  * @returns 
  */
-export default function AuthContextProvider({children}: AuthContextProviderProps) {
+export function AuthContextProvider({children}: AuthContextProviderProps) {
     const [currentAuthStatus, functions] = useAuthState();
     return (
         <AuthContext.Provider value={{currentAuthStatus, ...functions}}> 

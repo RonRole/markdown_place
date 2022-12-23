@@ -1,14 +1,13 @@
 
 import { AuthContext } from "../context/AuthContextProvider"
-import LoadingPage from "../pages/LoadingPage"
-import LoginPage from "../pages/LoginPage"
-import AuthStatusSwitcher, { OnAuthorized, OnLoading, OnUnauthorized } from "./AuthStatusSwitcher"
+import { LoadingPage, LoginPage } from "../pages"
+import { AuthStatusSwitcher, OnAuthorized, OnLoading, OnUnauthorized } from "../presentational"
 
 export type RequireAuthorizedProps = {
     children: React.ReactNode,
 }
 
-export default function RequireAuthorized({children}: RequireAuthorizedProps) {
+export function RequireAuthorized({children}: RequireAuthorizedProps) {
     return (
         <AuthContext.Consumer>{({currentAuthStatus, login})=>{
             return (
@@ -20,7 +19,7 @@ export default function RequireAuthorized({children}: RequireAuthorizedProps) {
                         {children}
                     </OnAuthorized>
                     <OnUnauthorized>
-                        <LoginPage login={login} />
+                        <LoginPage />
                     </OnUnauthorized>
                 </AuthStatusSwitcher>
             )

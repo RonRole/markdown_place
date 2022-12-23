@@ -1,7 +1,6 @@
 import axios from "axios"
 import React from "react";
-import RequireAuthorized from "../../components/functional/RequireAuthorized";
-import { NavBar } from "../../components/presentational";
+import { NavBar, RequireAuthorized } from "../../components/container";
 
 export default function Test() {
     const handleCSRFTest = () => {

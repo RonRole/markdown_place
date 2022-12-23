@@ -1,6 +1,6 @@
-import { AppBar, AppBarProps, Button, Container, ContainerProps, MenuItem, Toolbar, Typography } from "@mui/material";
-import Link from "next/link";
-import LogoutButton from "../container/LogoutButton";
+import { AppBar, Button, Container, Toolbar, Typography } from "@mui/material"
+import Link from "next/link"
+import { LogoutButton } from "./LogoutButton"
 
 export type LinkSrc = {
     path: string,
@@ -16,7 +16,7 @@ const links: LinkSrc[] = [
     {path:'/test', display:'TEST'}
 ]
 
-export default function NavBar({children}: NavBarProps) {
+export function NavBar({children}: NavBarProps) {
     return (
         <>
             <AppBar position='sticky'>

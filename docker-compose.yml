@@ -21,6 +21,7 @@ services:
       - "8000:8000"
     depends_on:
       - postgres
+      - redis
     tty: true
   postgres:
     image: postgres:latest
@@ -36,5 +37,13 @@ services:
       - POSTGRES_USER=postgres
       - POSTGRES_DB=postgres
     tty: true
+  redis:
+    image: redis:latest
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_store:/data
+    tty: true
 volumes:
   db_store:
+  redis_store:

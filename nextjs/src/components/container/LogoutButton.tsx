@@ -1,8 +1,10 @@
-import { Button } from "@mui/material"
+import { Button, ButtonProps } from "@mui/material"
 import React from "react";
 import { AuthContext } from "../context/AuthContextProvider"
 
-export function LogoutButton() {
+export type LogoutButtonProps = Omit<ButtonProps, 'variant' | 'color' | 'onClick' | 'disabled'>;
+
+export function LogoutButton(props:LogoutButtonProps) {
     const [submitting, setSubmitting] = React.useState<boolean>(false);
     const {logout} = React.useContext(AuthContext);
     const onClick = React.useCallback(async ()=>{
@@ -11,6 +13,6 @@ export function LogoutButton() {
         setSubmitting(false);
     }, [logout])
     return (
-        <Button variant="outlined" color="error" onClick={onClick} disabled={submitting}>LOG OUT</Button>
+        <Button variant="outlined" color="error" onClick={onClick} disabled={submitting} {...props}>LOG OUT</Button>
     )
 }

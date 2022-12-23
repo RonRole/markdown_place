@@ -6,22 +6,25 @@ export type LoginFormInput = {
     password?: string;
 }
 
-export type LoginFormProps = {
+export type LoginFormCardProps = {
     onSubmit: (input: LoginFormInput)=>Promise<void>,
     emailFieldProps?: Omit<TextFieldProps, 'inputRef'>,
     passwordFieldProps?: Omit<TextFieldProps, 'inputRef'>,
-    submitButtonProps? : Omit<ButtonProps, 'type'>
+    submitButtonProps? : Omit<ButtonProps, 'type' | 'disabled'>
 } & Omit<CardProps, 'onSubmit'>
 
-export default function LoginForm({emailFieldProps, passwordFieldProps, submitButtonProps, onSubmit, ...cardProps} : LoginFormProps) {
+export default function LoginForm({emailFieldProps, passwordFieldProps, submitButtonProps, onSubmit, ...cardProps} : LoginFormCardProps) {
+    const [submitting, setSubmitting] = React.useState<boolean>(false);
     const emailInputRef    = React.useRef<HTMLInputElement>(null);
     const passwordInputRef = React.useRef<HTMLInputElement>(null);
     const handleSubmit = React.useCallback<React.FormEventHandler<HTMLFormElement>>(async (e: React.FormEvent<HTMLFormElement>)=>{
         e.preventDefault();
+        setSubmitting(true);
         await onSubmit({
             email: emailInputRef.current?.value,
             password: passwordInputRef.current?.value
         });
+        setSubmitting(false);
     },[onSubmit]);
     return (
         <Card {...cardProps}>
@@ -32,7 +35,7 @@ export default function LoginForm({emailFieldProps, passwordFieldProps, submitBu
                     <TextField inputRef={passwordInputRef} label="password" type='password' placeholder='password' {...passwordFieldProps} />
                 </CardContent>
                 <CardContent>
-                    <Button type='submit' {...submitButtonProps}>ログイン</Button>
+                    <Button type='submit' disabled={submitting} {...submitButtonProps}>ログイン</Button>
                 </CardContent>
             </form>
         </Card>

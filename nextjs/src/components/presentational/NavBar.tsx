@@ -1,5 +1,6 @@
 import { AppBar, AppBarProps, Button, Container, ContainerProps, MenuItem, Toolbar, Typography } from "@mui/material";
 import Link from "next/link";
+import LogoutButton from "../container/LogoutButton";
 
 export type LinkSrc = {
     path: string,
@@ -27,6 +28,7 @@ export default function NavBar({children}: NavBarProps) {
                                 <Button sx={{color:'white'}}>{linkSrc.display}</Button>
                             </Link>
                         ))}
+                        <LogoutButton />
                     </Container>
                 </Toolbar>
             </AppBar>

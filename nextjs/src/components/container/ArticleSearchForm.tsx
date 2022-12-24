@@ -11,7 +11,7 @@ export default function ArticleSearchForm({onSubmit}: ArticleSearchFormProps) {
     const handleSubmit = React.useCallback(async (e:React.FormEvent<HTMLFormElement>)=>{
         e.preventDefault();
         await onSubmit(searchFieldInputRef.current?.value);
-    }, []);
+    }, [onSubmit]);
     return (
         <form onSubmit={handleSubmit}>
             <TextField

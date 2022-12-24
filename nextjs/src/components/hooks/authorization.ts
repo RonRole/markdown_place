@@ -1,6 +1,6 @@
 import axios, { Axios, AxiosError, AxiosResponse } from "axios";
 import React from "react";
-import AuthStatus from "../../domains/entities/auth-status";
+import AuthStatus from "../../domains/auth-status";
 
 export type UseAuthStateFunctions = {
     setUnauthorized() : void,

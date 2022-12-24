@@ -13,6 +13,7 @@ use Laravel\Sanctum\Sanctum;
  */
 class AdminUserTest extends TestCase
 {
+    use RefreshDatabase;
     /**
      * 管理者ユーザーの場合、/api/admin以下のルートにアクセスできる
      */

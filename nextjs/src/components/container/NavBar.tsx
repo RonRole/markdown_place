@@ -13,7 +13,7 @@ export type NavBarProps = {
 
 
 const links: LinkSrc[] = [
-    {path:'/test', display:'TEST'}
+    {path:'/articles', display:'記事一覧'},
 ]
 
 export function NavBar({children}: NavBarProps) {

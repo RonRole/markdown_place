@@ -1,5 +1,5 @@
 import React from "react"
-import AuthStatus from "../../domains/entities/auth-status"
+import AuthStatus from "../../domains/auth-status"
 import { useAuthState, UseAuthStateFunctions } from "../hooks";
 
 export type AuthContext = {

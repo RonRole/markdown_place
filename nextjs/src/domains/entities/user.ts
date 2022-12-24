@@ -1,13 +1,11 @@
-import Entity from "./entity";
-
 type UserConstructorParams = {
-    id: number;
+    id: number,
     name: string,
     email: string,
     is_admin: boolean,
 }
 
-export default class User implements Entity<number | undefined> {
+export default class User {
     readonly id?: number;
     readonly name: string;
     readonly email: string;
@@ -18,8 +16,5 @@ export default class User implements Entity<number | undefined> {
         this.name = name;
         this.email = email;
         this.isAdmin = is_admin;
-    }
-    get uniqueKey(): number | undefined {
-        return this.id;
     }
 }

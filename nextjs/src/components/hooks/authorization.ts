@@ -6,6 +6,7 @@ export type UseAuthStateFunctions = {
     setUnauthorized() : void,
     login(email?:string, password?: string):Promise<boolean>,
     logout():Promise<void>,
+    signUp(name?: string, email?:string, password?: string, passwordConfirmation?: string): Promise<boolean>,
 }
 export type UseAuthStateItems = [
     current : AuthStatus,
@@ -53,13 +54,33 @@ export function useAuthState() : UseAuthStateItems {
         await axios.post('/api/logout').finally(()=>{
             setCurrent('unauthorized');
         });
-    }, [])
+    }, []);
+    const signUp = React.useCallback(async (name?: string, email?:string, password?:string, passwordConfirmation?:string)=>{
+        return await axios
+            .post('/api/register', {
+                name,
+                email,
+                password,
+                password_confirmation: passwordConfirmation,
+            })
+            .then((value: AxiosResponse)=>{
+                if(value.status === 201) {
+                    setCurrent('authorized');
+                    return true;
+                }
+                return false;
+            })
+            .catch((_)=>{
+                return false;
+            })
+        }, []);
     return [
         current,
         {
             setUnauthorized,
             login,
             logout,
+            signUp,
         }
     ]
 }

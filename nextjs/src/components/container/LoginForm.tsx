@@ -1,16 +1,66 @@
-import Link from "next/link";
-import React from "react";
-import { AuthContext } from "../context/AuthContextProvider";
-import { LoginFormCard, LoginFormCardProps, LoginFormInput } from "../presentational/LoginFormCard";
+import {
+    Button,
+    ButtonProps,
+    CardContent,
+    CardHeader,
+    TextField,
+    TextFieldProps,
+} from '@mui/material';
+import React, { FormEvent } from 'react';
+import { AuthContext } from '../context/AuthContextProvider';
+import { FormCard, FormCardProps } from '../presentational/FormCard';
 
-export type LoginFormProps = Omit<LoginFormCardProps, 'onSubmit'>;
+export type LoginFormProps = {
+    emailFieldProps?: Omit<TextFieldProps, 'inputRef'>;
+    passwordFieldProps?: Omit<TextFieldProps, 'inputRef'>;
+    submitButtonProps?: Omit<ButtonProps, 'type' | 'disabled'>;
+} & Omit<FormCardProps, 'onSubmit'>;
 
-export function LoginForm(props: LoginFormProps) {
-    const {login} = React.useContext(AuthContext);
-    const onSubmit = React.useCallback(async ({email, password}: LoginFormInput)=>{
-        await login(email, password);
-    },[login]);
+export function LoginForm({
+    children,
+    emailFieldProps,
+    passwordFieldProps,
+    submitButtonProps,
+    ...props
+}: LoginFormProps) {
+    const { login } = React.useContext(AuthContext);
+    const emailInputRef = React.useRef<HTMLInputElement>(null);
+    const passwordInputRef = React.useRef<HTMLInputElement>(null);
+    const onSubmit = React.useCallback(
+        async (e: FormEvent<HTMLFormElement>) => {
+            e.preventDefault();
+            await login(emailInputRef.current?.value, passwordInputRef.current?.value);
+        },
+        [login]
+    );
     return (
-        <LoginFormCard onSubmit={onSubmit} {...props} />
-    )
+        <FormCard onSubmit={onSubmit} {...props}>
+            {(submitting) => (
+                <>
+                    <CardHeader title="Sawai Kei" />
+                    <CardContent>
+                        <TextField
+                            inputRef={emailInputRef}
+                            label="email"
+                            placeholder="sample@example.com"
+                            {...emailFieldProps}
+                        />
+                        <TextField
+                            inputRef={passwordInputRef}
+                            label="password"
+                            type="password"
+                            placeholder="password"
+                            {...passwordFieldProps}
+                        />
+                    </CardContent>
+                    <CardContent>
+                        <Button type="submit" disabled={submitting} {...submitButtonProps}>
+                            ログイン
+                        </Button>
+                    </CardContent>
+                    {children && <CardContent>{children(submitting)}</CardContent>}
+                </>
+            )}
+        </FormCard>
+    );
 }

@@ -1,5 +1,3 @@
 export function LoadingPage() {
-    return (
-        <div>Loading...</div>
-    )
+    return <div>Loading...</div>;
 }

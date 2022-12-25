@@ -1,23 +1,24 @@
-import axios, { AxiosResponse } from "axios";
-import React from "react";
-import { AuthContext } from "../context";
+import axios, { AxiosResponse } from 'axios';
+import React from 'react';
+import { AuthContext } from '../context';
 
 export type AxiosInterceptorsSettingsProps = {
-    children: React.ReactNode,
-}
+    children: React.ReactNode;
+};
 
-export function AxiosInterceptorsSettings({children}: AxiosInterceptorsSettingsProps) {
-    const {setUnauthorized} = React.useContext(AuthContext);
+export function AxiosInterceptorsSettings({ children }: AxiosInterceptorsSettingsProps) {
+    const { setUnauthorized } = React.useContext(AuthContext);
     axios.interceptors.response.use(
-        (value:AxiosResponse)=> value,
+        (value: AxiosResponse) => value,
         (error: any) => {
-            switch(error.response?.status) {
+            switch (error.response?.status) {
                 case 401:
                 case 419:
                 case 422:
                     setUnauthorized();
                     return Promise.reject(error.response?.data);
             }
-        });
+        }
+    );
     return <>{children}</>;
 }

@@ -1,18 +1,20 @@
-import { Button, ButtonProps } from "@mui/material"
-import React from "react";
-import { AuthContext } from "../context/AuthContextProvider"
+import { Button, ButtonProps } from '@mui/material';
+import React from 'react';
+import { AuthContext } from '../context/AuthContextProvider';
 
 export type LogoutButtonProps = Omit<ButtonProps, 'variant' | 'color' | 'onClick' | 'disabled'>;
 
-export function LogoutButton(props:LogoutButtonProps) {
+export function LogoutButton(props: LogoutButtonProps) {
     const [submitting, setSubmitting] = React.useState<boolean>(false);
-    const {logout} = React.useContext(AuthContext);
-    const onClick = React.useCallback(async ()=>{
+    const { logout } = React.useContext(AuthContext);
+    const onClick = React.useCallback(async () => {
         setSubmitting(true);
         await logout();
         setSubmitting(false);
-    }, [logout])
+    }, [logout]);
     return (
-        <Button variant="outlined" color="error" onClick={onClick} disabled={submitting} {...props}>LOG OUT</Button>
-    )
+        <Button variant="outlined" color="error" onClick={onClick} disabled={submitting} {...props}>
+            LOG OUT
+        </Button>
+    );
 }

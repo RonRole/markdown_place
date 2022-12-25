@@ -1,9 +1,9 @@
-import '../styles/globals.css'
-import type { AppProps } from 'next/app'
+import '../styles/globals.css';
+import type { AppProps } from 'next/app';
 import React from 'react';
 import dynamic from 'next/dynamic';
 import axios from 'axios';
-import { AuthContextProvider} from '../components/context';
+import { AuthContextProvider } from '../components/context';
 import { AxiosInterceptorsSettings } from '../components/functional';
 
 /**
@@ -11,21 +11,24 @@ import { AxiosInterceptorsSettings } from '../components/functional';
  * dynamic import
  */
 const PrefersColorSchemeMuiThemeProvider = dynamic(
-  ()=>import('../components/context').then(muiThemeProvider=>muiThemeProvider.PrefersColorSchemeMuiThemeProvider),
-  {ssr: false}
+    () =>
+        import('../components/context').then(
+            (muiThemeProvider) => muiThemeProvider.PrefersColorSchemeMuiThemeProvider
+        ),
+    { ssr: false }
 );
 
 axios.defaults.baseURL = process.env.NEXT_PUBLIC_APP_API_URL;
 axios.defaults.withCredentials = true;
 
 export default function App({ Component, pageProps }: AppProps) {
-  return (
-    <AuthContextProvider>
-      <PrefersColorSchemeMuiThemeProvider>
-        <AxiosInterceptorsSettings>
-          <Component {...pageProps} />
-        </AxiosInterceptorsSettings>
-      </PrefersColorSchemeMuiThemeProvider>
-    </AuthContextProvider>
-  )
+    return (
+        <AuthContextProvider>
+            <PrefersColorSchemeMuiThemeProvider>
+                <AxiosInterceptorsSettings>
+                    <Component {...pageProps} />
+                </AxiosInterceptorsSettings>
+            </PrefersColorSchemeMuiThemeProvider>
+        </AuthContextProvider>
+    );
 }

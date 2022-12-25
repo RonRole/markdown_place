@@ -7,13 +7,14 @@ export type LoginFormInput = {
 }
 
 export type LoginFormCardProps = {
+    children?: React.ReactNode,
     onSubmit: (input: LoginFormInput)=>Promise<void>,
     emailFieldProps?: Omit<TextFieldProps, 'inputRef'>,
     passwordFieldProps?: Omit<TextFieldProps, 'inputRef'>,
     submitButtonProps? : Omit<ButtonProps, 'type' | 'disabled'>
 } & Omit<CardProps, 'onSubmit'>
 
-export function LoginFormCard({emailFieldProps, passwordFieldProps, submitButtonProps, onSubmit, ...cardProps} : LoginFormCardProps) {
+export function LoginFormCard({children, emailFieldProps, passwordFieldProps, submitButtonProps, onSubmit, ...cardProps} : LoginFormCardProps) {
     const [submitting, setSubmitting] = React.useState<boolean>(false);
     const emailInputRef    = React.useRef<HTMLInputElement>(null);
     const passwordInputRef = React.useRef<HTMLInputElement>(null);
@@ -37,6 +38,7 @@ export function LoginFormCard({emailFieldProps, passwordFieldProps, submitButton
                 <CardContent>
                     <Button type='submit' disabled={submitting} {...submitButtonProps}>ログイン</Button>
                 </CardContent>
+                {children && <CardContent>{children}</CardContent>}
             </form>
         </Card>
     )

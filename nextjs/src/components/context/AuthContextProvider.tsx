@@ -22,6 +22,10 @@ export const AuthContext = React.createContext<AuthContext>({
     async logout() {
         console.log('now is loading...');
     },
+    async signUp(email?:string, password?:string, passwordConfirmation?:string) {
+        console.log('now is loading...');
+        return false;
+    }
 });
 
 /**

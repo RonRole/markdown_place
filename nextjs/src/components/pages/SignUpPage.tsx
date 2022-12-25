@@ -23,11 +23,15 @@ export function SignUpPage() {
                     maxWidth: 275,
                 }}
             >
-                <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-                    <NextLink href="/" passHref legacyBehavior>
-                        <Link>トップページへ</Link>
-                    </NextLink>
-                </Box>
+                {(submitting) => (
+                    <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+                        <NextLink href="/" passHref legacyBehavior>
+                            <Link sx={submitting ? { color: 'gray', pointerEvents: 'none' } : {}}>
+                                トップページへ
+                            </Link>
+                        </NextLink>
+                    </Box>
+                )}
             </SignUpForm>
         </Container>
     );

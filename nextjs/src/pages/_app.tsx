@@ -6,6 +6,7 @@ import axios from 'axios';
 import { AuthContextProvider, EditNewArticleDialogContextProvider } from '../components/context';
 import { AxiosInterceptorsSettings } from '../components/functional';
 import { NavBar } from '../components/container';
+import { LoadAuthorization } from '../components/functional/LoadAuthorization';
 
 /**
  * 内部でwindowを使用しているため、ssrでのエラーを回避するために
@@ -28,9 +29,11 @@ export default function App({ Component, pageProps }: AppProps) {
             <PrefersColorSchemeMuiThemeProvider>
                 <EditNewArticleDialogContextProvider>
                     <AxiosInterceptorsSettings>
-                        <NavBar>
-                            <Component {...pageProps} />
-                        </NavBar>
+                        <LoadAuthorization>
+                            <NavBar>
+                                <Component {...pageProps} />
+                            </NavBar>
+                        </LoadAuthorization>
                     </AxiosInterceptorsSettings>
                 </EditNewArticleDialogContextProvider>
             </PrefersColorSchemeMuiThemeProvider>

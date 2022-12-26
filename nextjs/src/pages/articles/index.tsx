@@ -16,18 +16,16 @@ export default function Articles() {
     }, []);
     return (
         <RequireAuthorized>
-            <NavBar>
-                <EditNewArticleDialogContext.Consumer>
-                    {({ open, close }) => (
-                        <Container maxWidth="xl" sx={{ display: 'flex', justifyContent: 'center' }}>
-                            <Button onClick={open}>Open!</Button>
-                            <Container maxWidth="sm" sx={{ mt: 2 }}>
-                                <ArticleSearchForm onSubmit={onSubmit} />
-                            </Container>
+            <EditNewArticleDialogContext.Consumer>
+                {({ open, close }) => (
+                    <Container maxWidth="xl" sx={{ display: 'flex', justifyContent: 'center' }}>
+                        <Button onClick={open}>Open!</Button>
+                        <Container maxWidth="sm" sx={{ mt: 2 }}>
+                            <ArticleSearchForm onSubmit={onSubmit} />
                         </Container>
-                    )}
-                </EditNewArticleDialogContext.Consumer>
-            </NavBar>
+                    </Container>
+                )}
+            </EditNewArticleDialogContext.Consumer>
         </RequireAuthorized>
     );
 }

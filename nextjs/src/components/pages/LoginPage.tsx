@@ -1,9 +1,11 @@
 import { Box, Container, Link } from '@mui/material';
 import NextLink from 'next/link';
 import React from 'react';
-import { LoginForm } from '../container';
+import { LoginForm, LoginFormProps, NavBar } from '../container';
 
-export function LoginPage() {
+export type LoginPageProps = Pick<LoginFormProps, 'afterLoginCallback'>;
+
+export function LoginPage({ afterLoginCallback }: LoginPageProps) {
     return (
         <Container
             maxWidth="xl"
@@ -18,6 +20,7 @@ export function LoginPage() {
                 emailFieldProps={{ fullWidth: true, sx: { mb: 1 } }}
                 passwordFieldProps={{ fullWidth: true }}
                 submitButtonProps={{ variant: 'outlined', fullWidth: true }}
+                afterLoginCallback={afterLoginCallback}
                 sx={{
                     maxWidth: 275,
                 }}

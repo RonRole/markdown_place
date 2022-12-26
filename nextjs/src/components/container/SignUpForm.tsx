@@ -51,6 +51,10 @@ export function SignUpForm({
         },
         [signUp, router]
     );
+    const childNodes = React.useCallback(
+        (submitting: boolean) => children && <CardContent>{children(submitting)}</CardContent>,
+        [children]
+    );
     return (
         <FormCard onSubmit={onSubmit}>
             {(submitting) => (

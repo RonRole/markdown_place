@@ -8,12 +8,14 @@ import {
 } from '@mui/material';
 import React, { FormEvent } from 'react';
 import { AuthContext } from '../context/AuthContextProvider';
+import { LoginResult, UseAuthStateFunctions } from '../hooks';
 import { FormCard, FormCardProps } from '../presentational/FormCard';
 
 export type LoginFormProps = {
     emailFieldProps?: Omit<TextFieldProps, 'inputRef'>;
     passwordFieldProps?: Omit<TextFieldProps, 'inputRef'>;
     submitButtonProps?: Omit<ButtonProps, 'type' | 'disabled'>;
+    afterLoginCallback?(result: LoginResult): Promise<void>;
 } & Omit<FormCardProps, 'onSubmit'>;
 
 export function LoginForm({
@@ -21,6 +23,7 @@ export function LoginForm({
     emailFieldProps,
     passwordFieldProps,
     submitButtonProps,
+    afterLoginCallback,
     ...props
 }: LoginFormProps) {
     const { login } = React.useContext(AuthContext);
@@ -36,8 +39,11 @@ export function LoginForm({
             if (loginResult !== true) {
                 console.log(loginResult);
             }
+            if (afterLoginCallback) {
+                await afterLoginCallback(loginResult);
+            }
         },
-        [login]
+        [login, afterLoginCallback]
     );
     return (
         <FormCard onSubmit={onSubmit} {...props}>

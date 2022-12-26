@@ -1,6 +1,6 @@
 import React from 'react';
 import AuthStatus from '../../domains/auth-status';
-import { useAuthState, UseAuthStateFunctions } from '../hooks';
+import { LoginParams, SignUpParams, useAuthState, UseAuthStateFunctions } from '../hooks';
 
 export type AuthContext = {
     currentAuthStatus: AuthStatus;
@@ -15,16 +15,22 @@ export const AuthContext = React.createContext<AuthContext>({
     setUnauthorized() {
         console.log('now is loading...');
     },
-    async login(email?: string, password?: string) {
-        console.log('now is loading...');
-        return false;
+    async login(params: LoginParams) {
+        return {
+            email: ['now is loading...'],
+            password: ['now is loading...'],
+        };
     },
     async logout() {
         console.log('now is loading...');
     },
-    async signUp(email?: string, password?: string, passwordConfirmation?: string) {
-        console.log('now is loading...');
-        return false;
+    async signUp(params: SignUpParams) {
+        return {
+            name: ['now is loading...'],
+            email: ['now is loading...'],
+            password: ['now is loading...'],
+            passwordConfirmation: ['now is loading...'],
+        };
     },
 });
 

@@ -3,7 +3,7 @@ import type { AppProps } from 'next/app';
 import React from 'react';
 import dynamic from 'next/dynamic';
 import axios from 'axios';
-import { AuthContextProvider } from '../components/context';
+import { AuthContextProvider, EditNewArticleDialogContextProvider } from '../components/context';
 import { AxiosInterceptorsSettings } from '../components/functional';
 
 /**
@@ -25,9 +25,11 @@ export default function App({ Component, pageProps }: AppProps) {
     return (
         <AuthContextProvider>
             <PrefersColorSchemeMuiThemeProvider>
-                <AxiosInterceptorsSettings>
-                    <Component {...pageProps} />
-                </AxiosInterceptorsSettings>
+                <EditNewArticleDialogContextProvider>
+                    <AxiosInterceptorsSettings>
+                        <Component {...pageProps} />
+                    </AxiosInterceptorsSettings>
+                </EditNewArticleDialogContextProvider>
             </PrefersColorSchemeMuiThemeProvider>
         </AuthContextProvider>
     );

@@ -29,7 +29,13 @@ export function LoginForm({
     const onSubmit = React.useCallback(
         async (e: FormEvent<HTMLFormElement>) => {
             e.preventDefault();
-            await login(emailInputRef.current?.value, passwordInputRef.current?.value);
+            const loginResult = await login({
+                email: emailInputRef.current?.value,
+                password: passwordInputRef.current?.value,
+            });
+            if (loginResult !== true) {
+                console.log(loginResult);
+            }
         },
         [login]
     );

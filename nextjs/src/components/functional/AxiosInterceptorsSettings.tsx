@@ -13,11 +13,9 @@ export function AxiosInterceptorsSettings({ children }: AxiosInterceptorsSetting
         (error: any) => {
             switch (error.response?.status) {
                 case 401:
-                case 419:
-                case 422:
                     setUnauthorized();
-                    return Promise.reject(error.response?.data);
             }
+            return Promise.reject(error);
         }
     );
     return <>{children}</>;

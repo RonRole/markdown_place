@@ -1,17 +1,32 @@
 import axios, { Axios, AxiosError, AxiosResponse } from 'axios';
 import React from 'react';
 import AuthStatus from '../../domains/auth-status';
+import { InputError } from '../../errors/input_error';
+
+export type LoginParams = {
+    email?: string;
+    password?: string;
+};
+
+export type SignUpParams = {
+    name?: string;
+    email?: string;
+    password?: string;
+    passwordConfirmation?: string;
+};
+
+type ServerErrorFormat = {
+    errors: {
+        [key: string]: string[];
+    };
+    message: string;
+};
 
 export type UseAuthStateFunctions = {
     setUnauthorized(): void;
-    login(email?: string, password?: string): Promise<boolean>;
+    login(params: LoginParams): Promise<true | InputError<LoginParams>>;
     logout(): Promise<void>;
-    signUp(
-        name?: string,
-        email?: string,
-        password?: string,
-        passwordConfirmation?: string
-    ): Promise<boolean>;
+    signUp(params: SignUpParams): Promise<true | InputError<SignUpParams>>;
 };
 export type UseAuthStateItems = [current: AuthStatus, useAuthStateFunctions: UseAuthStateFunctions];
 
@@ -37,23 +52,29 @@ export function useAuthState(): UseAuthStateItems {
             .catch((error: AxiosError) => setCurrent('unauthorized'));
     }, []);
     const setUnauthorized = React.useCallback(() => setCurrent('unauthorized'), []);
-    const login = React.useCallback(async (email: string, password: string) => {
+    const login = React.useCallback(async ({ email, password }: LoginParams) => {
         await axios.get('/sanctum/csrf-cookie');
-        return await axios
+        const result = await axios
             .post('/api/login', {
                 email,
                 password,
             })
-            .then((value: AxiosResponse) => {
-                if (value.status === 200) {
+            .then((res: AxiosResponse) => {
+                if (res.status === 200) {
                     setCurrent('authorized');
                     return true;
                 }
-                return false;
+                alert('予期しないエラーが発生しました');
+                return {};
             })
-            .catch((reason: any) => {
-                return false;
+            .catch((error: AxiosError) => {
+                const errorData = error.response?.data as ServerErrorFormat;
+                return {
+                    email: errorData?.errors?.email,
+                    password: errorData?.errors?.password,
+                };
             });
+        return result;
     }, []);
     const logout = React.useCallback(async () => {
         await axios.post('/api/logout').finally(() => {
@@ -61,8 +82,8 @@ export function useAuthState(): UseAuthStateItems {
         });
     }, []);
     const signUp = React.useCallback(
-        async (name?: string, email?: string, password?: string, passwordConfirmation?: string) => {
-            return await axios
+        async ({ name, email, password, passwordConfirmation }: SignUpParams) => {
+            const result = await axios
                 .post('/api/register', {
                     name,
                     email,
@@ -74,11 +95,19 @@ export function useAuthState(): UseAuthStateItems {
                         setCurrent('authorized');
                         return true;
                     }
-                    return false;
+                    alert('予期しないエラーが発生しました');
+                    return {};
                 })
-                .catch((_) => {
-                    return false;
+                .catch((error: AxiosError) => {
+                    const errorData = error.response?.data as ServerErrorFormat;
+                    return {
+                        name: errorData?.errors?.name,
+                        email: errorData?.errors?.email,
+                        password: errorData?.errors?.password,
+                        passwordConfirmation: errorData?.errors?.password_confirmation,
+                    };
                 });
+            return result;
         },
         []
     );

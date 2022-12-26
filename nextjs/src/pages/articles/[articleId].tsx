@@ -6,9 +6,7 @@ export default function EditArticlePage() {
     const { articleId } = router.query;
     return (
         <RequireAuthorized>
-            <NavBar>
-                <h1>記事閲覧/編集機能 記事ID:{articleId}</h1>
-            </NavBar>
+            <h1>記事閲覧/編集機能 記事ID:{articleId}</h1>
         </RequireAuthorized>
     );
 }

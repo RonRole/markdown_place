@@ -16,7 +16,10 @@ export function FormCard({ children, onSubmit, ...props }: FormCardProps) {
         },
         [setSubmitting, onSubmit]
     );
-    const childNodes = children ? children(submitting) : <></>;
+    const childNodes = React.useMemo<React.ReactNode>(
+        () => (children ? children(submitting) : <></>),
+        [children, submitting]
+    );
     return (
         <Card {...props}>
             <form onSubmit={handleSubmit}>{childNodes}</form>

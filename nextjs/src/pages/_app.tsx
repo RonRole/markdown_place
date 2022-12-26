@@ -5,6 +5,7 @@ import dynamic from 'next/dynamic';
 import axios from 'axios';
 import { AuthContextProvider, EditNewArticleDialogContextProvider } from '../components/context';
 import { AxiosInterceptorsSettings } from '../components/functional';
+import { NavBar } from '../components/container';
 
 /**
  * 内部でwindowを使用しているため、ssrでのエラーを回避するために
@@ -27,7 +28,9 @@ export default function App({ Component, pageProps }: AppProps) {
             <PrefersColorSchemeMuiThemeProvider>
                 <EditNewArticleDialogContextProvider>
                     <AxiosInterceptorsSettings>
-                        <Component {...pageProps} />
+                        <NavBar>
+                            <Component {...pageProps} />
+                        </NavBar>
                     </AxiosInterceptorsSettings>
                 </EditNewArticleDialogContextProvider>
             </PrefersColorSchemeMuiThemeProvider>

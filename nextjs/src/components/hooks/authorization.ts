@@ -8,12 +8,16 @@ export type LoginParams = {
     password?: string;
 };
 
+export type LoginResult = true | InputError<LoginParams>;
+
 export type SignUpParams = {
     name?: string;
     email?: string;
     password?: string;
     passwordConfirmation?: string;
 };
+
+export type SignUpResult = true | InputError<LoginParams>;
 
 type ServerErrorFormat = {
     errors: {
@@ -24,9 +28,9 @@ type ServerErrorFormat = {
 
 export type UseAuthStateFunctions = {
     setUnauthorized(): void;
-    login(params: LoginParams): Promise<true | InputError<LoginParams>>;
+    login(params: LoginParams): Promise<LoginResult>;
     logout(): Promise<void>;
-    signUp(params: SignUpParams): Promise<true | InputError<SignUpParams>>;
+    signUp(params: SignUpParams): Promise<SignUpResult>;
 };
 export type UseAuthStateItems = [current: AuthStatus, useAuthStateFunctions: UseAuthStateFunctions];
 

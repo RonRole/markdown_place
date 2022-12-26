@@ -37,14 +37,16 @@ export function SignUpForm({
     const onSubmit = React.useCallback(
         async (e: React.FormEvent<HTMLFormElement>) => {
             e.preventDefault();
-            const successed = await signUp(
-                nameInputRef.current?.value,
-                emailInputRef.current?.value,
-                passwordInputRef.current?.value,
-                passwordConfirmationInputRef.current?.value
-            );
-            if (successed) {
+            const signUpResult = await signUp({
+                name: nameInputRef.current?.value,
+                email: emailInputRef.current?.value,
+                password: passwordInputRef.current?.value,
+                passwordConfirmation: passwordConfirmationInputRef.current?.value,
+            });
+            if (signUpResult === true) {
                 await router.push('/');
+            } else {
+                console.log(signUpResult);
             }
         },
         [signUp, router]

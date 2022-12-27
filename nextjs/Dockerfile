@@ -3,4 +3,11 @@ FROM node:19-alpine
 WORKDIR /app
 COPY ./src /app
 
+RUN npm install
+
+ARG NEXT_PUBLIC_APP_API_URL
+ENV NEXT_PUBLIC_APP_API_URL $NEXT_PUBLIC_APP_API_URL
+
+EXPOSE 3000
+
 CMD ["npm", "run", "dev"]

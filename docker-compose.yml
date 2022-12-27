@@ -1,9 +1,11 @@
-version: '3'
+version: "3"
 services:
   nextjs:
-    build: 
+    build:
       context: ./nextjs
       dockerfile: ./Dockerfile
+      args:
+        - NEXT_PUBLIC_APP_API_URL=$NEXT_PUBLIC_APP_API_URL
     volumes:
       - ./nextjs/src:/app
     ports:
@@ -11,10 +13,28 @@ services:
     depends_on:
       - laravel
     tty: true
+    env_file:
+      - .env
   laravel:
     build:
       context: ./laravel
       dockerfile: ./Dockerfile
+      args:
+        - APP_ENV=$APP_ENV
+        - FRONT_ORIGIN=$FRONT_ORIGIN
+        - DB_CONNECTION=$DB_CONNECTION
+        - DB_HOST=$DB_HOST
+        - DB_PORT=$DB_PORT
+        - DB_DATABASE=$DB_DATABASE
+        - DB_USERNAME=$DB_USERNAME
+        - DB_PASSWORD=$DB_PASSWORD
+        - SESSION_DRIVER=$SESSION_DRIVER
+        - SESSION_LIFETIME=$SESSION_LIFETIME
+        - REDIS_HOST=$REDIS_HOST
+        - REDIS_PASSWORD=$REDIS_PASSWORD
+        - REDIS_PORT=$REDIS_PORT
+        - REDIS_SCHEME=$REDIS_SCHEME
+
     volumes:
       - ./laravel/src:/app
     ports:
@@ -23,6 +43,8 @@ services:
       - postgres
       - redis
     tty: true
+    env_file:
+      - .env
   postgres:
     image: postgres:latest
     ports:

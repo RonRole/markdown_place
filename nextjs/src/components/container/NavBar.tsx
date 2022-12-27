@@ -17,15 +17,15 @@ export type NavBarProps = {
 // ログイン済でなくても表示されるリンク
 const commonLinks: LinkSrc[] = [{ path: '/login', display: 'ログイン/ユーザー登録' }];
 // ログイン済の場合のみ表示されるリンク
-const requireAuthorizedLinks: LinkSrc[] = [{ path: '/articles', display: '記事一覧' }];
+const requireAuthorizedLinks: LinkSrc[] = [
+    { path: '/articles', display: '記事一覧' },
+    { path: '/articles/new', display: '記事作成' },
+];
 
 export function NavBar({ children }: NavBarProps) {
     const { currentAuthStatus } = React.useContext(AuthContext);
     const links = React.useMemo(
-        () => [
-            ...commonLinks,
-            ...(currentAuthStatus === 'authorized' ? requireAuthorizedLinks : []),
-        ],
+        () => [...(currentAuthStatus === 'authorized' ? requireAuthorizedLinks : [])],
         [currentAuthStatus]
     );
     return (
@@ -42,6 +42,13 @@ export function NavBar({ children }: NavBarProps) {
                             </Link>
                         ))}
                     </Container>
+                    {currentAuthStatus === 'unauthorized' && (
+                        <Link href="/login" passHref>
+                            <Button sx={{ color: 'white', whiteSpace: 'nowrap' }}>
+                                ログイン/ユーザー登録
+                            </Button>
+                        </Link>
+                    )}
                     {currentAuthStatus === 'authorized' && (
                         <LogoutButton sx={{ whiteSpace: 'nowrap' }} />
                     )}

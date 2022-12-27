@@ -25,9 +25,9 @@ export function SignUpPage() {
             >
                 {(submitting) => (
                     <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-                        <NextLink href="/" passHref legacyBehavior>
+                        <NextLink href="/login" passHref legacyBehavior>
                             <Link sx={submitting ? { color: 'gray', pointerEvents: 'none' } : {}}>
-                                トップページへ
+                                ログイン
                             </Link>
                         </NextLink>
                     </Box>

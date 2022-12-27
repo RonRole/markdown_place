@@ -15,7 +15,7 @@ export type NavBarProps = {
 };
 
 // ログイン済でなくても表示されるリンク
-const commonLinks: LinkSrc[] = [{ path: '/login', display: 'ログイン' }];
+const commonLinks: LinkSrc[] = [{ path: '/login', display: 'ログイン/ユーザー登録' }];
 // ログイン済の場合のみ表示されるリンク
 const requireAuthorizedLinks: LinkSrc[] = [{ path: '/articles', display: '記事一覧' }];
 

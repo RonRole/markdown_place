@@ -36,7 +36,7 @@ export function LoginPage({ afterLoginCallback }: LoginPageProps) {
                                             : undefined
                                     }
                                 >
-                                    新規登録
+                                    ユーザー登録
                                 </Link>
                             </NextLink>
                         </Box>

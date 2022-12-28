@@ -47,29 +47,22 @@ export function useAuthState(): UseAuthStateItems {
         axios
             .get('/api/user')
             .then((res: AxiosResponse) => {
-                if (res?.status === 200) {
-                    setCurrent('authorized');
-                    return;
-                }
-                setCurrent('unauthorized');
+                setCurrent('authorized');
+                return;
             })
             .catch((error: AxiosError) => setCurrent('unauthorized'));
     }, []);
     const setUnauthorized = React.useCallback(() => setCurrent('unauthorized'), []);
     const login = React.useCallback(async ({ email, password }: LoginParams) => {
         await axios.get('/sanctum/csrf-cookie');
-        const result = await axios
+        const result: LoginResult = await axios
             .post('/api/login', {
                 email,
                 password,
             })
-            .then((res: AxiosResponse) => {
-                if (res.status === 200) {
-                    setCurrent('authorized');
-                    return true;
-                }
-                alert('予期しないエラーが発生しました');
-                return {};
+            .then((_: AxiosResponse) => {
+                setCurrent('authorized');
+                return true as true;
             })
             .catch((error: AxiosError) => {
                 const errorData = error.response?.data as ServerErrorFormat;
@@ -94,13 +87,9 @@ export function useAuthState(): UseAuthStateItems {
                     password,
                     password_confirmation: passwordConfirmation,
                 })
-                .then((value: AxiosResponse) => {
-                    if (value.status === 201) {
-                        setCurrent('authorized');
-                        return true;
-                    }
-                    alert('予期しないエラーが発生しました');
-                    return {};
+                .then((_: AxiosResponse) => {
+                    setCurrent('authorized');
+                    return true as true;
                 })
                 .catch((error: AxiosError) => {
                     const errorData = error.response?.data as ServerErrorFormat;

@@ -1,22 +1,28 @@
 import {
     Button,
     ButtonProps,
+    Card,
     CardContent,
     CardHeader,
+    CardProps,
     TextField,
     TextFieldProps,
 } from '@mui/material';
 import React, { FormEvent } from 'react';
 import { AuthContext } from '../context/AuthContextProvider';
 import { LoginResult, UseAuthStateFunctions } from '../hooks';
-import { FormCard, FormCardProps } from '../presentational/FormCard';
+import {
+    FormWithSubmittingState,
+    FormWithSubmittingStateProps,
+} from '../presentational/FormWithSubmittingState';
 
 export type LoginFormProps = {
     emailFieldProps?: Omit<TextFieldProps, 'inputRef'>;
     passwordFieldProps?: Omit<TextFieldProps, 'inputRef'>;
     submitButtonProps?: Omit<ButtonProps, 'type' | 'disabled'>;
     afterLoginCallback?(result: LoginResult): Promise<void>;
-} & Omit<FormCardProps, 'onSubmit'>;
+} & Omit<FormWithSubmittingStateProps, 'onSubmit'> &
+    Omit<CardProps, 'children' | 'onSubmit'>;
 
 export function LoginForm({
     children,
@@ -46,9 +52,9 @@ export function LoginForm({
         [login, afterLoginCallback]
     );
     return (
-        <FormCard onSubmit={onSubmit} {...props}>
+        <FormWithSubmittingState onSubmit={onSubmit}>
             {(submitting) => (
-                <>
+                <Card {...props}>
                     <CardHeader title="Sawai Kei" />
                     <CardContent>
                         <TextField
@@ -71,8 +77,8 @@ export function LoginForm({
                         </Button>
                     </CardContent>
                     {children && <CardContent>{children(submitting)}</CardContent>}
-                </>
+                </Card>
             )}
-        </FormCard>
+        </FormWithSubmittingState>
     );
 }

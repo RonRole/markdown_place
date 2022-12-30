@@ -17,7 +17,7 @@ class CreateArticlesTable extends Migration
             $table->id();
             $table->foreignId('author_id')->constrained('users');
             $table->string('title');
-            $table->longText('content');
+            $table->longText('content')->nullable();
             $table->timestamps();
             $table->index(['author_id', 'title']);
         });

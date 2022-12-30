@@ -1,9 +1,9 @@
-import { EditNewArticleForm, RequireAuthorized } from '../../components/container';
+import { EditArticleForm, RequireAuthorized } from '../../components/container';
 
 export default function NewArticle() {
     return (
         <RequireAuthorized>
-            <EditNewArticleForm />
+            <EditArticleForm />
         </RequireAuthorized>
     );
 }

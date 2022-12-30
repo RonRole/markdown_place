@@ -1,6 +1,7 @@
 import axios, { Axios, AxiosError, AxiosResponse } from 'axios';
 import React from 'react';
 import AuthStatus from '../../domains/auth-status';
+import { ServerErrorFormat } from '../../errors';
 import { InputError } from '../../errors/input_error';
 
 export type LoginParams = {
@@ -18,13 +19,6 @@ export type SignUpParams = {
 };
 
 export type SignUpResult = true | InputError<LoginParams>;
-
-type ServerErrorFormat = {
-    errors: {
-        [key: string]: string[];
-    };
-    message: string;
-};
 
 export type UseAuthStateFunctions = {
     setUnauthorized(): void;

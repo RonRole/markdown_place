@@ -1,15 +1,17 @@
 import {
     Button,
     ButtonProps,
+    Card,
     CardContent,
     CardHeader,
+    CardProps,
     TextField,
     TextFieldProps,
 } from '@mui/material';
 import { useRouter } from 'next/router';
 import React from 'react';
 import { AuthContext } from '../context';
-import { FormCard, FormCardProps } from '../presentational';
+import { FormWithSubmittingState, FormWithSubmittingStateProps } from '../presentational';
 
 export type SignUpFormProps = {
     nameFieldProps?: Omit<TextFieldProps, 'inputRef'>;
@@ -17,7 +19,8 @@ export type SignUpFormProps = {
     passwordFieldProps?: Omit<TextFieldProps, 'type' | 'inputRef'>;
     passwordConfirmationFieldProps?: Omit<TextFieldProps, 'type' | 'inputRef'>;
     submitButtonProps?: Omit<ButtonProps, 'type' | 'disabled'>;
-} & Omit<FormCardProps, 'onSubmit'>;
+} & Omit<FormWithSubmittingStateProps, 'onSubmit'> &
+    Omit<CardProps, 'onSubmit'>;
 
 export function SignUpForm({
     children,
@@ -52,9 +55,9 @@ export function SignUpForm({
         [signUp, router]
     );
     return (
-        <FormCard onSubmit={onSubmit}>
+        <FormWithSubmittingState onSubmit={onSubmit}>
             {(submitting) => (
-                <>
+                <Card {...props}>
                     <CardHeader title="Sign Up" />
                     <CardContent {...props}>
                         <TextField
@@ -90,8 +93,8 @@ export function SignUpForm({
                         </Button>
                     </CardContent>
                     {children && <CardContent>{children(submitting)}</CardContent>}
-                </>
+                </Card>
             )}
-        </FormCard>
+        </FormWithSubmittingState>
     );
 }

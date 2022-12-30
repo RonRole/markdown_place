@@ -3,20 +3,29 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Actions\Article\CreateArticleActionInput;
 use App\Actions\Article\CreateArticleAction;
+use App\Actions\Article\UpdateArticleAction;
+use App\Actions\Article\ListArticleAction;
 
 class ArticleController extends Controller
 {
 
     /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
+     * Summary of index
+     * @param ListArticleAction $listArticleAction
+     * @return \Illuminate\Http\JsonResponse
      */
-    public function index()
+    public function index(Request $request, ListArticleAction $listArticleAction)
     {
-        //
+        $request->validate([
+            'count' => ['required','int','max:20'],
+            'skip-pages' => ['int', 'nullable']
+        ]);
+        return response()->json($listArticleAction([
+            'authorId' => $request->user()->id,
+            'skipPages' => $request->input('skip-pages'),
+            'count' => $request->input('count'),
+        ]));
     }
 
     /**
@@ -34,12 +43,23 @@ class ArticleController extends Controller
      *
      * @param  \Illuminate\Http\Request  $request
      * @param  \App\Actions\Article\CreateArticleAction $createArticleAction
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\JsonResponse
      */
     public function store(Request $request, CreateArticleAction $createArticleAction)
     {
-        $input = new CreateArticleActionInput($request->user()->id, $request->input('title'), $request->input('content'));
-        return $createArticleAction($input);
+        $request->validate([
+            'title' => 'required',
+            'content' => 'present',
+        ]);
+        $result = $createArticleAction([
+            'authorId' => $request->user()->id,
+            'title'    => $request->input('title'),
+            'content'  => $request->input('content'),
+        ]);
+        if($result) {
+            return response()->json($result);
+        }
+        abort(500);
     }
 
     /**
@@ -69,11 +89,24 @@ class ArticleController extends Controller
      *
      * @param  \Illuminate\Http\Request  $request
      * @param  int  $id
+     * @param  \App\Actions\Article\UpdateArticleAction $updateArticleAction
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, int $id, UpdateArticleAction $updateArticleAction)
     {
-        //
+        $request->validate([
+            'title' => 'required',
+            'content' => 'present',
+        ]);
+        $result = $updateArticleAction([
+            'articleId' => $id,
+            'title' => $request->input('title'),
+            'content' => $request->input('content'),
+        ]);
+        if($result) {
+            return response()->noContent();
+        }
+        abort(500);
     }
 
     /**

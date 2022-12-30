@@ -8,12 +8,20 @@ import {
     RequireAuthorized,
 } from '../../components/container';
 import { EditNewArticleDialogContext } from '../../components/context/EditNewArticleDialogContextProvider';
+import { useArticles } from '../../components/hooks';
+import { InputError } from '../../errors';
 
 export default function Articles() {
+    const { list } = useArticles();
     const onSubmit = React.useCallback(async (query?: string) => {
         console.log(query);
         console.log('kandakengo');
     }, []);
+    React.useEffect(() => {
+        list({
+            count: 20,
+        });
+    }, [list]);
     return (
         <RequireAuthorized>
             <EditNewArticleDialogContext.Consumer>

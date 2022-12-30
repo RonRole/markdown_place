@@ -1,2 +1,3 @@
 export * from './AppLogo';
-export * from './FormCard';
+export * from '../container/EditArticleForm';
+export * from './FormWithSubmittingState';

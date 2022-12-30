@@ -16,7 +16,7 @@ class ListArticleAction
         return Article::where([
             'author_id' => $param['authorId'],   
         ])
-        ->orderBy('id', 'desc')
+        ->orderBy('updated_at', 'desc')
         ->offSet($offSet)
         ->limit($param['count'])
         ->get();

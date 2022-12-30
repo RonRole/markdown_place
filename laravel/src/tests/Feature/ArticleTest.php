@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Models\Article;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Carbon;
 use Tests\TestCase;
 use App\Models\User;
 use Laravel\Sanctum\Sanctum;
@@ -95,7 +96,7 @@ class ArticleTest extends TestCase
         $response->assertStatus(200);
         $response->assertJsonCount(20);
     }
-    public function test_list_sorted_desc_by_updated_at()
+    public function test_list_sorted_by_updated_at_desc()
     {
         $user = User::factory()->create();
         Sanctum::actingAs(
@@ -105,18 +106,21 @@ class ArticleTest extends TestCase
             return [
                 'author_id' => $user->id,
                 'title' => 'article_1',
+                'updated_at' => Carbon::now()
             ];
         })->create();
         Article::factory()->state(function ($attributes) use ($user) {
             return [
                 'author_id' => $user->id,
                 'title' => 'article_2',
+                'updated_at' => Carbon::now()->addDay()
             ];
         })->create();
         Article::factory()->state(function ($attributes) use ($user) {
             return [
                 'author_id' => $user->id,
                 'title' => 'article_3',
+                'updated_at' => Carbon::now()->addDays(2)
             ];
         })->create();
         $response = $this->getJson('/api/articles?count=20');
@@ -149,18 +153,21 @@ class ArticleTest extends TestCase
             return [
                 'author_id' => $user->id,
                 'title' => 'article_1',
+                'updated_at' => Carbon::now()
             ];
         })->create();
         Article::factory()->state(function ($attributes) use ($user) {
             return [
                 'author_id' => $user->id,
                 'title' => 'article_2',
+                'updated_at' => Carbon::now()->addDay()
             ];
         })->create();
         Article::factory()->state(function ($attributes) use ($user) {
             return [
                 'author_id' => $user->id,
                 'title' => 'article_3',
+                'updated_at' => Carbon::now()->addDays(2)
             ];
         })->create();
         $response = $this->getJson('/api/articles?count=1&skip-pages=2');
@@ -186,18 +193,21 @@ class ArticleTest extends TestCase
             return [
                 'author_id' => $user->id,
                 'title' => 'article_1',
+                'updated_at' => Carbon::now()
             ];
         })->create();
         Article::factory()->state(function ($attributes) use ($user) {
             return [
                 'author_id' => $user->id,
                 'title' => 'article_2',
+                'updated_at' => Carbon::now()->addDay()
             ];
         })->create();
         Article::factory()->state(function ($attributes) use ($user) {
             return [
                 'author_id' => $user->id,
                 'title' => 'article_3',
+                'updated_at' => Carbon::now()->addDays(2)
             ];
         })->create();
         $response = $this->getJson('/api/articles?count=1&skip-pages=');

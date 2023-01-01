@@ -14,13 +14,14 @@ import { AuthContext } from '../context';
 import { FormWithSubmittingState, FormWithSubmittingStateProps } from '../presentational';
 
 export type SignUpFormProps = {
+    children?(submitting: boolean): React.ReactNode;
     nameFieldProps?: Omit<TextFieldProps, 'inputRef'>;
     emailFieldProps?: Omit<TextFieldProps, 'inputRef'>;
     passwordFieldProps?: Omit<TextFieldProps, 'type' | 'inputRef'>;
     passwordConfirmationFieldProps?: Omit<TextFieldProps, 'type' | 'inputRef'>;
     submitButtonProps?: Omit<ButtonProps, 'type' | 'disabled'>;
-} & Omit<FormWithSubmittingStateProps, 'onSubmit'> &
-    Omit<CardProps, 'onSubmit'>;
+} & Omit<FormWithSubmittingStateProps, 'onSubmit' | 'children'> &
+    Omit<CardProps, 'onSubmit' | 'children'>;
 
 export function SignUpForm({
     children,

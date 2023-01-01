@@ -7,5 +7,7 @@ export type LoadAuthorizationProps = {
 };
 export function LoadAuthorization({ children }: LoadAuthorizationProps) {
     const { currentAuthStatus } = React.useContext(AuthContext);
-    return currentAuthStatus === 'loading' ? <LoadingPage /> : <>{children}</>;
+    const isLoading = React.useMemo(() => currentAuthStatus === 'loading', [currentAuthStatus]);
+    if (isLoading) return <LoadingPage />;
+    return <>{children}</>;
 }

@@ -1,4 +1,4 @@
-import { Button, ButtonProps } from '@mui/material';
+import { Button, ButtonProps, Typography } from '@mui/material';
 import React from 'react';
 import { AuthContext } from '../context/AuthContextProvider';
 
@@ -14,7 +14,7 @@ export function LogoutButton(props: LogoutButtonProps) {
     }, [logout]);
     return (
         <Button variant="outlined" color="error" onClick={onClick} disabled={submitting} {...props}>
-            LOG OUT
+            <Typography>LOG OUT</Typography>
         </Button>
     );
 }

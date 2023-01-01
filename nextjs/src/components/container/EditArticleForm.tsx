@@ -1,43 +1,94 @@
 import React from 'react';
-import { useArticles } from '../hooks';
+import { CreateArticleParams, UpdateArticleParams, useArticles } from '../hooks';
 import Article from '../../domains/article';
-import { EditArticleFormComponent } from '../presentational/EditArticleFormComponent';
+import {
+    EditArticleFormComponent,
+    EditArticleModeKey,
+    OnsubmitInput as OnSubmitInput,
+} from '../presentational/EditArticleFormComponent';
+import { AuthContext, AuthContextProvider } from '../context';
+import AuthStatus from '../../domains/auth-status';
 
 export type EditArticleFormProps = {
     article?: Article;
 };
 
+type SelectModeParams = {
+    authStatus: AuthStatus;
+    article?: Article;
+};
+
+const selectMode = ({ authStatus, article }: SelectModeParams): EditArticleModeKey => {
+    if (authStatus !== 'authorized') return 'unauthorized';
+    if (!article) return 'create';
+    return 'update';
+};
+
 export function EditArticleForm({ article }: EditArticleFormProps) {
     const [currentArticle, setCurrentArticle] = React.useState<undefined | Article>(article);
     const { create, update } = useArticles();
-    const onSubmit = React.useCallback(
-        async (content: string) => {
-            const title = content?.split('\n').find((e) => e) || '';
-            if (currentArticle) {
-                const result = await update(
-                    new Article({
-                        id: currentArticle.id,
-                        title,
-                        content,
-                    })
-                );
-                if (result === true) {
-                    alert('更新しました');
-                } else {
-                    alert('更新に失敗しました');
-                }
+    const { currentAuthStatus } = React.useContext(AuthContext);
+    const mode = React.useMemo(
+        () =>
+            selectMode({
+                authStatus: currentAuthStatus,
+                article,
+            }),
+        [article, currentAuthStatus]
+    );
+    const createArticle = React.useCallback(
+        async ({ title, content }: CreateArticleParams) => {
+            const result = await create({ title, content });
+            if (result instanceof Article) {
+                setCurrentArticle(result);
+                alert('作成しました');
+                return;
             } else {
-                const result = await create({ title, content });
-                if (result instanceof Article) {
-                    setCurrentArticle(result);
-                    alert('作成しました');
-                    return;
-                } else {
-                    alert('作成に失敗しました');
-                }
+                alert('作成に失敗しました');
             }
         },
-        [create, currentArticle, update]
+        [create]
     );
-    return <EditArticleFormComponent onSubmit={onSubmit} />;
+    const updateArticle = React.useCallback(
+        async ({ id, title, content }: UpdateArticleParams) => {
+            const result = await update(
+                new Article({
+                    id,
+                    title,
+                    content,
+                })
+            );
+            if (result === true) {
+                alert('更新しました');
+            } else {
+                alert('更新に失敗しました');
+            }
+            return;
+        },
+        [update]
+    );
+    const onSubmit = React.useCallback(
+        async ({ submitterId, content }: OnSubmitInput) => {
+            const title = content?.split('\n').find((e) => e) || '';
+            switch (submitterId) {
+                case 'save':
+                    if (!currentArticle) return;
+                    await updateArticle({
+                        ...currentArticle,
+                        content,
+                    });
+                    break;
+                case 'saveAs':
+                    await createArticle({
+                        title,
+                        content,
+                    });
+                    break;
+            }
+        },
+        [createArticle, currentArticle, updateArticle]
+    );
+    return (
+        <EditArticleFormComponent defaultInput={article?.content} mode={mode} onSubmit={onSubmit} />
+    );
 }

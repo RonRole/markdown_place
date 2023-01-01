@@ -96,6 +96,10 @@ class ArticleTest extends TestCase
         $response->assertStatus(200);
         $response->assertJsonCount(20);
     }
+    /**
+     * 記事の並び順は更新日時の降順
+     * @return void
+     */
     public function test_list_sorted_by_updated_at_desc()
     {
         $user = User::factory()->create();
@@ -217,6 +221,24 @@ class ArticleTest extends TestCase
             $json->has(0, function (AssertableJson $json) {
                 $json->where('title', 'article_3')->etc();
             });
+        });
+    }
+
+    public function test_show_article()
+    {
+        $user = User::factory()->create();
+        Sanctum::actingAs(
+            $user
+        );
+        $article = Article::factory()->state(function (array $attributes) use($user) {
+            return [
+                'author_id' => $user->id,
+            ];
+        })->create();
+        $response = $this->getJson('/api/articles/'.$article->id);
+        $response->assertStatus(200);
+        $response->assertJson(function (AssertableJson $json) use ($article) {
+            $json->where('id', $article->id)->etc();
         });
     }
 

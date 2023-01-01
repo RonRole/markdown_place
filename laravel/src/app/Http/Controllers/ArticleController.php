@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Article;
 use Illuminate\Http\Request;
 use App\Actions\Article\CreateArticleAction;
 use App\Actions\Article\UpdateArticleAction;
@@ -65,12 +66,17 @@ class ArticleController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @param \Illuminate\Http\Request 
+     * @param int  $id
+     * @return \Illuminate\Http\JsonResponse
      */
-    public function show($id)
+    public function show(Request $request, int $id)
     {
-        //
+        $article = Article::where([
+            'id' => $id,
+            'author_id' => $request->user()->id
+        ])->first();
+        return response()->json($article);
     }
 
     /**

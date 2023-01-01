@@ -2,8 +2,8 @@ import { Save, SaveAs } from '@mui/icons-material';
 import { AppBar, Grid, IconButton, TextareaAutosize, Toolbar, Tooltip } from '@mui/material';
 
 import React from 'react';
-import { FormWithSubmittingState } from './FormWithSubmittingState';
-import { ParsedMarkdown } from './ParsedMarkdown';
+import { FormWithSubmittingState } from '../presentational/FormWithSubmittingState';
+import { ParsedMarkdown } from '../presentational/ParsedMarkdown';
 
 export type OnsubmitInput = {
     submitterId: SubmitterId;

@@ -5,7 +5,7 @@ import {
     EditArticleFormComponent,
     EditArticleModeKey,
     OnsubmitInput as OnSubmitInput,
-} from '../presentational/EditArticleFormComponent';
+} from '../pages/EditArticleFormPage';
 import { AuthContext, AuthContextProvider } from '../context';
 import AuthStatus from '../../domains/auth-status';
 

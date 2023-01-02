@@ -2,8 +2,7 @@ import { AppBar, Button, Container, Toolbar, Typography } from '@mui/material';
 import Link from 'next/link';
 import React from 'react';
 import { AuthContext } from '../context';
-import { LoginResult, SignUpResult } from '../hooks';
-import { LoginOrSignUpFormDialog } from './LoginOrSignUpFormDialog';
+import { OpenAuthDialogButton } from './OpenAuthDialogButton';
 
 import { LogoutButton } from './LogoutButton';
 
@@ -20,12 +19,6 @@ export type NavBarProps = {
 const requireAuthorizedLinks: LinkSrc[] = [{ path: '/articles', display: '記事一覧' }];
 
 export function NavBar({ children }: NavBarProps) {
-    const [openDialog, setOpenDialog] = React.useState<boolean>(false);
-    const handleOpen = React.useCallback(async () => setOpenDialog(true), []);
-    const handleClose = React.useCallback(async () => setOpenDialog(false), []);
-    const afterCallback = React.useCallback(async (result: LoginResult | SignUpResult) => {
-        if (result === true) setOpenDialog(false);
-    }, []);
     const { currentAuthStatus } = React.useContext(AuthContext);
     const links = React.useMemo(
         () => [...(currentAuthStatus === 'authorized' ? requireAuthorizedLinks : [])],
@@ -37,7 +30,7 @@ export function NavBar({ children }: NavBarProps) {
                 <Toolbar sx={{ flexGrow: 1 }}>
                     <Container sx={{ display: 'flex', flexGrow: 1 }} maxWidth="xl" disableGutters>
                         <Typography sx={{ mr: 2 }} variant="h6" component={Link} href="/">
-                            Sawai Kei
+                            MarkdownPlace
                         </Typography>
                         {links.map((link) => (
                             <Link key={link.path} href={link.path} passHref>
@@ -45,28 +38,13 @@ export function NavBar({ children }: NavBarProps) {
                             </Link>
                         ))}
                     </Container>
-                    {currentAuthStatus === 'unauthorized' && (
-                        <Button
-                            onClick={handleOpen}
-                            variant="outlined"
-                            color="primary"
-                            sx={{ whiteSpace: 'nowrap' }}
-                        >
-                            ログイン/ユーザー登録
-                        </Button>
-                    )}
+                    {currentAuthStatus === 'unauthorized' && <OpenAuthDialogButton />}
                     {currentAuthStatus === 'authorized' && (
                         <LogoutButton sx={{ whiteSpace: 'nowrap' }} />
                     )}
                 </Toolbar>
             </AppBar>
             {children}
-            <LoginOrSignUpFormDialog
-                open={openDialog}
-                onClose={handleClose}
-                afterLoginCallback={afterCallback}
-                afterSignUpCallback={afterCallback}
-            />
         </>
     );
 }

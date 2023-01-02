@@ -5,6 +5,7 @@ import {
     CardHeader,
     CardHeaderProps,
     CardProps,
+    Typography,
 } from '@mui/material';
 import Article from '../../domains/article';
 import { ParsedMarkdown } from './ParsedMarkdown';
@@ -23,6 +24,7 @@ export default function ArticleCard({
 }: ArticleCardProps) {
     return (
         <Card {...props}>
+            <CardHeader title={article.title} {...cardHeaderProps} />
             <CardContent {...cardContentProps}>
                 <ParsedMarkdown markdownSrc={article.content} />
             </CardContent>

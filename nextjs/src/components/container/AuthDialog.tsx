@@ -70,7 +70,7 @@ export type LoginOrSignUpFormDialogProps = Pick<LoginFormInDialogProps, 'afterLo
     Pick<SignUpFormInDialogProps, 'afterSignUpCallback'> &
     DialogProps;
 
-export function LoginOrSignUpFormDialog({
+export function AuthDialog({
     afterLoginCallback,
     afterSignUpCallback,
     ...props

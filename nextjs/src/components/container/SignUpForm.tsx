@@ -8,13 +8,14 @@ import {
     TextField,
     TextFieldProps,
 } from '@mui/material';
-import { useRouter } from 'next/router';
 import React from 'react';
 import { AuthContext } from '../context';
+import { SignUpResult } from '../hooks';
 import { FormWithSubmittingState, FormWithSubmittingStateProps } from '../presentational';
 
 export type SignUpFormProps = {
     children?(submitting: boolean): React.ReactNode;
+    afterSignUpCallback?(signUpResult: SignUpResult): Promise<void>;
     nameFieldProps?: Omit<TextFieldProps, 'inputRef'>;
     emailFieldProps?: Omit<TextFieldProps, 'inputRef'>;
     passwordFieldProps?: Omit<TextFieldProps, 'type' | 'inputRef'>;
@@ -25,6 +26,7 @@ export type SignUpFormProps = {
 
 export function SignUpForm({
     children,
+    afterSignUpCallback,
     nameFieldProps,
     emailFieldProps,
     passwordFieldProps,
@@ -32,7 +34,6 @@ export function SignUpForm({
     submitButtonProps,
     ...props
 }: SignUpFormProps) {
-    const router = useRouter();
     const { signUp } = React.useContext(AuthContext);
     const nameInputRef = React.useRef<HTMLInputElement>(null);
     const emailInputRef = React.useRef<HTMLInputElement>(null);
@@ -47,13 +48,11 @@ export function SignUpForm({
                 password: passwordInputRef.current?.value,
                 passwordConfirmation: passwordConfirmationInputRef.current?.value,
             });
-            if (signUpResult === true) {
-                await router.push('/');
-            } else {
-                console.log(signUpResult);
+            if (afterSignUpCallback) {
+                await afterSignUpCallback(signUpResult);
             }
         },
-        [signUp, router]
+        [signUp, afterSignUpCallback]
     );
     return (
         <FormWithSubmittingState onSubmit={onSubmit}>

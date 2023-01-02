@@ -42,9 +42,6 @@ export function LoginForm({
                 email: emailInputRef.current?.value,
                 password: passwordInputRef.current?.value,
             });
-            if (loginResult !== true) {
-                console.log(loginResult);
-            }
             if (afterLoginCallback) {
                 await afterLoginCallback(loginResult);
             }

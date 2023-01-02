@@ -55,17 +55,19 @@ export function LoginForm({
                     <CardHeader title="Sawai Kei" />
                     <CardContent>
                         <TextField
+                            {...emailFieldProps}
+                            disabled={submitting || emailFieldProps?.disabled}
                             inputRef={emailInputRef}
                             label="email"
                             placeholder="sample@example.com"
-                            {...emailFieldProps}
                         />
                         <TextField
+                            {...passwordFieldProps}
+                            disabled={submitting || passwordFieldProps?.disabled}
                             inputRef={passwordInputRef}
                             label="password"
                             type="password"
                             placeholder="password"
-                            {...passwordFieldProps}
                         />
                     </CardContent>
                     <CardContent>

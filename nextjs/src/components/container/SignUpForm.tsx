@@ -61,30 +61,34 @@ export function SignUpForm({
                     <CardHeader title="Sign Up" />
                     <CardContent {...props}>
                         <TextField
+                            {...nameFieldProps}
+                            disabled={submitting || nameFieldProps?.disabled}
                             inputRef={nameInputRef}
                             label="name"
                             placeholder="your name"
-                            {...nameFieldProps}
                         />
                         <TextField
+                            {...emailFieldProps}
+                            disabled={submitting || emailFieldProps?.disabled}
                             inputRef={emailInputRef}
                             label="email"
                             placeholder="sample@example.com"
-                            {...emailFieldProps}
                         />
                         <TextField
+                            {...passwordFieldProps}
+                            disabled={submitting || passwordFieldProps?.disabled}
                             inputRef={passwordInputRef}
                             type="password"
                             label="password"
                             placeholder="password"
-                            {...passwordFieldProps}
                         />
                         <TextField
+                            {...passwordConfirmationFieldProps}
+                            disabled={submitting || passwordConfirmationFieldProps?.disabled}
                             inputRef={passwordConfirmationInputRef}
                             type="password"
                             label="confirm password"
                             placeholder="comfirm password"
-                            {...passwordConfirmationFieldProps}
                         />
                     </CardContent>
                     <CardContent>

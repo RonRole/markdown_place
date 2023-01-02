@@ -1,4 +1,4 @@
-import { Button, ButtonProps } from '@mui/material';
+import { Button, ButtonProps, Typography } from '@mui/material';
 import React from 'react';
 import { LoginResult, SignUpResult } from '../hooks';
 import { AuthDialog } from './AuthDialog';
@@ -19,7 +19,7 @@ export function OpenAuthDialogButton() {
                 color="primary"
                 sx={{ whiteSpace: 'nowrap' }}
             >
-                ログイン/ユーザー登録
+                log in/sign up
             </Button>
             <AuthDialog
                 open={openDialog}

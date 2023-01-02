@@ -14,7 +14,7 @@ export function LogoutButton(props: LogoutButtonProps) {
     }, [logout]);
     return (
         <Button variant="outlined" color="error" onClick={onClick} disabled={submitting} {...props}>
-            <Typography>LOG OUT</Typography>
+            log out
         </Button>
     );
 }

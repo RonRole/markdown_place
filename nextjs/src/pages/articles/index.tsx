@@ -1,6 +1,7 @@
 import { Button, Grid } from '@mui/material';
 import { Container } from '@mui/system';
 import Link from 'next/link';
+import { useRouter } from 'next/router';
 import React from 'react';
 import { ArticleSearchForm, RequireAuthorized } from '../../components/container';
 import { EditNewArticleDialogContext } from '../../components/context/EditNewArticleDialogContextProvider';
@@ -9,79 +10,72 @@ import { ListArticleParams, ListArticleResult, useArticles } from '../../compone
 import { LoadingPage } from '../../components/pages';
 import { ErrorPage } from '../../components/pages/ErrorPage';
 import ArticleCard from '../../components/presentational/ArticleCard';
-import Article from '../../domains/article';
 
 export default function Articles() {
-    const [articles, setArticles] = React.useState<Article[]>([]);
-    const onSubmit = React.useCallback(async (result: ListArticleResult) => {
-        if (Array.isArray(result)) {
-            setArticles(() => result);
-            return;
-        }
-    }, []);
+    const router = useRouter();
+    const onSubmit = React.useCallback(
+        async (result: ListArticleResult) => {
+            if (Array.isArray(result)) {
+                router.push('/articles');
+                return;
+            }
+        },
+        [router]
+    );
     return (
         <RequireAuthorized>
-            <EditNewArticleDialogContext.Consumer>
-                {({ open, close }) => (
-                    <Container maxWidth="xl" sx={{ mt: 2 }}>
-                        <Container
-                            maxWidth="sm"
-                            sx={{ display: 'flex', justifyContent: 'center', mb: 2 }}
-                        >
-                            <ArticleSearchForm
-                                textFieldProps={{
-                                    fullWidth: true,
-                                }}
-                                style={{
-                                    width: '100%',
-                                }}
-                                onSubmit={onSubmit}
-                                listItemCount={20}
-                                skipPages={0}
-                            />
-                        </Container>
-                        <ArticleListLoader count={20} skipPages={0}>
-                            {(loading, result) => {
-                                if (loading) return <LoadingPage />;
-                                if (!Array.isArray(result))
-                                    return <ErrorPage errorMessage="error occurs" />;
-                                return (
-                                    <Grid container spacing={1}>
-                                        {result.map((article) => (
-                                            <Grid xs={2} item key={article.id}>
-                                                <Link
-                                                    href={`/articles/${encodeURIComponent(
-                                                        article.id
-                                                    )}`}
-                                                    passHref
-                                                >
-                                                    <ArticleCard
-                                                        sx={{
-                                                            width: '100%',
-                                                            height: '100%',
-                                                            overflow: 'hidden',
-                                                            whiteSpace: 'nowrap',
-                                                            border: '1px solid rgba(0,0,0,0)',
-                                                            cursor: 'pointer',
-                                                            ':hover': { borderColor: 'blue' },
-                                                        }}
-                                                        cardContentProps={{
-                                                            sx: {
-                                                                maxHeight: 275,
-                                                            },
-                                                        }}
-                                                        article={article}
-                                                    />
-                                                </Link>
-                                            </Grid>
-                                        ))}
+            <Container maxWidth="xl" sx={{ mt: 2 }}>
+                <Container maxWidth="sm" sx={{ display: 'flex', justifyContent: 'center', mb: 2 }}>
+                    <ArticleSearchForm
+                        textFieldProps={{
+                            fullWidth: true,
+                        }}
+                        style={{
+                            width: '100%',
+                        }}
+                        onSubmit={onSubmit}
+                        listItemCount={20}
+                        skipPages={0}
+                    />
+                </Container>
+                <ArticleListLoader count={12} skipPages={0}>
+                    {(loading, result) => {
+                        if (loading) return <LoadingPage />;
+                        if (!Array.isArray(result))
+                            return <ErrorPage errorMessage="error occurs" />;
+                        return (
+                            <Grid container spacing={1}>
+                                {result.map((article) => (
+                                    <Grid xs={2} item key={article.id}>
+                                        <Link
+                                            href={`/articles/${encodeURIComponent(article.id)}`}
+                                            passHref
+                                        >
+                                            <ArticleCard
+                                                sx={{
+                                                    width: '100%',
+                                                    height: '100%',
+                                                    overflow: 'hidden',
+                                                    whiteSpace: 'nowrap',
+                                                    cursor: 'pointer',
+                                                    ':hover': { borderColor: 'blue' },
+                                                }}
+                                                variant="outlined"
+                                                cardContentProps={{
+                                                    sx: {
+                                                        maxHeight: 275,
+                                                    },
+                                                }}
+                                                article={article}
+                                            />
+                                        </Link>
                                     </Grid>
-                                );
-                            }}
-                        </ArticleListLoader>
-                    </Container>
-                )}
-            </EditNewArticleDialogContext.Consumer>
+                                ))}
+                            </Grid>
+                        );
+                    }}
+                </ArticleListLoader>
+            </Container>
         </RequireAuthorized>
     );
 }

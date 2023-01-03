@@ -19,7 +19,7 @@ export function OpenAuthDialogButton() {
                 color="primary"
                 sx={{ whiteSpace: 'nowrap' }}
             >
-                log in/sign up
+                log in / sign up
             </Button>
             <AuthDialog
                 open={openDialog}

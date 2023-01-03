@@ -52,7 +52,7 @@ export function LoginForm({
         <FormWithSubmittingState onSubmit={onSubmit}>
             {(submitting) => (
                 <Card {...props}>
-                    <CardHeader title="Sawai Kei" />
+                    <CardHeader title="Log In" />
                     <CardContent>
                         <TextField
                             {...emailFieldProps}

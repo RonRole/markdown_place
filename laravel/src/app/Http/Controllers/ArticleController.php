@@ -19,7 +19,6 @@ class ArticleController extends Controller
     public function index(Request $request, ListArticleAction $listArticleAction)
     {
         $request->validate([
-            'count' => ['required','int','max:20'],
             'skip-pages' => ['int', 'nullable']
         ]);
         return response()->json($listArticleAction([

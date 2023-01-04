@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\Article;
+use App\Models\AppGlobalConfig;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Carbon;
 use Tests\TestCase;
@@ -87,12 +88,17 @@ class ArticleTest extends TestCase
         Sanctum::actingAs(
             $user
         );
+        AppGlobalConfig::factory()->state(function ($attributes) {
+            return [
+                'list_article_count' => 20
+            ];
+        })->create();
         Article::factory()->count(50)->state(function ($attributes) use ($user) {
             return [
                 'author_id' => $user->id
             ];
         })->create();
-        $response = $this->getJson('/api/articles?count=20');
+        $response = $this->getJson('/api/articles');
         $response->assertStatus(200);
         $response->assertJsonCount(20);
     }
@@ -106,6 +112,11 @@ class ArticleTest extends TestCase
         Sanctum::actingAs(
             $user
         );
+        AppGlobalConfig::factory()->state(function ($attributes) {
+            return [
+                'list_article_count' => 20
+            ];
+        })->create();
         Article::factory()->state(function ($attributes) use ($user) {
             return [
                 'author_id' => $user->id,
@@ -127,7 +138,7 @@ class ArticleTest extends TestCase
                 'updated_at' => Carbon::now()->addDays(2)
             ];
         })->create();
-        $response = $this->getJson('/api/articles?count=20');
+        $response = $this->getJson('/api/articles');
         $response->assertStatus(200);
         $response->assertJsonCount(3);
         $response->assertJson(function (AssertableJson $json) {
@@ -144,7 +155,7 @@ class ArticleTest extends TestCase
     }
     /**
      * skipPagesを設定した場合、
-     * skipPages * count分件数が飛ぶ
+     * skipPages * 表示件数分件数が飛ぶ
      * ソート順は更新日時降順
      */
     public function test_list_skip_page()
@@ -153,6 +164,11 @@ class ArticleTest extends TestCase
         Sanctum::actingAs(
             $user
         );
+        AppGlobalConfig::factory()->state(function ($attributes) {
+            return [
+                'list_article_count' => 1
+            ];
+        })->create();
         Article::factory()->state(function ($attributes) use ($user) {
             return [
                 'author_id' => $user->id,
@@ -174,7 +190,7 @@ class ArticleTest extends TestCase
                 'updated_at' => Carbon::now()->addDays(2)
             ];
         })->create();
-        $response = $this->getJson('/api/articles?count=1&skip-pages=2');
+        $response = $this->getJson('/api/articles?skip-pages=2');
         $response->assertStatus(200);
         $response->assertJsonCount(1);
         $response->assertJson(function (AssertableJson $json) {
@@ -193,6 +209,11 @@ class ArticleTest extends TestCase
         Sanctum::actingAs(
             $user
         );
+        AppGlobalConfig::factory()->state(function ($attributes) {
+            return [
+                'list_article_count' => 1
+            ];
+        })->create();
         Article::factory()->state(function ($attributes) use ($user) {
             return [
                 'author_id' => $user->id,
@@ -214,7 +235,7 @@ class ArticleTest extends TestCase
                 'updated_at' => Carbon::now()->addDays(2)
             ];
         })->create();
-        $response = $this->getJson('/api/articles?count=1&skip-pages=');
+        $response = $this->getJson('/api/articles?skip-pages=');
         $response->assertStatus(200);
         $response->assertJsonCount(1);
         $response->assertJson(function (AssertableJson $json) {

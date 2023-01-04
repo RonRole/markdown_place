@@ -7,7 +7,6 @@ import { InputError } from '../../errors/input_error';
 export type CreateArticleParams = Pick<Article, 'title' | 'content'>;
 export type CreateArticleResult = Article | InputError<CreateArticleParams>;
 export type ListArticleParams = {
-    count: number;
     skipPages?: number;
 };
 export type ListArticleResult = Article[] | InputError<ListArticleParams>;
@@ -46,9 +45,9 @@ export function useArticles(): UseArticleFunctions {
             });
         return result;
     }, []);
-    const list = React.useCallback(async ({ count, skipPages = 0 }: ListArticleParams) => {
+    const list = React.useCallback(async ({ skipPages = 0 }: ListArticleParams) => {
         const result: ListArticleResult = await axios
-            .get(`/api/articles?count=${encodeURIComponent(count)}&skip-pages=${skipPages}`)
+            .get(`/api/articles?skip-pages=${skipPages}`)
             .then((res: AxiosResponse) => {
                 if (Array.isArray(res.data)) {
                     return res.data.map(

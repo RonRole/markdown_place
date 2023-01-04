@@ -5,16 +5,16 @@ export type ArticleListLoaderProps = {
     children(loading: boolean, result: ListArticleResult): React.ReactNode;
 } & ListArticleParams;
 
-export function ArticleListLoader({ count, skipPages = 0, children }: ArticleListLoaderProps) {
+export function ArticleListLoader({ skipPages = 0, children }: ArticleListLoaderProps) {
     const { list } = useArticles();
     const [loading, setLoading] = React.useState<boolean>(false);
     const [result, setResult] = React.useState<ListArticleResult>([]);
     React.useEffect(() => {
         setLoading(true);
-        list({ count, skipPages })
+        list({ skipPages })
             .then((result: ListArticleResult) => setResult(result))
             .finally(() => setLoading(false));
-    }, [count, list, skipPages]);
+    }, [list, skipPages]);
     const component = React.useMemo(() => children(loading, result), [children, loading, result]);
     return <>{component}</>;
 }

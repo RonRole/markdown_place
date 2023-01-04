@@ -3,22 +3,24 @@ import { Container } from '@mui/system';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import React from 'react';
-import { ArticleSearchForm, RequireAuthorized } from '../../components/container';
-import { EditNewArticleDialogContext } from '../../components/context/EditNewArticleDialogContextProvider';
+import { ArticleListSearchForm, RequireAuthorized } from '../../components/container';
 import { ArticleListLoader } from '../../components/functional/ArticleListLoader';
-import { ListArticleParams, ListArticleResult, useArticles } from '../../components/hooks';
 import { LoadingPage } from '../../components/pages';
 import { ErrorPage } from '../../components/pages/ErrorPage';
 import ArticleCard from '../../components/presentational/ArticleCard';
+import { ArticleSearchFormComponent } from '../../components/presentational/ArticleSearchFormComponent';
+
+const parseQueryItemToNumber = (queryItem: string | string[] | undefined, defaultValue = 0) => {
+    return Number.isNaN(Number(queryItem)) ? defaultValue : Number(queryItem);
+};
 
 export default function Articles() {
     const router = useRouter();
+    const skipPages = parseQueryItemToNumber(router.query['skip-pages']);
     const onSubmit = React.useCallback(
-        async (result: ListArticleResult) => {
-            if (Array.isArray(result)) {
-                router.push('/articles');
-                return;
-            }
+        async (value = '') => {
+            router.push(`/articles?q=${encodeURIComponent(value)}&skip-pages=0&count=3`);
+            return;
         },
         [router]
     );
@@ -26,7 +28,7 @@ export default function Articles() {
         <RequireAuthorized>
             <Container maxWidth="xl" sx={{ mt: 2 }}>
                 <Container maxWidth="sm" sx={{ display: 'flex', justifyContent: 'center', mb: 2 }}>
-                    <ArticleSearchForm
+                    <ArticleSearchFormComponent
                         textFieldProps={{
                             fullWidth: true,
                         }}
@@ -34,11 +36,9 @@ export default function Articles() {
                             width: '100%',
                         }}
                         onSubmit={onSubmit}
-                        listItemCount={20}
-                        skipPages={0}
                     />
                 </Container>
-                <ArticleListLoader count={12} skipPages={0}>
+                <ArticleListLoader skipPages={skipPages}>
                     {(loading, result) => {
                         if (loading) return <LoadingPage />;
                         if (!Array.isArray(result))

@@ -19,7 +19,7 @@ export default function Articles() {
     const skipPages = parseQueryItemToNumber(router.query['skip-pages']);
     const onSubmit = React.useCallback(
         async (value = '') => {
-            router.push(`/articles?q=${encodeURIComponent(value)}&skip-pages=0&count=3`);
+            router.push(`/articles?q=${encodeURIComponent(value)}&skip-pages=0`);
             return;
         },
         [router]

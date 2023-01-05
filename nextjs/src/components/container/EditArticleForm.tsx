@@ -32,9 +32,9 @@ export function EditArticleForm({ article }: EditArticleFormProps) {
         () =>
             selectMode({
                 authStatus: currentAuthStatus,
-                article,
+                article: currentArticle,
             }),
-        [article, currentAuthStatus]
+        [currentArticle, currentAuthStatus]
     );
     const createArticle = React.useCallback(
         async ({ title, content }: CreateArticleParams) => {

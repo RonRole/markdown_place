@@ -16,7 +16,7 @@ export type NavBarProps = {
 };
 
 // ログイン済の場合のみ表示されるリンク
-const requireAuthorizedLinks: LinkSrc[] = [{ path: '/articles', display: '記事一覧' }];
+const requireAuthorizedLinks: LinkSrc[] = [{ path: '/articles', display: '一覧' }];
 
 export function NavBar({ children }: NavBarProps) {
     const { currentAuthStatus } = React.useContext(AuthContext);

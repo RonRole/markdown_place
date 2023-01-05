@@ -1,13 +1,14 @@
 import React from 'react';
-import { CreateArticleParams, UpdateArticleParams, useArticles } from '../hooks';
+import { CreateArticleResult, UpdateArticleParams, useArticles } from '../hooks';
 import Article from '../../domains/article';
 import {
-    EditArticleFormComponent,
+    EditArticleFormPage,
     EditArticleModeKey,
     OnsubmitInput as OnSubmitInput,
 } from '../pages/EditArticleFormPage';
 import { AuthContext, AuthContextProvider } from '../context';
 import AuthStatus from '../../domains/auth-status';
+import { ArticleSaveAsFormDialog } from './ArticleSaveAsFormDialog';
 
 export type EditArticleFormProps = {
     article?: Article;
@@ -15,40 +16,54 @@ export type EditArticleFormProps = {
 
 type SelectModeParams = {
     authStatus: AuthStatus;
-    article?: Article;
+    articleId?: Article['id'];
 };
 
-const selectMode = ({ authStatus, article }: SelectModeParams): EditArticleModeKey => {
+type EdittingItems = {
+    id?: Article['id'];
+    title?: Article['title'];
+    content?: Article['content'];
+};
+
+const selectMode = ({ authStatus, articleId }: SelectModeParams): EditArticleModeKey => {
     if (authStatus !== 'authorized') return 'unauthorized';
-    if (!article) return 'create';
+    if (articleId === undefined) return 'create';
     return 'update';
 };
 
 export function EditArticleForm({ article }: EditArticleFormProps) {
-    const [currentArticle, setCurrentArticle] = React.useState<undefined | Article>(article);
-    const { create, update } = useArticles();
+    const [currentEdittingItems, setEdittingItems] = React.useState<EdittingItems>({
+        id: article?.id,
+        title: article?.title,
+        content: article?.content,
+    });
+    const [openSaveAsDialog, setOpenSaveAsDialog] = React.useState<boolean>(false);
+    const { update } = useArticles();
     const { currentAuthStatus } = React.useContext(AuthContext);
     const mode = React.useMemo(
         () =>
             selectMode({
                 authStatus: currentAuthStatus,
-                article: currentArticle,
+                articleId: currentEdittingItems?.id,
             }),
-        [currentArticle, currentAuthStatus]
+        [currentAuthStatus, currentEdittingItems?.id]
     );
-    const createArticle = React.useCallback(
-        async ({ title, content }: CreateArticleParams) => {
-            const result = await create({ title, content });
-            if (result instanceof Article) {
-                setCurrentArticle(result);
-                alert('作成しました');
-                return;
-            } else {
-                alert('作成に失敗しました');
-            }
-        },
-        [create]
-    );
+    const afterArticleCallback = React.useCallback(async (result: CreateArticleResult) => {
+        if (result instanceof Article) {
+            setEdittingItems(() => {
+                return {
+                    ...result,
+                };
+            });
+            alert('作成しました');
+        } else {
+            alert('作成できませんでした');
+        }
+        setOpenSaveAsDialog(false);
+    }, []);
+    const handleClose = React.useCallback(() => {
+        setOpenSaveAsDialog(false);
+    }, []);
     const updateArticle = React.useCallback(
         async ({ id, title, content }: UpdateArticleParams) => {
             const result = await update(
@@ -69,26 +84,38 @@ export function EditArticleForm({ article }: EditArticleFormProps) {
     );
     const onSubmit = React.useCallback(
         async ({ submitterId, content }: OnSubmitInput) => {
-            const title = content?.split('\n').find((e) => e) || '';
             switch (submitterId) {
                 case 'save':
-                    if (!currentArticle) return;
+                    const { id, title } = currentEdittingItems;
+                    if (id === undefined || title === undefined) return;
                     await updateArticle({
-                        ...currentArticle,
-                        content,
-                    });
-                    break;
-                case 'saveAs':
-                    await createArticle({
+                        id,
                         title,
                         content,
                     });
                     break;
+                case 'saveAs':
+                    setEdittingItems(() => {
+                        return { ...currentEdittingItems, content };
+                    });
+                    setOpenSaveAsDialog(true);
+                    break;
             }
         },
-        [createArticle, currentArticle, updateArticle]
+        [currentEdittingItems, updateArticle]
     );
     return (
-        <EditArticleFormComponent defaultInput={article?.content} mode={mode} onSubmit={onSubmit} />
+        <>
+            <EditArticleFormPage defaultInput={article?.content} mode={mode} onSubmit={onSubmit} />;
+            <ArticleSaveAsFormDialog
+                fullWidth
+                maxWidth="xs"
+                open={openSaveAsDialog}
+                onClose={handleClose}
+                content={currentEdittingItems?.content}
+                afterCreateCallback={afterArticleCallback}
+                onClickCancelButton={handleClose}
+            />
+        </>
     );
 }

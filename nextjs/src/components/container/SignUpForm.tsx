@@ -59,7 +59,7 @@ export function SignUpForm({
             {(submitting) => (
                 <Card {...props}>
                     <CardHeader title="Sign Up" />
-                    <CardContent {...props}>
+                    <CardContent>
                         <TextField
                             {...nameFieldProps}
                             disabled={submitting || nameFieldProps?.disabled}

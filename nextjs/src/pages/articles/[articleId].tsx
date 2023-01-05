@@ -1,5 +1,5 @@
 import { Edit } from '@mui/icons-material';
-import { Grid, IconButton, Tooltip } from '@mui/material';
+import { Grid, IconButton, List, ListItem, ListItemButton, Tooltip } from '@mui/material';
 import { useRouter } from 'next/router';
 import React from 'react';
 import { EditArticleForm, NavBar, RequireAuthorized } from '../../components/container';
@@ -28,11 +28,12 @@ export default function EditArticlePage() {
                     return (
                         <Grid container>
                             <Grid item xs={2}>
-                                <Tooltip title="編集">
-                                    <IconButton onClick={handleStartEdit}>
+                                <List>
+                                    <ListItemButton onClick={handleStartEdit}>
                                         <Edit />
-                                    </IconButton>
-                                </Tooltip>
+                                        編集
+                                    </ListItemButton>
+                                </List>
                             </Grid>
                             <Grid item xs={8}>
                                 <ParsedMarkdown markdownSrc={loadResult.content} />

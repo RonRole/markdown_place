@@ -4,7 +4,7 @@ import Article from '../../domains/article';
 import { ServerErrorFormat } from '../../errors';
 import { InputError } from '../../errors/input_error';
 
-export type CreateArticleParams = Pick<Article, 'title' | 'content'>;
+export type CreateArticleParams = Partial<Pick<Article, 'title' | 'content'>>;
 export type CreateArticleResult = Article | InputError<CreateArticleParams>;
 export type ListArticleParams = {
     skipPages?: number;

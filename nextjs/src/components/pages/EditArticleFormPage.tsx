@@ -78,7 +78,7 @@ const EditArticleFormModes = {
     },
 };
 
-export function EditArticleFormComponent({
+export function EditArticleFormPage({
     mode,
     defaultInput = '',
     onSubmit,

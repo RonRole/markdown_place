@@ -3,7 +3,7 @@ import Article from '../../domains/article';
 import { InputError } from '../../errors';
 import { useArticles } from '../hooks';
 
-type LoadResult = Article | InputError<Pick<Article, 'id'>> | null;
+export type LoadResult = Article | InputError<Pick<Article, 'id'>> | null;
 
 export type ArticleLoaderProps = {
     id: Article['id'];

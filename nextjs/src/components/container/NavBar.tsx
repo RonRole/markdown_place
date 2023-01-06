@@ -1,4 +1,4 @@
-import { AppBar, Button, Container, Toolbar, Typography } from '@mui/material';
+import { AppBar, AppBarProps, Button, Container, Toolbar, Typography } from '@mui/material';
 import Link from 'next/link';
 import React from 'react';
 import { AuthContext } from '../context';
@@ -13,12 +13,12 @@ export type LinkSrc = {
 
 export type NavBarProps = {
     children: React.ReactNode;
-};
+} & Omit<AppBarProps, 'position'>;
 
 // ログイン済の場合のみ表示されるリンク
 const requireAuthorizedLinks: LinkSrc[] = [{ path: '/articles', display: '一覧' }];
 
-export function NavBar({ children }: NavBarProps) {
+export function NavBar({ children, ...props }: NavBarProps) {
     const { currentAuthStatus } = React.useContext(AuthContext);
     const links = React.useMemo(
         () => [...(currentAuthStatus === 'authorized' ? requireAuthorizedLinks : [])],
@@ -26,7 +26,7 @@ export function NavBar({ children }: NavBarProps) {
     );
     return (
         <>
-            <AppBar position="sticky">
+            <AppBar position="sticky" {...props}>
                 <Toolbar sx={{ flexGrow: 1 }}>
                     <Container sx={{ display: 'flex', flexGrow: 1 }} maxWidth="xl" disableGutters>
                         <Typography sx={{ mr: 2 }} variant="h6" component={Link} href="/">

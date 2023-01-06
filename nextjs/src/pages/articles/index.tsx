@@ -3,7 +3,7 @@ import { Container } from '@mui/system';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import React from 'react';
-import { ArticleListSearchForm, RequireAuthorized } from '../../components/container';
+import { ArticleListSearchForm, NavBar, RequireAuthorized } from '../../components/container';
 import { ArticleListLoader } from '../../components/functional/ArticleListLoader';
 import { LoadingPage } from '../../components/pages';
 import { ErrorPage } from '../../components/pages/ErrorPage';
@@ -25,57 +25,62 @@ export default function Articles() {
         [router]
     );
     return (
-        <RequireAuthorized>
-            <Container maxWidth="xl" sx={{ mt: 2 }}>
-                <Container maxWidth="sm" sx={{ display: 'flex', justifyContent: 'center', mb: 2 }}>
-                    <ArticleSearchFormComponent
-                        textFieldProps={{
-                            fullWidth: true,
+        <NavBar>
+            <RequireAuthorized>
+                <Container maxWidth="xl" sx={{ mt: 2 }}>
+                    <Container
+                        maxWidth="sm"
+                        sx={{ display: 'flex', justifyContent: 'center', mb: 2 }}
+                    >
+                        <ArticleSearchFormComponent
+                            textFieldProps={{
+                                fullWidth: true,
+                            }}
+                            style={{
+                                width: '100%',
+                            }}
+                            onSubmit={onSubmit}
+                        />
+                    </Container>
+                    <ArticleListLoader skipPages={skipPages}>
+                        {(loading, result) => {
+                            if (loading) return <LoadingPage />;
+                            if (!Array.isArray(result))
+                                return <ErrorPage errorMessage="error occurs" />;
+                            return (
+                                <Grid container spacing={1}>
+                                    {result.map((article) => (
+                                        <Grid xs={2} item key={article.id}>
+                                            <Link
+                                                href={`/articles/${encodeURIComponent(article.id)}`}
+                                                passHref
+                                            >
+                                                <ArticleCard
+                                                    sx={{
+                                                        width: '100%',
+                                                        height: '100%',
+                                                        overflow: 'hidden',
+                                                        whiteSpace: 'nowrap',
+                                                        cursor: 'pointer',
+                                                        ':hover': { borderColor: 'blue' },
+                                                    }}
+                                                    variant="outlined"
+                                                    cardContentProps={{
+                                                        sx: {
+                                                            maxHeight: 275,
+                                                        },
+                                                    }}
+                                                    article={article}
+                                                />
+                                            </Link>
+                                        </Grid>
+                                    ))}
+                                </Grid>
+                            );
                         }}
-                        style={{
-                            width: '100%',
-                        }}
-                        onSubmit={onSubmit}
-                    />
+                    </ArticleListLoader>
                 </Container>
-                <ArticleListLoader skipPages={skipPages}>
-                    {(loading, result) => {
-                        if (loading) return <LoadingPage />;
-                        if (!Array.isArray(result))
-                            return <ErrorPage errorMessage="error occurs" />;
-                        return (
-                            <Grid container spacing={1}>
-                                {result.map((article) => (
-                                    <Grid xs={2} item key={article.id}>
-                                        <Link
-                                            href={`/articles/${encodeURIComponent(article.id)}`}
-                                            passHref
-                                        >
-                                            <ArticleCard
-                                                sx={{
-                                                    width: '100%',
-                                                    height: '100%',
-                                                    overflow: 'hidden',
-                                                    whiteSpace: 'nowrap',
-                                                    cursor: 'pointer',
-                                                    ':hover': { borderColor: 'blue' },
-                                                }}
-                                                variant="outlined"
-                                                cardContentProps={{
-                                                    sx: {
-                                                        maxHeight: 275,
-                                                    },
-                                                }}
-                                                article={article}
-                                            />
-                                        </Link>
-                                    </Grid>
-                                ))}
-                            </Grid>
-                        );
-                    }}
-                </ArticleListLoader>
-            </Container>
-        </RequireAuthorized>
+            </RequireAuthorized>
+        </NavBar>
     );
 }

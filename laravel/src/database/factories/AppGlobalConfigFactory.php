@@ -14,7 +14,7 @@ class AppGlobalConfigFactory extends Factory
     public function definition()
     {
         return [
-            'list_article_count' => 20
+            'list_article_count' => 12
         ];
     }
 }

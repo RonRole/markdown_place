@@ -15,30 +15,40 @@ import { CreateArticleResult, useArticles } from '../hooks';
 import { FormWithSubmittingState } from '../presentational';
 
 export type ArticleSaveAsFormDialogProps = {
-    content?: Article['content'];
+    contentTextAreaRef: React.RefObject<HTMLTextAreaElement>;
     cardProps?: CardProps;
     onClickCancelButton?: ButtonProps['onClick'];
+    beforeCreateCallback?(params: Partial<Pick<Article, 'title' | 'content'>>): Promise<void>;
     afterCreateCallback?(result: CreateArticleResult): Promise<void>;
 } & DialogProps;
 
 export function ArticleSaveAsFormDialog({
-    content = '',
+    contentTextAreaRef,
     onClickCancelButton,
+    beforeCreateCallback = async () => {},
     afterCreateCallback = async () => {},
     ...props
 }: ArticleSaveAsFormDialogProps) {
     const { create } = useArticles();
-    const titleInputRef = React.useRef<HTMLInputElement>(null);
+    const titleInputRef = React.useRef<HTMLTextAreaElement>(null);
     const handleSubmit = React.useCallback(
         async (e: React.FormEvent<HTMLFormElement>) => {
             e.preventDefault();
+            const [title, content] = [
+                titleInputRef.current?.value,
+                contentTextAreaRef.current?.value,
+            ];
+            await beforeCreateCallback({
+                title,
+                content,
+            });
             const result = await create({
                 title: titleInputRef.current?.value,
-                content,
+                content: contentTextAreaRef.current?.value,
             });
             await afterCreateCallback(result);
         },
-        [afterCreateCallback, content, create]
+        [afterCreateCallback, beforeCreateCallback, contentTextAreaRef, create]
     );
     return (
         <Dialog {...props}>
@@ -54,12 +64,12 @@ export function ArticleSaveAsFormDialog({
                                 fullWidth
                             />
                         </CardContent>
-                        <CardContent sx={{ display: 'flex' }}>
+                        <CardContent sx={{ display: 'flex', flexDirection: 'row-reverse' }}>
                             <Button
                                 disabled={submitting}
+                                sx={{ ml: 1 }}
                                 type="submit"
                                 variant="outlined"
-                                fullWidth
                             >
                                 保存
                             </Button>
@@ -69,7 +79,6 @@ export function ArticleSaveAsFormDialog({
                                 type="button"
                                 variant="outlined"
                                 color="secondary"
-                                fullWidth
                             >
                                 キャンセル
                             </Button>

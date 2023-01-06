@@ -5,7 +5,6 @@ import dynamic from 'next/dynamic';
 import axios from 'axios';
 import { AuthContextProvider, EditNewArticleDialogContextProvider } from '../components/context';
 import { AxiosInterceptorsSettings } from '../components/functional';
-import { NavBar } from '../components/container';
 import { LoadAuthorization } from '../components/functional/LoadAuthorization';
 
 /**
@@ -30,9 +29,7 @@ export default function App({ Component, pageProps }: AppProps) {
                 <EditNewArticleDialogContextProvider>
                     <AxiosInterceptorsSettings>
                         <LoadAuthorization>
-                            <NavBar>
-                                <Component {...pageProps} />
-                            </NavBar>
+                            <Component {...pageProps} />
                         </LoadAuthorization>
                     </AxiosInterceptorsSettings>
                 </EditNewArticleDialogContextProvider>

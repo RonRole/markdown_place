@@ -30,11 +30,9 @@ export function AxiosInterceptorsSettings({ children }: AxiosInterceptorsSetting
                 case 419:
                     alert('認証エラーが発生しました');
                     setUnauthorized();
-                    return Promise.resolve();
             }
-            if (error.response?.status >= 500) {
+            if (!error.response || error.response?.status >= 500) {
                 alert('予期しないエラーが発生しました');
-                return Promise.resolve();
             }
             return Promise.reject(error);
         }

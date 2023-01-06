@@ -1,3 +1,4 @@
+import React from 'react';
 import { AuthContext } from '../context/AuthContextProvider';
 import { LoadingPage, LoginPage } from '../pages';
 import { RequireLoginPage } from '../pages/RequireLoginPage';

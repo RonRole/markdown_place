@@ -2,10 +2,11 @@ import { Edit } from '@mui/icons-material';
 import { Grid, List, ListItemButton } from '@mui/material';
 import { useRouter } from 'next/router';
 import React from 'react';
-import { EditArticleForm, NavBar, RequireAuthorized } from '../../components/container';
+import { NavBar, RequireAuthorized } from '../../components/container';
 import { ArticleLoader } from '../../components/functional/ArticleLoader';
 import { LoadingPage } from '../../components/pages';
 import { ErrorPage } from '../../components/pages/ErrorPage';
+import { EditArticleForm } from '../../components/presentational';
 import { ParsedMarkdown } from '../../components/presentational/ParsedMarkdown';
 import Article from '../../domains/article';
 

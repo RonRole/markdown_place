@@ -1,5 +1,5 @@
 import { Edit } from '@mui/icons-material';
-import { Grid, IconButton, List, ListItem, ListItemButton, Tooltip } from '@mui/material';
+import { Grid, List, ListItemButton } from '@mui/material';
 import { useRouter } from 'next/router';
 import React from 'react';
 import { EditArticleForm, NavBar, RequireAuthorized } from '../../components/container';
@@ -20,26 +20,43 @@ export default function EditArticlePage() {
         <RequireAuthorized>
             <ArticleLoader id={Number(articleId)}>
                 {(loading, loadResult) => {
-                    if (loading) return <LoadingPage />;
-                    if (loadResult === null) return <ErrorPage errorMessage="article not found" />;
+                    if (loading)
+                        return (
+                            <NavBar>
+                                <LoadingPage />
+                            </NavBar>
+                        );
+                    if (loadResult === null)
+                        return (
+                            <NavBar>
+                                <ErrorPage errorMessage="article not found" />
+                            </NavBar>
+                        );
                     if (!(loadResult instanceof Article))
-                        return <ErrorPage errorMessage={loadResult.id} />;
-                    if (editting) return <EditArticleForm article={loadResult} />;
+                        return (
+                            <NavBar>
+                                <ErrorPage errorMessage={loadResult.id} />
+                            </NavBar>
+                        );
+                    if (editting)
+                        return <EditArticleForm initialArticle={loadResult} initialMode="update" />;
                     return (
-                        <Grid container>
-                            <Grid item xs={2}>
-                                <List>
-                                    <ListItemButton onClick={handleStartEdit}>
-                                        <Edit />
-                                        編集
-                                    </ListItemButton>
-                                </List>
+                        <NavBar>
+                            <Grid container>
+                                <Grid item xs={2}>
+                                    <List>
+                                        <ListItemButton onClick={handleStartEdit}>
+                                            <Edit />
+                                            編集
+                                        </ListItemButton>
+                                    </List>
+                                </Grid>
+                                <Grid item xs={8}>
+                                    <ParsedMarkdown markdownSrc={loadResult.content} />
+                                </Grid>
+                                <Grid item xs={2}></Grid>
                             </Grid>
-                            <Grid item xs={8}>
-                                <ParsedMarkdown markdownSrc={loadResult.content} />
-                            </Grid>
-                            <Grid item xs={2}></Grid>
-                        </Grid>
+                        </NavBar>
                     );
                 }}
             </ArticleLoader>

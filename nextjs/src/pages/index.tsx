@@ -2,5 +2,5 @@ import React from 'react';
 import { EditArticleForm, NavBar, RequireAuthorized } from '../components/container';
 
 export default function Home() {
-    return <EditArticleForm />;
+    return <EditArticleForm initialMode="create" />;
 }

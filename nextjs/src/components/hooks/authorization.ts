@@ -54,7 +54,7 @@ export function useAuthState(): UseAuthStateItems {
                 email,
                 password,
             })
-            .then((_: AxiosResponse) => {
+            .then((res: AxiosResponse) => {
                 setCurrent('authorized');
                 return true as true;
             })

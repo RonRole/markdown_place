@@ -74,6 +74,7 @@ export function useAuthState(): UseAuthStateItems {
     }, []);
     const signUp = React.useCallback(
         async ({ name, email, password, passwordConfirmation }: SignUpParams) => {
+            await axios.get('/sanctum/csrf-cookie');
             const result = await axios
                 .post('/api/register', {
                     name,

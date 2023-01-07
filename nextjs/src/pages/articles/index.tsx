@@ -1,11 +1,10 @@
-import { Button, Grid } from '@mui/material';
+import { Grid } from '@mui/material';
 import { Container } from '@mui/system';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import React from 'react';
-import { ArticleListSearchForm, NavBar, RequireAuthorized } from '../../components/container';
+import { NavBar, RequireAuthorized } from '../../components/container';
 import { ArticleListLoader } from '../../components/functional/ArticleListLoader';
-import { LoadingPage } from '../../components/pages';
 import { ErrorPage } from '../../components/pages/ErrorPage';
 import ArticleCard from '../../components/presentational/ArticleCard';
 import { ArticleSearchFormComponent } from '../../components/presentational/ArticleSearchFormComponent';
@@ -16,6 +15,7 @@ const parseQueryItemToNumber = (queryItem: string | string[] | undefined, defaul
 
 export default function Articles() {
     const router = useRouter();
+    const q = router.query['q'] as string;
     const skipPages = parseQueryItemToNumber(router.query['skip-pages']);
     const onSubmit = React.useCallback(
         async (value = '') => {
@@ -42,9 +42,9 @@ export default function Articles() {
                             onSubmit={onSubmit}
                         />
                     </Container>
-                    <ArticleListLoader skipPages={skipPages}>
+                    <ArticleListLoader q={q} skipPages={skipPages}>
                         {(loading, result) => {
-                            if (loading) return <LoadingPage />;
+                            if (loading) return <div>検索中...</div>;
                             if (!Array.isArray(result))
                                 return <ErrorPage errorMessage="error occurs" />;
                             return (

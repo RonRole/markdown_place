@@ -36,7 +36,7 @@ export function ArticleSearchFormComponent({
                         ),
                     }}
                     disabled={submitting}
-                    placeholder="検索フォームでやんす"
+                    placeholder="タイトル、内容で検索"
                     inputRef={searchFieldInputRef}
                 />
             )}

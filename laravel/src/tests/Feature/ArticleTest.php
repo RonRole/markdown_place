@@ -102,6 +102,39 @@ class ArticleTest extends TestCase
         $response->assertStatus(200);
         $response->assertJsonCount(20);
     }
+
+    public function test_list_without_other_user()
+    {
+        $user1 = User::factory()->create();
+        $user2 = User::factory()->create();
+        Sanctum::actingAs(
+            $user1
+        );
+        AppGlobalConfig::factory()->state(function ($attributes) {
+            return [
+                'list_article_count' => 10
+            ];
+        })->create();
+        Article::factory()->state(function ($attributes) use ($user1) {
+            return [
+                'author_id' => $user1->id,
+                'title' => 'article_1',
+            ];
+        })->create();
+        Article::factory()->state(function ($attributes) use ($user2) {
+            return [
+                'author_id' => $user2->id,
+            ];
+        })->create();
+        $response = $this->getJson('/api/articles');
+        $response->assertStatus(200);
+        $response->assertJsonCount(1);
+        $response->assertJson(function (AssertableJson $json) {
+            $json->has(0, function (AssertableJson $json) {
+                $json->where('title', 'article_1')->etc();
+            });
+        });
+    }
     /**
      * 記事の並び順は更新日時の降順
      * @return void
@@ -191,6 +224,170 @@ class ArticleTest extends TestCase
             ];
         })->create();
         $response = $this->getJson('/api/articles?skip-pages=2');
+        $response->assertStatus(200);
+        $response->assertJsonCount(1);
+        $response->assertJson(function (AssertableJson $json) {
+            $json->has(0, function (AssertableJson $json) {
+                $json->where('title', 'article_1')->etc();
+            });
+        });
+    }
+    
+    /**
+     * 記事タイトルがqに部分一致する場合、返却される
+     * タイトルも内容も部分一致しない記事は返却されない
+     * @return void
+     */
+    public function test_list_title_matched_q() {
+        $user = User::factory()->create();
+        Sanctum::actingAs($user);
+        AppGlobalConfig::factory()->state(function ($attributes) {
+            return [
+                'list_article_count' => 1
+            ];
+        })->create();
+        Article::factory()->state(function ($attributes) use ($user) {
+            return [
+                'author_id' => $user->id,
+                'title' => 'article_1',
+                'updated_at' => Carbon::now()
+            ];
+        })->create();
+        Article::factory()->state(function ($attributes) use ($user) {
+            return [
+                'author_id' => $user->id,
+                'title' => 'not matched',
+                'content' => 'not matched',
+                'updated_at' => Carbon::now()
+            ];
+        })->create();
+        $response = $this->getJson('/api/articles?q=rtic');
+        $response->assertStatus(200);
+        $response->assertJsonCount(1);
+        $response->assertJson(function (AssertableJson $json) {
+            $json->has(0, function (AssertableJson $json) {
+                $json->where('title', 'article_1')->etc();
+            });
+        });
+    }
+    /**
+     * 記事内容がqに部分一致する場合、返却される
+     * タイトルも内容も部分一致しない記事は返却されない
+     * @return void
+     */
+    public function test_list_content_matched_q() {
+        $user = User::factory()->create();
+        Sanctum::actingAs($user);
+        AppGlobalConfig::factory()->state(function ($attributes) {
+            return [
+                'list_article_count' => 1
+            ];
+        })->create();
+        Article::factory()->state(function ($attributes) use ($user) {
+            return [
+                'author_id' => $user->id,
+                'title' => 'title is not matched',
+                'content' => 'this is content',
+                'updated_at' => Carbon::now()
+            ];
+        })->create();
+        Article::factory()->state(function ($attributes) use ($user) {
+            return [
+                'author_id' => $user->id,
+                'title' => 'not matched',
+                'content' => 'not matched',
+                'updated_at' => Carbon::now()
+            ];
+        })->create();
+        $response = $this->getJson('/api/articles?q=cont');
+        $response->assertStatus(200);
+        $response->assertJsonCount(1);
+        $response->assertJson(function (AssertableJson $json) {
+            $json->has(0, function (AssertableJson $json) {
+                $json->where('content', 'this is content')->etc();
+            });
+        });
+    }
+    /**
+     * likeでエスケープされる文字でも検索できる
+     * @return void
+     */
+    public function test_list_escaped_characters() {
+        $user = User::factory()->create();
+        Sanctum::actingAs($user);
+        AppGlobalConfig::factory()->state(function ($attributes) {
+            return [
+                'list_article_count' => 1
+            ];
+        })->create();
+        Article::factory()->state(function ($attributes) use ($user) {
+            return [
+                'author_id' => $user->id,
+                'title' => '100% orange juice',
+                'updated_at' => Carbon::now()
+            ];
+        })->create();
+        Article::factory()->state(function ($attributes) use ($user) {
+            return [
+                'author_id' => $user->id,
+                'title' => 'underscore_is_escaped',
+                'updated_at' => Carbon::now()
+            ];
+        })->create();
+        Article::factory()->state(function ($attributes) use ($user) {
+            return [
+                'author_id' => $user->id,
+                'title' => 'backslash\\is escaped',
+                'updated_at' => Carbon::now()
+            ];
+        })->create();
+        $response = $this->getJson('/api/articles?q=%');
+        $response->assertJson(function (AssertableJson $json) {
+            $json->has(0, function (AssertableJson $json) {
+                $json->where('title', '100% orange juice')->etc();
+            });
+        });
+        $response = $this->getJson('/api/articles?q=_');
+        $response->assertJson(function (AssertableJson $json) {
+            $json->has(0, function (AssertableJson $json) {
+                $json->where('title', 'underscore_is_escaped')->etc();
+            });
+        });
+        $response = $this->getJson('/api/articles?q=\\');
+        $response->assertJson(function (AssertableJson $json) {
+            $json->has(0, function (AssertableJson $json) {
+                $json->where('title', 'backslash\\is escaped')->etc();
+            });
+        });
+    }
+    /**
+     * q付きの場合でも、他のユーザーの記事は出てこない
+     * @return void
+     */
+    public function test_list_like_without_other_user()
+    {
+        $user1 = User::factory()->create();
+        $user2 = User::factory()->create();
+        Sanctum::actingAs(
+            $user1
+        );
+        AppGlobalConfig::factory()->state(function ($attributes) {
+            return [
+                'list_article_count' => 10
+            ];
+        })->create();
+        Article::factory()->state(function ($attributes) use ($user1) {
+            return [
+                'author_id' => $user1->id,
+                'title' => 'article_1',
+            ];
+        })->create();
+        Article::factory()->state(function ($attributes) use ($user2) {
+            return [
+                'author_id' => $user2->id,
+            ];
+        })->create();
+        $response = $this->getJson('/api/articles?q=rt');
         $response->assertStatus(200);
         $response->assertJsonCount(1);
         $response->assertJson(function (AssertableJson $json) {

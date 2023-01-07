@@ -23,8 +23,8 @@ class ArticleController extends Controller
         ]);
         return response()->json($listArticleAction([
             'authorId' => $request->user()->id,
+            'q' => $request->input('q'),
             'skipPages' => $request->input('skip-pages'),
-            'count' => $request->input('count'),
         ]));
     }
 

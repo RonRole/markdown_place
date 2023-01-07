@@ -9,13 +9,11 @@ import { ArticleSearchFormComponentProps } from '../presentational/ArticleSearch
 
 export type ArticleListSearchFormProps = {
     onSubmit(result: Article[] | InputError<ListArticleParams>): Promise<void>;
-    listItemCount?: number;
     skipPages?: number;
 } & Omit<ArticleSearchFormComponentProps, 'onSubmit'>;
 
 export function ArticleListSearchForm({
     onSubmit,
-    listItemCount = 20,
     skipPages = 0,
     textFieldProps,
     ...props
@@ -26,6 +24,7 @@ export function ArticleListSearchForm({
         async (e: React.FormEvent<HTMLFormElement>) => {
             e.preventDefault();
             const searchResult = await list({
+                q: searchFieldInputRef.current?.value,
                 skipPages,
             });
             await onSubmit(searchResult);
@@ -46,7 +45,7 @@ export function ArticleListSearchForm({
                         ),
                     }}
                     disabled={submitting}
-                    placeholder="検索フォームでやんす"
+                    placeholder="タイトル,内容で検索"
                     inputRef={searchFieldInputRef}
                     {...textFieldProps}
                 />

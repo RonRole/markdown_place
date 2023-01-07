@@ -14,11 +14,7 @@ export function RequireAuthorized({ children }: RequireAuthorizedProps) {
             {({ currentAuthStatus }) => (
                 <>
                     {currentAuthStatus === 'authorized' && <>{children}</>}
-                    {currentAuthStatus === 'unauthorized' && (
-                        <NavBar>
-                            <RequireLoginPage />
-                        </NavBar>
-                    )}
+                    {currentAuthStatus === 'unauthorized' && <RequireLoginPage />}
                 </>
             )}
         </AuthContext.Consumer>

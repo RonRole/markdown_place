@@ -75,16 +75,16 @@ export function useArticles(): UseArticleFunctions {
         const result: ShowArticleResult = await axios
             .get(`/api/articles/${encodeURIComponent(id)}`)
             .then((res: AxiosResponse) => {
-                if (res.data) {
-                    return new Article({
-                        id: res.data.id,
-                        title: res.data.title,
-                        content: res.data.content,
-                    });
+                if (!Object.keys(res.data).length) {
+                    return {
+                        id: ['データがありませんでした'],
+                    };
                 }
-                return {
-                    id: ['データがありませんでした'],
-                };
+                return new Article({
+                    id: res.data.id,
+                    title: res.data.title,
+                    content: res.data.content,
+                });
             })
             .catch((error: AxiosError) => {
                 const errorData = error.response?.data as ServerErrorFormat;

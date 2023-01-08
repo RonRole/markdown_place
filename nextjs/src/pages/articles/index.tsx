@@ -25,8 +25,8 @@ export default function Articles() {
         [router]
     );
     return (
-        <NavBar>
-            <RequireAuthorized>
+        <RequireAuthorized>
+            <NavBar>
                 <Container maxWidth="xl" sx={{ mt: 2 }}>
                     <Container
                         maxWidth="sm"
@@ -80,7 +80,7 @@ export default function Articles() {
                         }}
                     </ArticleListLoader>
                 </Container>
-            </RequireAuthorized>
-        </NavBar>
+            </NavBar>
+        </RequireAuthorized>
     );
 }

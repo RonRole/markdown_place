@@ -1,16 +1,18 @@
+import { NavBar } from '../container';
+
 export type ErrorPageProps = {
     errorMessage: string | string[];
 };
 
 export function ErrorPage({ errorMessage }: ErrorPageProps) {
-    if (Array.isArray(errorMessage)) {
-        return (
-            <div>
-                {errorMessage.map((e: string, i: number) => (
-                    <div key={i}>{e}</div>
-                ))}
-            </div>
-        );
+    if (typeof errorMessage === 'string') {
+        return <NavBar>{errorMessage}</NavBar>;
     }
-    return <div>{errorMessage}</div>;
+    return (
+        <NavBar>
+            {errorMessage.map((e: string, i: number) => (
+                <div key={i}>{e}</div>
+            ))}
+        </NavBar>
+    );
 }

@@ -3,7 +3,9 @@ import React from 'react';
 import { LoginResult, SignUpResult } from '../hooks';
 import { AuthDialog } from './AuthDialog';
 
-export function OpenAuthDialogButton() {
+export type OpenAuthDialogButtonProps = Omit<ButtonProps, 'onClick' | 'variant' | 'color'>;
+
+export function OpenAuthDialogButton({ ...props }: OpenAuthDialogButtonProps) {
     const [openDialog, setOpenDialog] = React.useState<boolean>(false);
     const handleOpen = React.useCallback(async () => setOpenDialog(true), []);
     const handleClose = React.useCallback(async () => setOpenDialog(false), []);
@@ -13,12 +15,7 @@ export function OpenAuthDialogButton() {
 
     return (
         <>
-            <Button
-                onClick={handleOpen}
-                variant="outlined"
-                color="primary"
-                sx={{ whiteSpace: 'nowrap' }}
-            >
+            <Button onClick={handleOpen} variant="outlined" color="primary" {...props}>
                 log in / sign up
             </Button>
             <AuthDialog

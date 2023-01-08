@@ -38,7 +38,9 @@ export function NavBar({ children, ...props }: NavBarProps) {
                             </Link>
                         ))}
                     </Container>
-                    {currentAuthStatus === 'unauthorized' && <OpenAuthDialogButton />}
+                    {currentAuthStatus === 'unauthorized' && (
+                        <OpenAuthDialogButton sx={{ whiteSpace: 'nowrap' }} />
+                    )}
                     {currentAuthStatus === 'authorized' && (
                         <LogoutButton sx={{ whiteSpace: 'nowrap' }} />
                     )}

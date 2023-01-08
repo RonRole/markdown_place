@@ -44,7 +44,9 @@ export function NavBar({ children, ...props }: NavBarProps) {
                             管理者ボタン
                         </Button>
                     )}
-                    {currentAuthStatus.isFixedAsUnauthorized && <OpenAuthDialogButton />}
+                    {currentAuthStatus.isFixedAsUnauthorized && (
+                        <OpenAuthDialogButton sx={{ whiteSpace: 'nowrap' }} />
+                    )}
                     {currentAuthStatus.isFixedAsAuthorized && (
                         <LogoutButton sx={{ whiteSpace: 'nowrap' }} />
                     )}

@@ -1,5 +1,6 @@
 import React from 'react';
+import { NavBar } from '../container';
 
 export function RequireLoginPage() {
-    return <div>このページの閲覧にはログインが必要です</div>;
+    return <NavBar>このページの閲覧にはログインが必要です</NavBar>;
 }

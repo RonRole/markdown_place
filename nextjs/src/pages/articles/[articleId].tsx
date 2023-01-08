@@ -36,7 +36,14 @@ export default function EditArticlePage() {
                     if (!(loadResult instanceof Article))
                         return (
                             <NavBar>
-                                <div>エラーが発生しました</div>
+                                <div>
+                                    エラーが発生しました
+                                    <ul>
+                                        {loadResult.id?.map((e: string, i: number) => (
+                                            <li key={i}>{e}</li>
+                                        ))}
+                                    </ul>
+                                </div>
                             </NavBar>
                         );
                     if (editting)

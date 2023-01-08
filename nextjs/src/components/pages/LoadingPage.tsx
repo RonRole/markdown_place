@@ -1,3 +1,5 @@
+import { NavBar } from '../container';
+
 export function LoadingPage() {
-    return <div>Loading...</div>;
+    return <NavBar>Loading...</NavBar>;
 }

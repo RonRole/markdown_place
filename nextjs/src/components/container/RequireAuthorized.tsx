@@ -13,8 +13,7 @@ export function RequireAuthorized({ children }: RequireAuthorizedProps) {
         <AuthContext.Consumer>
             {({ currentAuthStatus }) => (
                 <>
-                    {currentAuthStatus === 'authorized' && <>{children}</>}
-                    {currentAuthStatus === 'unauthorized' && <RequireLoginPage />}
+                    {currentAuthStatus.isFixedAsAuthorized ? <>{children}</> : <RequireLoginPage />}
                 </>
             )}
         </AuthContext.Consumer>

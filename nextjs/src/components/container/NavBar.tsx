@@ -21,7 +21,7 @@ const requireAuthorizedLinks: LinkSrc[] = [{ path: '/articles', display: '一覧
 export function NavBar({ children, ...props }: NavBarProps) {
     const { currentAuthStatus } = React.useContext(AuthContext);
     const links = React.useMemo(
-        () => [...(currentAuthStatus === 'authorized' ? requireAuthorizedLinks : [])],
+        () => [...(currentAuthStatus.isFixedAsAuthorized ? requireAuthorizedLinks : [])],
         [currentAuthStatus]
     );
     return (
@@ -38,10 +38,14 @@ export function NavBar({ children, ...props }: NavBarProps) {
                             </Link>
                         ))}
                     </Container>
-                    {currentAuthStatus === 'unauthorized' && (
-                        <OpenAuthDialogButton sx={{ whiteSpace: 'nowrap' }} />
+
+                    {currentAuthStatus.isFixedAsAdmin && (
+                        <Button variant="outlined" sx={{ whiteSpace: 'nowrap' }}>
+                            管理者ボタン
+                        </Button>
                     )}
-                    {currentAuthStatus === 'authorized' && (
+                    {currentAuthStatus.isFixedAsUnauthorized && <OpenAuthDialogButton />}
+                    {currentAuthStatus.isFixedAsAuthorized && (
                         <LogoutButton sx={{ whiteSpace: 'nowrap' }} />
                     )}
                 </Toolbar>

@@ -1,6 +1,6 @@
 import axios, { Axios, AxiosError, AxiosResponse } from 'axios';
 import React from 'react';
-import AuthStatus from '../../domains/auth-status';
+import { AuthStatus } from '../../domains/auth-status';
 import { ServerErrorFormat } from '../../errors';
 import { InputError } from '../../errors/input_error';
 
@@ -36,17 +36,20 @@ axios.defaults.withCredentials = true;
  * @returns UseAuthorizationItems
  */
 export function useAuthState(): UseAuthStateItems {
-    const [current, setCurrent] = React.useState<AuthStatus>('loading');
+    const [current, setCurrent] = React.useState<AuthStatus>(AuthStatus.Loading);
     React.useEffect(() => {
         axios
             .get('/api/user')
             .then((res: AxiosResponse) => {
-                setCurrent('authorized');
+                const authStatus = res.data?.is_admin
+                    ? AuthStatus.AuthorizedAsAdmin
+                    : AuthStatus.AuthorizedAsNormal;
+                setCurrent(authStatus);
                 return;
             })
-            .catch((error: AxiosError) => setCurrent('unauthorized'));
+            .catch((error: AxiosError) => setCurrent(AuthStatus.Unauthorized));
     }, []);
-    const setUnauthorized = React.useCallback(() => setCurrent('unauthorized'), []);
+    const setUnauthorized = React.useCallback(() => setCurrent(AuthStatus.Unauthorized), []);
     const login = React.useCallback(async ({ email, password }: LoginParams) => {
         await axios.get('/sanctum/csrf-cookie');
         const result: LoginResult = await axios
@@ -55,7 +58,10 @@ export function useAuthState(): UseAuthStateItems {
                 password,
             })
             .then((res: AxiosResponse) => {
-                setCurrent('authorized');
+                const authStatus = res.data?.is_admin
+                    ? AuthStatus.AuthorizedAsAdmin
+                    : AuthStatus.AuthorizedAsNormal;
+                setCurrent(authStatus);
                 return true as true;
             })
             .catch((error: AxiosError) => {
@@ -69,7 +75,7 @@ export function useAuthState(): UseAuthStateItems {
     }, []);
     const logout = React.useCallback(async () => {
         await axios.post('/api/logout').finally(() => {
-            setCurrent('unauthorized');
+            setCurrent(AuthStatus.Unauthorized);
         });
     }, []);
     const signUp = React.useCallback(
@@ -83,7 +89,7 @@ export function useAuthState(): UseAuthStateItems {
                     password_confirmation: passwordConfirmation,
                 })
                 .then((_: AxiosResponse) => {
-                    setCurrent('authorized');
+                    setCurrent(AuthStatus.AuthorizedAsNormal);
                     return true as true;
                 })
                 .catch((error: AxiosError) => {

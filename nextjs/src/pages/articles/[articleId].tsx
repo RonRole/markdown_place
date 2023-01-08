@@ -24,19 +24,19 @@ export default function EditArticlePage() {
                     if (loading)
                         return (
                             <NavBar>
-                                <LoadingPage />
+                                <div>読み込み中...</div>
                             </NavBar>
                         );
                     if (loadResult === null)
                         return (
                             <NavBar>
-                                <ErrorPage errorMessage="article not found" />
+                                <div>記事が見つかりませんでした</div>
                             </NavBar>
                         );
                     if (!(loadResult instanceof Article))
                         return (
                             <NavBar>
-                                <ErrorPage errorMessage={loadResult.id} />
+                                <div>エラーが発生しました</div>
                             </NavBar>
                         );
                     if (editting)

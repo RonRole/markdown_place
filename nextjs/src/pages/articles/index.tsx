@@ -1,8 +1,6 @@
 import { useRouter } from 'next/router';
 import React from 'react';
-
-import { ListArticlePage } from '../../components/pages/ListArticlePage ';
-
+import { ListArticlePage } from '../../components/pages/ListArticlePage';
 import Article from '../../domains/article';
 
 const parseQueryItemToNumber = (queryItem: string | string[] | undefined, defaultValue = 0) => {

@@ -22,7 +22,7 @@ class AuthorizedUserTest extends TestCase
         Sanctum::actingAs(
             User::factory()->create()
         );
-        $response = $this->getJson('/api/admin/user');
+        $response = $this->getJson('/api/admin/app-global-config');
         $response->assertStatus(401);
     }
 }

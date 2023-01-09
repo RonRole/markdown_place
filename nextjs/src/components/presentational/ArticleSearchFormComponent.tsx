@@ -35,7 +35,7 @@ export function ArticleSearchFormComponent({
                             </InputAdornment>
                         ),
                     }}
-                    disabled={submitting}
+                    disabled={textFieldProps?.disabled || submitting}
                     placeholder="タイトル、内容で検索"
                     inputRef={searchFieldInputRef}
                 />

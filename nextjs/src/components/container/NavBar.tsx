@@ -17,11 +17,16 @@ export type NavBarProps = {
 
 // ログイン済の場合のみ表示されるリンク
 const requireAuthorizedLinks: LinkSrc[] = [{ path: '/articles', display: '一覧' }];
+// 管理者ユーザーの場合のみ表示されるリンク
+const adminLinks: LinkSrc[] = [{ path: '/admin', display: '管理' }];
 
 export function NavBar({ children, ...props }: NavBarProps) {
     const { currentAuthStatus } = React.useContext(AuthContext);
     const links = React.useMemo(
-        () => [...(currentAuthStatus === 'authorized' ? requireAuthorizedLinks : [])],
+        () => [
+            ...(currentAuthStatus.isFixedAsAuthorized ? requireAuthorizedLinks : []),
+            ...(currentAuthStatus.isFixedAsAdmin ? adminLinks : []),
+        ],
         [currentAuthStatus]
     );
     return (
@@ -38,10 +43,10 @@ export function NavBar({ children, ...props }: NavBarProps) {
                             </Link>
                         ))}
                     </Container>
-                    {currentAuthStatus === 'unauthorized' && (
+                    {currentAuthStatus.isFixedAsUnauthorized && (
                         <OpenAuthDialogButton sx={{ whiteSpace: 'nowrap' }} />
                     )}
-                    {currentAuthStatus === 'authorized' && (
+                    {currentAuthStatus.isFixedAsAuthorized && (
                         <LogoutButton sx={{ whiteSpace: 'nowrap' }} />
                     )}
                 </Toolbar>

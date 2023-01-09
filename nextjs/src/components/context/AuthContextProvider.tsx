@@ -1,5 +1,5 @@
 import React from 'react';
-import AuthStatus from '../../domains/auth-status';
+import { AuthStatus } from '../../domains/auth-status';
 import { LoginParams, SignUpParams, useAuthState, UseAuthStateFunctions } from '../hooks';
 
 export type AuthContext = {
@@ -11,7 +11,7 @@ export type AuthContextProviderProps = {
 };
 
 export const AuthContext = React.createContext<AuthContext>({
-    currentAuthStatus: 'loading',
+    currentAuthStatus: AuthStatus.Loading,
     setUnauthorized() {
         console.log('now is loading...');
     },

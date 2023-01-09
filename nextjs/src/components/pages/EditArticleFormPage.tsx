@@ -48,7 +48,7 @@ export function EditArticleFormPage({ initialMode, initialArticle }: EditArticle
                                 sx: { flexGrow: 1 },
                             }}
                             article={article}
-                            mode={currentAuthStatus === 'unauthorized' ? 'unauthorized' : mode}
+                            mode={currentAuthStatus.isFixedAsAuthorized ? mode : 'unauthorized'}
                             afterSaveCallback={afterUpdateCallback}
                             afterCreateCallback={afterCreateCallback}
                         />

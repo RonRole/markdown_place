@@ -22,7 +22,7 @@ class AdminUserTest extends TestCase
         Sanctum::actingAs(
             User::factory()->admin()->create()
         );
-        $response = $this->getJson('/api/admin/user');
+        $response = $this->getJson('/api/admin/app-global-config');
         $response->assertOk();
     }
 }

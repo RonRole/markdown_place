@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ArticleController;
+use App\Http\Controllers\AppGlobalConfigController;
 
 /*
 |--------------------------------------------------------------------------
@@ -28,10 +29,11 @@ Route::group([
  * 管理者ユーザー向け
  */
 Route::group([
-    'prefix'     => 'admin',
+    'prefix' => 'admin',
     'middleware' => ['auth:sanctum', 'admin'],
-], function(){
-    Route::get('/user', function (Request $request) {
-        return $request->user();
+], function () {
+    Route::controller(AppGlobalConfigController::class)->group(function () {
+        Route::get('/app-global-config', 'index');
+        Route::put('/app-global-config', 'update');
     });
 });

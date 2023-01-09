@@ -30,7 +30,6 @@ export function AxiosInterceptorsSettings({ children }: AxiosInterceptorsSetting
             switch (error.response?.status) {
                 case 401:
                 case 419:
-                case 422:
                     setUnauthorized();
                     open({
                         message: '認証エラーが発生しました',

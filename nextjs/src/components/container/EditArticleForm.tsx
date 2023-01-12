@@ -1,22 +1,14 @@
-import { AppBar, Box, Grid, GridProps, TextareaAutosize, Toolbar, Tooltip } from '@mui/material';
+import { AppBar, Grid, GridProps, TextareaAutosize, Toolbar, Tooltip } from '@mui/material';
 
 import React from 'react';
 import Article from '../../domains/article';
-import { NavBar } from '../container';
 import { ArticleSaveAsFormDialogProps } from '../container/ArticleSaveAsFormDialog';
 import { SaveAsButton } from '../container/edit-article-form-action-buttons/SaveAsButton';
 import {
     SaveButton,
     SaveButtonProps,
 } from '../container/edit-article-form-action-buttons/SaveButton';
-
 import { ParsedMarkdown } from '../presentational/ParsedMarkdown';
-
-export type EditArticleFormProps = {
-    mode: EditArticleModeKey;
-    article?: Article;
-    gridContainerProps?: GridProps;
-} & Omit<BottomBarProps, 'contentTextAreaRef' | 'article'>;
 
 type BottomBarProps = {
     article?: Article;
@@ -100,6 +92,12 @@ const EditArticleFormModes = {
     },
 };
 
+export type EditArticleFormProps = {
+    mode: EditArticleModeKey;
+    article?: Article;
+    gridContainerProps?: GridProps;
+} & Omit<BottomBarProps, 'contentTextAreaRef' | 'article'>;
+
 export function EditArticleForm({
     mode,
     article,
@@ -132,7 +130,7 @@ export function EditArticleForm({
     return (
         <>
             <Grid container {...gridContainerProps}>
-                <Grid item xs={4}>
+                <Grid item xs={4} sx={{ height: '100%' }}>
                     <TextareaAutosize
                         ref={contentInputRef}
                         defaultValue={content}
@@ -147,8 +145,8 @@ export function EditArticleForm({
                         placeholder="こっちが入力エリア"
                     />
                 </Grid>
-                <Grid item xs={8}>
-                    <ParsedMarkdown sx={{ overflow: 'scroll' }} markdownSrc={content} />
+                <Grid item xs={8} sx={{ height: '100%', overflowY: 'scroll' }}>
+                    <ParsedMarkdown sx={{ height: '100%' }} markdownSrc={content} />
                 </Grid>
             </Grid>
             <BottomBar

@@ -5,6 +5,7 @@ import {
     CardHeader,
     CardHeaderProps,
     CardProps,
+    Grid,
     Typography,
 } from '@mui/material';
 import Article from '../../domains/article';

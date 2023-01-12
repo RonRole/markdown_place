@@ -3,7 +3,7 @@ import { AppGlobalConfig } from '../../domains/app-global-config';
 import { NavBar } from '../container';
 import { RequireAdmin } from '../container/RequireAdmin';
 import { useAppGlobalConfig } from '../hooks/app-global-config';
-import { FormControl, TextField, FormLabel, Container, Button } from '@mui/material';
+import { Box, FormControl, TextField, FormLabel, Container, Button, Grid } from '@mui/material';
 import { LoadingPage } from './LoadingPage';
 import { FormWithSubmittingState } from '../presentational';
 
@@ -33,30 +33,39 @@ export function AdminPage() {
                 <LoadingPage />
             ) : (
                 <NavBar>
-                    <Container maxWidth="xl">
-                        <h1>管理者ページ</h1>
-                        <FormWithSubmittingState onSubmit={handleSubmit}>
-                            {(submitting) => (
-                                <FormControl disabled={submitting} required>
-                                    <FormLabel htmlFor="list-article-count">
-                                        ページあたり記事読み込み件数
-                                    </FormLabel>
-                                    <TextField
-                                        id="list-article-count"
-                                        inputRef={listArticleCountInputRef}
-                                        defaultValue={config.listArticleCount}
-                                        type="number"
+                    <FormWithSubmittingState onSubmit={handleSubmit}>
+                        {(submitting) => (
+                            <Container>
+                                <h1>管理者ページ</h1>
+                                <Grid container rowSpacing={4} columnSpacing={1}>
+                                    <FormControl
+                                        component={Grid}
+                                        item
+                                        xs={4}
                                         disabled={submitting}
                                         required
-                                        sx={{ mb: 1 }}
-                                    />
+                                    >
+                                        <TextField
+                                            id="list-article-count"
+                                            label="1ページあたりの記事読み込み件数"
+                                            inputRef={listArticleCountInputRef}
+                                            defaultValue={config.listArticleCount}
+                                            type="number"
+                                            disabled={submitting}
+                                            required
+                                            sx={{ mb: 1 }}
+                                            variant="standard"
+                                        />
+                                    </FormControl>
+                                </Grid>
+                                <Box sx={{ display: 'flex', justifyContent: 'end' }}>
                                     <Button disabled={submitting} type="submit" variant="outlined">
                                         更新
                                     </Button>
-                                </FormControl>
-                            )}
-                        </FormWithSubmittingState>
-                    </Container>
+                                </Box>
+                            </Container>
+                        )}
+                    </FormWithSubmittingState>
                 </NavBar>
             )}
         </RequireAdmin>

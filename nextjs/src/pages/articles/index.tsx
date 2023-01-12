@@ -19,8 +19,8 @@ export default function Articles() {
         [router]
     );
     const onClickArticle = React.useCallback(
-        async (articleId: Article['id']) => {
-            router.push(`/articles/${encodeURIComponent(articleId)}`);
+        async (article: Article) => {
+            router.push(`/articles/${encodeURIComponent(article.id)}`);
         },
         [router]
     );

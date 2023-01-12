@@ -45,7 +45,7 @@ export function EditArticleFormPage({ initialMode, initialArticle }: EditArticle
                     <NavBar>
                         <EditArticleForm
                             gridContainerProps={{
-                                sx: { flexGrow: 1 },
+                                sx: { flexGrow: 1, overflow: 'hidden' },
                             }}
                             article={article}
                             mode={currentAuthStatus.isFixedAsAuthorized ? mode : 'unauthorized'}

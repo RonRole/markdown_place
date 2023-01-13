@@ -22,33 +22,53 @@ export const AlertDialogContext = React.createContext<AlertDialogContext>({
     close() {},
 });
 
+type State = {
+    open: boolean;
+} & Partial<AlertDialogProps>;
+
+type Actions =
+    | {
+          type: 'open';
+          data: AlertDialogProps;
+      }
+    | {
+          type: 'close';
+      };
+
+const initialState: State = { open: false };
+const reducer = (state: State, action: Actions): State => {
+    switch (action.type) {
+        case 'open':
+            return {
+                open: true,
+                message: action.data.message,
+                description: action.data.description,
+            };
+        case 'close':
+            return {
+                open: false,
+            };
+        default:
+            throw new Error('undefined action');
+    }
+};
+
 export function AlertDialogContextProvider({ children }: AuthContextProviderProps) {
-    const [open, setOpen] = React.useState<boolean>(false);
-    const [dialogProps, setDialogProps] = React.useState<AlertDialogProps>({
-        message: 'エラーが発生しました',
-        description: '',
-    });
-    const handleOpen = React.useCallback(
-        (props: AlertDialogProps) => {
-            setDialogProps({
-                message: props.message || dialogProps.message,
-                description: props.description || dialogProps.description,
-            });
-            setOpen(true);
-        },
-        [dialogProps.description, dialogProps.message]
-    );
-    const handleClose = React.useCallback(() => {
-        setOpen(false);
-    }, []);
+    const [state, dispatch] = React.useReducer(reducer, initialState);
     return (
-        <AlertDialogContext.Provider value={{ open: handleOpen, close: handleClose }}>
+        <AlertDialogContext.Provider
+            value={{
+                open: (props: AlertDialogProps) => dispatch({ type: 'open', data: props }),
+                close: () => dispatch({ type: 'close' }),
+            }}
+        >
             {children}
             <AlertDialog
-                message={dialogProps.message}
-                description={dialogProps.description}
-                open={open}
-                onClose={handleClose}
+                message={state.message}
+                description={state.description}
+                open={state.open}
+                onClose={() => dispatch({ type: 'close' })}
+                onClickOk={() => dispatch({ type: 'close' })}
             />
         </AlertDialogContext.Provider>
     );

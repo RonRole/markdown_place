@@ -3,6 +3,7 @@ import React from 'react';
 import Article from '../../domains/article';
 import { ServerErrorFormat } from '../../errors';
 import { InputError } from '../../errors/input_error';
+import { useAbortController } from './abort-controller';
 
 export type CreateArticleParams = Partial<Pick<Article, 'title' | 'content'>>;
 export type CreateArticleResult = Article | InputError<CreateArticleParams>;
@@ -46,31 +47,39 @@ export function useArticles(): UseArticleFunctions {
             });
         return result;
     }, []);
-    const list = React.useCallback(async ({ q = '', skipPages = 0 }: ListArticleParams) => {
-        const result: ListArticleResult = await axios
-            .get(`/api/articles?q=${q}&skip-pages=${skipPages}`)
-            .then((res: AxiosResponse) => {
-                if (Array.isArray(res.data)) {
-                    return res.data.map(
-                        ({ id, title, content }) =>
-                            new Article({
-                                id,
-                                title,
-                                content,
-                            })
-                    );
-                }
-                return [];
-            })
-            .catch((error: AxiosError) => {
-                const errorData = error.response?.data as ServerErrorFormat;
-                return {
-                    count: errorData?.errors?.count,
-                    skipPages: errorData?.errors?.['skip-pages'],
-                };
-            });
-        return result;
-    }, []);
+    const { restartProcess, clearAbortSignal } = useAbortController();
+    const list = React.useCallback(
+        async ({ q = '', skipPages = 0 }: ListArticleParams) => {
+            const signal = restartProcess();
+            const result: ListArticleResult = await axios
+                .get(`/api/articles?q=${q}&skip-pages=${skipPages}`, {
+                    signal,
+                })
+                .then((res: AxiosResponse) => {
+                    if (Array.isArray(res.data)) {
+                        return res.data.map(
+                            ({ id, title, content }) =>
+                                new Article({
+                                    id,
+                                    title,
+                                    content,
+                                })
+                        );
+                    }
+                    return [];
+                })
+                .catch((error: AxiosError) => {
+                    const errorData = error.response?.data as ServerErrorFormat;
+                    return {
+                        count: errorData?.errors?.count,
+                        skipPages: errorData?.errors?.['skip-pages'],
+                    };
+                })
+                .finally(clearAbortSignal);
+            return result;
+        },
+        [clearAbortSignal, restartProcess]
+    );
     const show = React.useCallback(async (id: Article['id']) => {
         const result: ShowArticleResult = await axios
             .get(`/api/articles/${encodeURIComponent(id)}`)

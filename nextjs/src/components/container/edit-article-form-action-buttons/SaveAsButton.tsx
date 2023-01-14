@@ -7,38 +7,66 @@ import { ArticleSaveAsFormDialog, ArticleSaveAsFormDialogProps } from '../Articl
 
 export type SaveAsButtonProps = Omit<IconButtonProps, 'onClick'> & ArticleSaveAsFormDialogProps;
 
+type SaveAsButtonState = {
+    openDialog: boolean;
+};
+
+const initialState = {
+    openDialog: false,
+};
+
+type SaveAsButtonAction =
+    | {
+          type: 'openDialog';
+      }
+    | {
+          type: 'closeDialog';
+      };
+
+const saveAsButtonReducer = (
+    state: SaveAsButtonState,
+    action: SaveAsButtonAction
+): SaveAsButtonState => {
+    switch (action.type) {
+        case 'openDialog':
+            return { ...state, openDialog: true };
+        case 'closeDialog':
+            return { ...state, openDialog: false };
+    }
+};
+
 export const SaveAsButton = ({
     contentTextAreaRef,
-    beforeCreateCallback,
-    afterCreateCallback = async () => {},
+    beforeCreateCallbacks,
+    afterCreateCallbacks,
     ...props
 }: SaveAsButtonProps) => {
-    const [open, setOpen] = React.useState<boolean>(false);
-    const handleOpen = React.useCallback(() => setOpen(true), []);
-    const handleClose = React.useCallback(() => setOpen(false), []);
-    const handleCreate = React.useCallback(
-        async (result: CreateArticleResult) => {
-            await afterCreateCallback(result);
-            if (result instanceof Article) {
-                setOpen(false);
-            }
-        },
-        [afterCreateCallback]
+    const [state, dispatch] = React.useReducer(saveAsButtonReducer, initialState);
+    const handleCreateCallbacks = React.useMemo(
+        () => [
+            ...afterCreateCallbacks,
+            async (result: CreateArticleResult) => {
+                if (result instanceof Article) {
+                    dispatch({ type: 'closeDialog' });
+                }
+            },
+        ],
+        [afterCreateCallbacks]
     );
     return (
         <>
-            <IconButton {...props} onClick={handleOpen}>
+            <IconButton {...props} onClick={() => dispatch({ type: 'openDialog' })}>
                 <SaveAs />
             </IconButton>
             <ArticleSaveAsFormDialog
                 fullWidth
                 maxWidth="xs"
-                open={open}
-                onClose={handleClose}
+                open={state.openDialog}
+                onClose={() => dispatch({ type: 'closeDialog' })}
                 contentTextAreaRef={contentTextAreaRef}
-                beforeCreateCallback={beforeCreateCallback}
-                afterCreateCallback={handleCreate}
-                onClickCancelButton={handleClose}
+                beforeCreateCallbacks={beforeCreateCallbacks}
+                afterCreateCallbacks={handleCreateCallbacks}
+                onClickCancelButton={() => dispatch({ type: 'closeDialog' })}
             />
         </>
     );

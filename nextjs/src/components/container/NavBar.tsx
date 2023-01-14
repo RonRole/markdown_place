@@ -5,6 +5,7 @@ import { AuthContext } from '../context';
 import { OpenAuthDialogButton } from './OpenAuthDialogButton';
 
 import { LogoutButton } from './LogoutButton';
+import { useRouter } from 'next/router';
 
 export type LinkSrc = {
     path: string;
@@ -22,6 +23,7 @@ const adminLinks: LinkSrc[] = [{ path: '/admin', display: '管理' }];
 
 export function NavBar({ children, ...props }: NavBarProps) {
     const { currentAuthStatus } = React.useContext(AuthContext);
+    const router = useRouter();
     const links = React.useMemo(
         () => [
             ...(currentAuthStatus.isFixedAsAuthorized ? requireAuthorizedLinks : []),
@@ -38,9 +40,13 @@ export function NavBar({ children, ...props }: NavBarProps) {
                             MarkdownPlace
                         </Typography>
                         {links.map((link) => (
-                            <Link key={link.path} href={link.path} passHref>
-                                <Button sx={{ color: 'white' }}>{link.display}</Button>
-                            </Link>
+                            <Button
+                                key={link.path}
+                                sx={{ color: 'white' }}
+                                onClick={() => router.push(link.path)}
+                            >
+                                {link.display}
+                            </Button>
                         ))}
                     </Container>
                     {currentAuthStatus.isFixedAsUnauthorized && (

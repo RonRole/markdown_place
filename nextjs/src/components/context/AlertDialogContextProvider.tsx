@@ -29,7 +29,7 @@ type State = {
 type Actions =
     | {
           type: 'open';
-          data: AlertDialogProps;
+          payload: AlertDialogProps;
       }
     | {
           type: 'close';
@@ -41,8 +41,8 @@ const reducer = (state: State, action: Actions): State => {
         case 'open':
             return {
                 open: true,
-                message: action.data.message,
-                description: action.data.description,
+                message: action.payload.message,
+                description: action.payload.description,
             };
         case 'close':
             return {
@@ -58,7 +58,7 @@ export function AlertDialogContextProvider({ children }: AuthContextProviderProp
     return (
         <AlertDialogContext.Provider
             value={{
-                open: (props: AlertDialogProps) => dispatch({ type: 'open', data: props }),
+                open: (props: AlertDialogProps) => dispatch({ type: 'open', payload: props }),
                 close: () => dispatch({ type: 'close' }),
             }}
         >

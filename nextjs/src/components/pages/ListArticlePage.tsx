@@ -26,11 +26,19 @@ export function ListArticlePage({
         },
         [onSubmit]
     );
+    const [articleAreaOffsetY, setArticleAreaOffsetY] = React.useState<number>(0);
+    React.useEffect(() => {
+        const articlesArea = document.getElementById('articles_area');
+        if (articlesArea) {
+            setArticleAreaOffsetY(articlesArea.offsetTop);
+        }
+    }, []);
     return (
         <RequireAuthorized>
             <Box
                 sx={{
                     height: '100vh',
+                    overflow: 'hidden',
                 }}
             >
                 <NavBar>
@@ -57,7 +65,12 @@ export function ListArticlePage({
                                 if (loading || !Array.isArray(result)) return <div>検索中...</div>;
                                 return (
                                     <ArticlesArea
-                                        sx={{ flexGrow: 1 }}
+                                        id="articles_area"
+                                        sx={{
+                                            flexGrow: 1,
+                                            overflow: 'scroll',
+                                            height: `calc(100vh - ${articleAreaOffsetY}px)`,
+                                        }}
                                         articles={result}
                                         onClickArticle={onClickArticle}
                                     />

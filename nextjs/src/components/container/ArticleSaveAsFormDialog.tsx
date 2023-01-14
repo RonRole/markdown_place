@@ -7,6 +7,8 @@ import {
     CardProps,
     Dialog,
     DialogProps,
+    FormControl,
+    FormLabel,
     TextField,
 } from '@mui/material';
 import React from 'react';
@@ -14,19 +16,24 @@ import Article from '../../domains/article';
 import { CreateArticleResult, useArticles } from '../hooks';
 import { FormWithSubmittingState } from '../presentational';
 
+export type BeforeCreateCallback = (
+    params: Partial<Pick<Article, 'title' | 'content'>>
+) => Promise<void>;
+export type AfterCreateCallback = (result: CreateArticleResult) => Promise<void>;
+
 export type ArticleSaveAsFormDialogProps = {
     contentTextAreaRef: React.RefObject<HTMLTextAreaElement>;
     cardProps?: CardProps;
     onClickCancelButton?: ButtonProps['onClick'];
-    beforeCreateCallback?(params: Partial<Pick<Article, 'title' | 'content'>>): Promise<void>;
-    afterCreateCallback?(result: CreateArticleResult): Promise<void>;
+    beforeCreateCallbacks: (BeforeCreateCallback | undefined)[];
+    afterCreateCallbacks: (AfterCreateCallback | undefined)[];
 } & DialogProps;
 
 export function ArticleSaveAsFormDialog({
     contentTextAreaRef,
     onClickCancelButton,
-    beforeCreateCallback = async () => {},
-    afterCreateCallback = async () => {},
+    beforeCreateCallbacks = [],
+    afterCreateCallbacks = [],
     ...props
 }: ArticleSaveAsFormDialogProps) {
     const { create } = useArticles();
@@ -38,17 +45,18 @@ export function ArticleSaveAsFormDialog({
                 titleInputRef.current?.value,
                 contentTextAreaRef.current?.value,
             ];
-            await beforeCreateCallback({
-                title,
-                content,
+            beforeCreateCallbacks.forEach(async (callback) => {
+                if (callback) await callback({ title, content });
             });
             const result = await create({
                 title: titleInputRef.current?.value,
                 content: contentTextAreaRef.current?.value,
             });
-            await afterCreateCallback(result);
+            afterCreateCallbacks.forEach(async (callback) => {
+                if (callback) await callback(result);
+            });
         },
-        [afterCreateCallback, beforeCreateCallback, contentTextAreaRef, create]
+        [afterCreateCallbacks, beforeCreateCallbacks, contentTextAreaRef, create]
     );
     return (
         <Dialog {...props}>

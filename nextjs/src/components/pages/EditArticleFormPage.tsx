@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box } from '@mui/material';
+import { AppBar, Box } from '@mui/material';
 import { CreateArticleResult, UpdateArticleResult } from '../hooks';
 import Article from '../../domains/article';
 import { AuthContext, AuthContextProvider } from '../context';
@@ -44,13 +44,17 @@ export function EditArticleFormPage({ initialMode, initialArticle }: EditArticle
                 >
                     <NavBar>
                         <EditArticleForm
-                            gridContainerProps={{
-                                sx: { flexGrow: 1, overflow: 'hidden' },
-                            }}
+                            sx={{ flexGrow: 1, overflow: 'hidden' }}
                             article={article}
                             mode={currentAuthStatus.isFixedAsAuthorized ? mode : 'unauthorized'}
-                            afterSaveCallback={afterUpdateCallback}
-                            afterCreateCallback={afterCreateCallback}
+                            callbacks={{
+                                save: {
+                                    after: afterUpdateCallback,
+                                },
+                                create: {
+                                    after: afterCreateCallback,
+                                },
+                            }}
                         />
                     </NavBar>
                 </Box>

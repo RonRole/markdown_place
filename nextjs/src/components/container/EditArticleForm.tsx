@@ -1,81 +1,12 @@
-import { AppBar, Grid, GridProps, TextareaAutosize, Toolbar, Tooltip } from '@mui/material';
-
+import { AppBar, Grid, GridProps, TextareaAutosize } from '@mui/material';
+import { before } from 'node:test';
 import React from 'react';
 import Article from '../../domains/article';
-import { ArticleSaveAsFormDialogProps } from '../container/ArticleSaveAsFormDialog';
-import { SaveAsButton } from '../container/edit-article-form-action-buttons/SaveAsButton';
-import {
-    SaveButton,
-    SaveButtonProps,
-} from '../container/edit-article-form-action-buttons/SaveButton';
 import { ParsedMarkdown } from '../presentational/ParsedMarkdown';
-
-type BottomBarProps = {
-    article?: Article;
-    contentTextAreaRef: React.RefObject<HTMLTextAreaElement>;
-    disabledSaveButton?: boolean;
-    disabledSaveAsButton?: boolean;
-} & Pick<ArticleSaveAsFormDialogProps, 'beforeCreateCallback' | 'afterCreateCallback'> &
-    Pick<SaveButtonProps, 'beforeSaveCallback' | 'afterSaveCallback'>;
-
-const BottomBar = ({
-    article,
-    contentTextAreaRef,
-    beforeSaveCallback,
-    afterSaveCallback,
-    beforeCreateCallback,
-    afterCreateCallback,
-    disabledSaveButton = false,
-    disabledSaveAsButton = false,
-}: BottomBarProps) => {
-    const [open, setOpen] = React.useState<boolean>(false);
-    const handleClose = React.useCallback(() => setOpen(false), []);
-    return (
-        <AppBar
-            position="fixed"
-            sx={{
-                top: 'auto',
-                bottom: '0',
-                opacity: 0.5,
-            }}
-        >
-            <Toolbar sx={{ justifyContent: 'end' }}>
-                <Tooltip title="上書き保存">
-                    <span>
-                        <SaveButton
-                            article={article}
-                            type="submit"
-                            beforeSaveCallback={beforeSaveCallback}
-                            afterSaveCallback={afterSaveCallback}
-                            disabled={disabledSaveButton}
-                            contentTextAreaRef={contentTextAreaRef}
-                        />
-                    </span>
-                </Tooltip>
-                <Tooltip title="タイトルをつけて保存">
-                    <span>
-                        <SaveAsButton
-                            type="submit"
-                            open={open}
-                            onClose={handleClose}
-                            contentTextAreaRef={contentTextAreaRef}
-                            beforeCreateCallback={beforeCreateCallback}
-                            afterCreateCallback={afterCreateCallback}
-                            disabled={disabledSaveAsButton}
-                        />
-                    </span>
-                </Tooltip>
-            </Toolbar>
-        </AppBar>
-    );
-};
-
-export type EditArticleFormMode = {
-    isAbleSave: boolean;
-    isAbleSaveAs: boolean;
-};
-
-export type EditArticleModeKey = keyof typeof EditArticleFormModes;
+import {
+    EditArticleToolBar,
+    BottomBarActionCallbacks,
+} from './edit-article-form-action-buttons/EditArticleToolBar';
 
 const EditArticleFormModes = {
     unauthorized: {
@@ -90,52 +21,80 @@ const EditArticleFormModes = {
         isAbleSave: true,
         isAbleSaveAs: true,
     },
+} as const;
+
+export type EditArticleModeKey = keyof typeof EditArticleFormModes;
+
+type EditArticleFormState = {
+    content?: Article['content'];
+    submitting: boolean;
+};
+
+type EditArticleFormActions =
+    | {
+          type: 'changeContent';
+          payload: Pick<EditArticleFormState, 'content'>;
+      }
+    | {
+          type: 'startSubmitting';
+      }
+    | {
+          type: 'finishSubmitting';
+      };
+
+const reducer = (
+    state: EditArticleFormState,
+    action: EditArticleFormActions
+): EditArticleFormState => {
+    switch (action.type) {
+        case 'changeContent':
+            return {
+                ...state,
+                content: action.payload.content,
+            };
+        case 'startSubmitting':
+            return {
+                ...state,
+                submitting: true,
+            };
+        case 'finishSubmitting':
+            return {
+                ...state,
+                submitting: false,
+            };
+        default:
+            throw new Error(`action is not defined`);
+    }
 };
 
 export type EditArticleFormProps = {
     mode: EditArticleModeKey;
     article?: Article;
-    gridContainerProps?: GridProps;
-} & Omit<BottomBarProps, 'contentTextAreaRef' | 'article'>;
+    callbacks?: BottomBarActionCallbacks;
+} & GridProps;
 
-export function EditArticleForm({
-    mode,
-    article,
-    gridContainerProps,
-    beforeSaveCallback = async () => {},
-    afterSaveCallback = async () => {},
-    beforeCreateCallback = async () => {},
-    afterCreateCallback = async () => {},
-}: EditArticleFormProps) {
+export function EditArticleForm({ mode, article, callbacks, ...props }: EditArticleFormProps) {
     const contentInputRef = React.useRef<HTMLTextAreaElement>(null);
-    const [content, setContent] = React.useState<Article['content']>(article?.content || '');
-    const [submitting, setSubmitting] = React.useState<boolean>(false);
-    const handleChange = React.useCallback((e: React.ChangeEvent<HTMLTextAreaElement>) => {
-        setContent(e.currentTarget.value);
-    }, []);
-    const wrappedBeforeCallback =
-        <T,>(callback: (result: T) => Promise<void>) =>
-        async (result: T) => {
-            setSubmitting(true);
-            await callback(result);
-        };
-
-    const wrappedAfterCallback =
-        <T,>(callback: (result: T) => Promise<void>) =>
-        async (result: T) => {
-            await callback(result);
-            setSubmitting(false);
-        };
-
+    const [state, dispatch] = React.useReducer(reducer, {
+        content: article?.content,
+        submitting: false,
+    });
     return (
         <>
-            <Grid container {...gridContainerProps}>
+            <Grid container {...props}>
                 <Grid item xs={4} sx={{ height: '100%' }}>
                     <TextareaAutosize
                         ref={contentInputRef}
-                        defaultValue={content}
-                        disabled={submitting}
-                        onChange={handleChange}
+                        defaultValue={state.content}
+                        disabled={state.submitting}
+                        onChange={() =>
+                            dispatch({
+                                type: 'changeContent',
+                                payload: {
+                                    content: contentInputRef.current?.value,
+                                },
+                            })
+                        }
                         style={{
                             width: '100%',
                             resize: 'none',
@@ -146,19 +105,37 @@ export function EditArticleForm({
                     />
                 </Grid>
                 <Grid item xs={8} sx={{ height: '100%', overflowY: 'scroll' }}>
-                    <ParsedMarkdown sx={{ height: '100%' }} markdownSrc={content} />
+                    <ParsedMarkdown sx={{ height: '100%' }} markdownSrc={state.content} />
                 </Grid>
             </Grid>
-            <BottomBar
-                disabledSaveButton={submitting || !EditArticleFormModes[mode].isAbleSave}
-                disabledSaveAsButton={submitting || !EditArticleFormModes[mode].isAbleSaveAs}
-                article={article}
-                contentTextAreaRef={contentInputRef}
-                beforeSaveCallback={wrappedBeforeCallback(beforeSaveCallback)}
-                afterSaveCallback={wrappedAfterCallback(afterSaveCallback)}
-                beforeCreateCallback={wrappedBeforeCallback(beforeCreateCallback)}
-                afterCreateCallback={wrappedAfterCallback(afterCreateCallback)}
-            />
+            <AppBar
+                position="fixed"
+                sx={{
+                    top: 'auto',
+                    bottom: '0',
+                    opacity: 0.5,
+                }}
+            >
+                <EditArticleToolBar
+                    article={article}
+                    sx={{ justifyContent: 'end' }}
+                    contentTextAreaRef={contentInputRef}
+                    disabled={state.submitting}
+                    commonCallbacks={{
+                        before: async () => dispatch({ type: 'startSubmitting' }),
+                        after: async () => dispatch({ type: 'finishSubmitting' }),
+                    }}
+                    itemCallbacks={callbacks}
+                    itemStates={{
+                        save: {
+                            disabled: !EditArticleFormModes[mode].isAbleSave,
+                        },
+                        saveAs: {
+                            disabled: !EditArticleFormModes[mode].isAbleSaveAs,
+                        },
+                    }}
+                />
+            </AppBar>
         </>
     );
 }

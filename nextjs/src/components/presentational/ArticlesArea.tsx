@@ -21,6 +21,7 @@ export function ArticlesArea({
                     {articles.map((article) => (
                         <ListItemButton
                             key={article.id}
+                            onFocus={() => setSelectedArticle(article)}
                             onMouseOver={() => setSelectedArticle(article)}
                             onClick={() => onClickArticle(article)}
                             sx={{ overflow: 'hidden', whiteSpace: 'nowrap' }}

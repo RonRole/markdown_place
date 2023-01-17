@@ -4,8 +4,6 @@ WORKDIR /app
 COPY ./src /app
 
 ENV NODE_ENV production
-ARG NEXT_PUBLIC_APP_API_URL
-ENV NEXT_PUBLIC_APP_API_URL $NEXT_PUBLIC_APP_API_URL
 
 # 開発環境と本番環境でpackage-lock.jsonが違うケースを防ぐため、
 # npm ciを使用

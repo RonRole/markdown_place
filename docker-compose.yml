@@ -1,72 +1,53 @@
-version: "3"
+version: '3'
 services:
-  nextjs:
-    build:
-      context: ./nextjs
-      dockerfile: ./Dockerfile
-      args:
-        - NEXT_PUBLIC_APP_API_URL=$NEXT_PUBLIC_APP_API_URL
-    volumes:
-      - ./nextjs/src:/app
-      - nextjs_node_modules:/app/node_modules
-    ports:
-      - "3000:3000"
-    depends_on:
-      - laravel
-    tty: true
-    env_file:
-      - .env
-  laravel:
-    build:
-      context: ./laravel
-      dockerfile: ./Dockerfile
-      args:
-        - APP_ENV=$APP_ENV
-        - FRONT_ORIGIN=$FRONT_ORIGIN
-        - DB_CONNECTION=$DB_CONNECTION
-        - DB_HOST=$DB_HOST
-        - DB_PORT=$DB_PORT
-        - DB_DATABASE=$DB_DATABASE
-        - DB_USERNAME=$DB_USERNAME
-        - DB_PASSWORD=$DB_PASSWORD
-        - SESSION_DRIVER=$SESSION_DRIVER
-        - SESSION_LIFETIME=$SESSION_LIFETIME
-        - REDIS_HOST=$REDIS_HOST
-        - REDIS_PASSWORD=$REDIS_PASSWORD
-        - REDIS_PORT=$REDIS_PORT
-        - REDIS_SCHEME=$REDIS_SCHEME
-    volumes:
-      - ./laravel/src:/app
-    ports:
-      - "8000:8000"
-    depends_on:
-      - postgres
-      - redis
-    tty: true
-    env_file:
-      - .env
-  postgres:
-    image: postgres:latest
-    ports:
-      - "5432:5432"
-    volumes:
-      - db_store:/var/lib/postgresql/data
-      # 公式postgresイメージの仕様
-      # 初回起動時に、/docker-entrypoint-initdb.d内のsqlを実行する
-      - ./postgres/scripts:/docker-entrypoint-initdb.d
-    environment:
-      - POSTGRES_PASSWORD=postgres
-      - POSTGRES_USER=postgres
-      - POSTGRES_DB=postgres
-    tty: true
-  redis:
-    image: redis:latest
-    ports:
-      - "6379:6379"
-    volumes:
-      - redis_store:/data
-    tty: true
+    nextjs:
+        build:
+            context: ./nextjs
+            dockerfile: ./Dockerfile
+        volumes:
+            - ./nextjs/src:/app
+            - nextjs_node_modules:/app/node_modules
+        ports:
+            - '3000:3000'
+        depends_on:
+            - laravel
+        tty: true
+
+    laravel:
+        build:
+            context: ./laravel
+            dockerfile: ./Dockerfile
+        volumes:
+            - ./laravel/src:/app
+        ports:
+            - '8000:8000'
+        depends_on:
+            - postgres
+            - redis
+        tty: true
+
+    postgres:
+        image: postgres:latest
+        ports:
+            - '5432:5432'
+        volumes:
+            - db_store:/var/lib/postgresql/data
+            # 公式postgresイメージの仕様
+            # 初回起動時に、/docker-entrypoint-initdb.d内のsqlを実行する
+            - ./postgres/scripts:/docker-entrypoint-initdb.d
+        environment:
+            - POSTGRES_PASSWORD=postgres
+            - POSTGRES_USER=postgres
+            - POSTGRES_DB=postgres
+        tty: true
+    redis:
+        image: redis:latest
+        ports:
+            - '6379:6379'
+        volumes:
+            - redis_store:/data
+        tty: true
 volumes:
-  nextjs_node_modules:
-  db_store:
-  redis_store:
+    nextjs_node_modules:
+    db_store:
+    redis_store:

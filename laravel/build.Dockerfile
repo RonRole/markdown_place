@@ -26,9 +26,6 @@ ARG DB_DATABASE
 ARG DB_USERNAME
 ARG DB_PASSWORD
 ARG DB_SCHEMA
-ARG REDIS_HOST
-ARG REDIS_PASSWORD
-ARG REDIS_PORT
 
 ENV FRONT_ORIGIN $FRONT_ORIGIN
 ENV APP_ENV production
@@ -41,9 +38,7 @@ ENV DB_DATABASE $DB_DATABASE
 ENV DB_USERNAME $DB_USERNAME
 ENV DB_PASSWORD $DB_PASSWORD
 ENV DB_SCHEMA $DB_SCHEMA
-ENV REDIS_HOST $REDIS_HOST
-ENV REDIS_PASSWORD $REDIS_PASSWORD
-ENV REDIS_PORT $REDIS_PORT
+ENV SESSION_DRIVER=file
 
 RUN apt-get update && apt-get install -y \ 
     libpq-dev && \
@@ -59,6 +54,7 @@ RUN chmod 777 -R /var/www/public && \
 WORKDIR /var/www
 RUN php artisan config:cache && \
     php artisan route:cache && \
-    php artisan view:cache
+    php artisan view:cache && \
+    mv .env.example .env
 
 WORKDIR /var/www/public

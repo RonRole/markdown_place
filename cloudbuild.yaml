@@ -1,6 +1,6 @@
 steps:
     # フロントのデプロイ
-    - name: 'build front'
+    - name: 'gcr.io/cloud-builders/docker'
       args:
           [
               'build',
@@ -13,10 +13,10 @@ steps:
               'NEXT_PUBLIC_APP_API_URL=$_NEXT_PUBLIC_APP_API_URL',
           ]
 
-    - name: 'push front'
+    - name: 'gcr.io/cloud-builders/docker'
       args: ['push', 'gcr.io/$PROJECT_ID/markdown-place-front:$COMMIT_SHA']
 
-    - name: 'run front'
+    - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
       entrypoint: gcloud
       args:
           - 'run'
@@ -28,7 +28,7 @@ steps:
           - 'us-east1'
 
     # バックエンドのデプロイ
-    - name: 'build back'
+    - name: 'gcr.io/cloud-builders/docker'
       args:
           [
               'build',
@@ -49,10 +49,10 @@ steps:
               'DB_SCHEMA=$_DB_SCHEMA',
           ]
 
-    - name: 'push back'
+    - name: 'gcr.io/cloud-builders/docker'
       args: ['push', 'gcr.io/$PROJECT_ID/markdown-place-back:$COMMIT_SHA']
 
-    - name: 'run back'
+    - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
       entrypoint: gcloud
       args:
           - 'run'

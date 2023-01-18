@@ -1,9 +1,30 @@
 steps:
+    # Build the container image
     - name: 'gcr.io/cloud-builders/docker'
       args:
           [
               'build',
-              '-t',
-              'us-central1-docker.pkg.dev/${PROJECT_ID}/markdown-place/nextjs',
               './nextjs',
+              '-t',
+              'gcr.io/$PROJECT_ID/markdown-place-front:$COMMIT_SHA',
+              '-f',
+              './nextjs/build.Dockerfile',
+              '--build-arg',
+              'NEXT_PUBLIC_APP_API_URL=$_NEXT_PUBLIC_APP_API_URL',
           ]
+    # Push the container image to Container Registry
+    - name: 'gcr.io/cloud-builders/docker'
+      args: ['push', 'gcr.io/$PROJECT_ID/markdown-place-front:$COMMIT_SHA']
+    # Deploy container image to Cloud Run
+    - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+      entrypoint: gcloud
+      args:
+          - 'run'
+          - 'deploy'
+          - 'markdown-place-front'
+          - '--image'
+          - 'gcr.io/$PROJECT_ID/markdown-place-front:$COMMIT_SHA'
+          - '--region'
+          - 'us-east1'
+images:
+    - 'gcr.io/$PROJECT_ID/markdown-place-front:$COMMIT_SHA'

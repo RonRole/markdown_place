@@ -44,6 +44,7 @@ ENV DB_USERNAME $DB_USERNAME
 ENV DB_PASSWORD $DB_PASSWORD
 ENV DB_SCHEMA $DB_SCHEMA
 ENV SESSION_DRIVER=file
+ENV LOG_CHANNEL stdout
 
 RUN apt-get update && apt-get install -y libpq-dev && \
     docker-php-ext-install pdo_pgsql

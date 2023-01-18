@@ -40,9 +40,14 @@ ENV DB_PASSWORD $DB_PASSWORD
 ENV DB_SCHEMA $DB_SCHEMA
 ENV SESSION_DRIVER=file
 
-RUN apt-get update && apt-get install -y \ 
-    libpq-dev && \
-    docker-php-ext-install pdo_pgsql
+RUN apt-get update && apt-get install -y \
+    git \
+    zip \
+    unzip \
+    # pdo_pgsqlに必要
+    libpq-dev
+
+RUN docker-php-ext-install pdo_pgsql
 
 COPY --from=builder /app /var/www
 COPY ./apache2/ /etc/apache2

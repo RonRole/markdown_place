@@ -47,6 +47,7 @@ ENV DB_SCHEMA $DB_SCHEMA
 ENV SESSION_DRIVER=file
 ENV LOG_CHANNEL stdout
 ENV SESSION_DOMAIN $SESSION_DOMAIN
+ENV SESSION_SECURE_COOKIE true
 
 RUN apt-get update && apt-get install -y libpq-dev && \
     docker-php-ext-install pdo_pgsql

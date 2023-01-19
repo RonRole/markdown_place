@@ -55,6 +55,8 @@ steps:
               'DB_PASSWORD=$_DB_PASSWORD',
               '--build-arg',
               'DB_SCHEMA=$_DB_SCHEMA',
+              '--build-arg',
+              'SESSION_DOMAIN=$_SESSION_DOMAIN',
           ]
 
     - name: 'gcr.io/cloud-builders/docker'

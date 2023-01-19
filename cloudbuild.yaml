@@ -25,7 +25,7 @@ steps:
           - '--image'
           - 'gcr.io/$PROJECT_ID/markdown-place-front:$COMMIT_SHA'
           - '--region'
-          - 'us-east1'
+          - 'us-central1'
 
     # バックエンドのデプロイ
     - name: 'gcr.io/cloud-builders/docker'
@@ -75,7 +75,7 @@ steps:
           - '--image'
           - 'gcr.io/$PROJECT_ID/markdown-place-back:$COMMIT_SHA'
           - '--region'
-          - 'us-east1'
+          - 'us-central1'
 images:
     - 'gcr.io/$PROJECT_ID/markdown-place-front:$COMMIT_SHA'
     - 'gcr.io/$PROJECT_ID/markdown-place-back:$COMMIT_SHA'

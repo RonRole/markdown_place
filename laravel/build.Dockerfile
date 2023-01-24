@@ -68,7 +68,6 @@ WORKDIR /var/www
 RUN php artisan config:cache && \
     php artisan route:cache && \
     php artisan view:cache && \
-    echo yes | php artisan migrate && \
     mv .env.example .env
 
 WORKDIR /var/www/public

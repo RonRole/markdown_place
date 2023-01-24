@@ -1,0 +1,17 @@
+name: Test Markdown Place
+on: pull_request
+jobs:
+    test:
+        runs-on: ubuntu-18.04
+        steps:
+            - name: checkout
+              uses: actions/checkout@v3
+
+            - name: test-laravel
+              run: |
+                  mv ./laravel/src/.env.example ./laravel/src/.env
+                  docker-compose build laravel
+                  docker-compose run laravel composer install
+                  docker-compose run laravel php artisan config:clear
+                  docker-compose run laravel php artisan key:generate 
+                  docker-compose run laravel php artisan test

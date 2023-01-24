@@ -48,7 +48,7 @@ ENV DB_PASSWORD $DB_PASSWORD
 ENV DB_SCHEMA $DB_SCHEMA
 ENV REDIS_HOST $REDIS_HOST
 ENV REDIS_PORT $REDIS_PORT
-ENV SESSION_DRIVER=redis
+ENV SESSION_DRIVER redis
 ENV LOG_CHANNEL stderr
 ENV LOG_LEVEL info
 ENV SESSION_DOMAIN $SESSION_DOMAIN
@@ -65,8 +65,7 @@ RUN chmod 777 -R /var/www/public && \
     a2enmod rewrite
 
 WORKDIR /var/www
-RUN mv .env.example .env && \
-    php artisan config:cache && \
+RUN php artisan config:cache && \
     php artisan route:cache && \
     php artisan view:cache
 

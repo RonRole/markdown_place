@@ -65,9 +65,9 @@ RUN chmod 777 -R /var/www/public && \
     a2enmod rewrite
 
 WORKDIR /var/www
-RUN php artisan config:cache && \
+RUN mv .env.example .env && \
+    php artisan config:cache && \
     php artisan route:cache && \
-    php artisan view:cache && \
-    mv .env.example .env
+    php artisan view:cache
 
 WORKDIR /var/www/public

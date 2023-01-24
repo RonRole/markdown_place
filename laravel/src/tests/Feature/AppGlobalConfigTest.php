@@ -23,7 +23,7 @@ class AppGlobalConfigTest extends TestCase
         Sanctum::actingAs(
             User::factory()->admin()->create()
         );
-        $response = $this->get('/api/admin/app-global-config');
+        $response = $this->getJson('/api/admin/app-global-config');
         $response->assertStatus(200);
         $response->assertJson(function (AssertableJson $json) use ($config) {
             $json->whereAll([
@@ -41,7 +41,7 @@ class AppGlobalConfigTest extends TestCase
         Sanctum::actingAs(
             User::factory()->admin()->create()
         );
-        $response = $this->put('/api/admin/app-global-config', [
+        $response = $this->putJson('/api/admin/app-global-config', [
             'list_article_count' => 30
         ]);
         $response->assertStatus(204);
@@ -58,7 +58,7 @@ class AppGlobalConfigTest extends TestCase
         Sanctum::actingAs(
             User::factory()->admin()->create()
         );
-        $response = $this->put('/api/admin/app-global-config', []);
+        $response = $this->putJson('/api/admin/app-global-config', []);
         $response->assertStatus(204);
         $this->assertDatabaseHas('app_global_configs', [
             'list_article_count' => 15

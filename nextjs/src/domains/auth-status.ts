@@ -51,6 +51,10 @@ export class AuthStatus {
         });
     }
 
+    get isLoading(): boolean {
+        return !this._params.isLoaded;
+    }
+
     get isFixedAsUnauthorized(): boolean {
         return this._params.isLoaded && !this._params.isAuthorized;
     }

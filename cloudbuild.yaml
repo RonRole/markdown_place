@@ -1,0 +1,81 @@
+steps:
+    # フロントのデプロイ
+    - name: 'gcr.io/cloud-builders/docker'
+      args:
+          [
+              'build',
+              './nextjs',
+              '-t',
+              'gcr.io/$PROJECT_ID/markdown-place-front:$COMMIT_SHA',
+              '-f',
+              './nextjs/build.Dockerfile',
+              '--build-arg',
+              'NEXT_PUBLIC_APP_API_URL=$_NEXT_PUBLIC_APP_API_URL',
+          ]
+
+    - name: 'gcr.io/cloud-builders/docker'
+      args: ['push', 'gcr.io/$PROJECT_ID/markdown-place-front:$COMMIT_SHA']
+
+    - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+      entrypoint: gcloud
+      args:
+          - 'run'
+          - 'deploy'
+          - 'markdown-place-front'
+          - '--image'
+          - 'gcr.io/$PROJECT_ID/markdown-place-front:$COMMIT_SHA'
+          - '--region'
+          - 'us-central1'
+
+    # バックエンドのデプロイ
+    - name: 'gcr.io/cloud-builders/docker'
+      args:
+          [
+              'build',
+              './laravel',
+              '-t',
+              'gcr.io/$PROJECT_ID/markdown-place-back:$COMMIT_SHA',
+              '-f',
+              './laravel/build.Dockerfile',
+              '--build-arg',
+              'FRONT_ORIGIN=$_FRONT_ORIGIN',
+              '--build-arg',
+              'APP_KEY=$_APP_KEY',
+              '--build-arg',
+              'DB_CONNECTION=$_DB_CONNECTION',
+              '--build-arg',
+              'DB_HOST=$_DB_HOST',
+              '--build-arg',
+              'DB_PORT=$_DB_PORT',
+              '--build-arg',
+              'DB_DATABASE=$_DB_DATABASE',
+              '--build-arg',
+              'DB_USERNAME=$_DB_USERNAME',
+              '--build-arg',
+              'DB_PASSWORD=$_DB_PASSWORD',
+              '--build-arg',
+              'REDIS_HOST=$_REDIS_HOST',
+              '--build-arg',
+              'REDIS_PORT=$_REDIS_PORT',
+              '--build-arg',
+              'DB_SCHEMA=$_DB_SCHEMA',
+              '--build-arg',
+              'SESSION_DOMAIN=$_SESSION_DOMAIN',
+          ]
+
+    - name: 'gcr.io/cloud-builders/docker'
+      args: ['push', 'gcr.io/$PROJECT_ID/markdown-place-back:$COMMIT_SHA']
+
+    - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+      entrypoint: gcloud
+      args:
+          - 'run'
+          - 'deploy'
+          - 'markdown-place-back'
+          - '--image'
+          - 'gcr.io/$PROJECT_ID/markdown-place-back:$COMMIT_SHA'
+          - '--region'
+          - 'us-central1'
+images:
+    - 'gcr.io/$PROJECT_ID/markdown-place-front:$COMMIT_SHA'
+    - 'gcr.io/$PROJECT_ID/markdown-place-back:$COMMIT_SHA'

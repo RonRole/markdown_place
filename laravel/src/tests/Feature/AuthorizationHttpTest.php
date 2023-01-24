@@ -15,7 +15,7 @@ use Laravel\Sanctum\Sanctum;
  * 3. /loginにpostリクエスト
  * 4. セッションにユーザー情報が追加される
  */
-class AutorizationHttpTest extends TestCase
+class AuthorizationHttpTest extends TestCase
 {
     use RefreshDatabase;
     /**

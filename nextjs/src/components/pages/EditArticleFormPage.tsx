@@ -24,7 +24,7 @@ export function EditArticleFormPage({ initialMode, initialArticle }: EditArticle
         }
     }, []);
     const afterUpdateCallback = React.useCallback(async (result: UpdateArticleResult) => {
-        if (result === true) {
+        if (result.isSuccess) {
             alert('更新しました');
         } else {
             alert('更新に失敗しました');

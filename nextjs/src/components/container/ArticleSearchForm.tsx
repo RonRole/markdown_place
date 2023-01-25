@@ -1,20 +1,18 @@
 import { Search } from '@mui/icons-material';
 import { IconButton, InputAdornment, TextField, TextFieldProps } from '@mui/material';
 import React from 'react';
-import Article from '../../domains/article';
-import { InputError } from '../../errors';
-import { ListArticleParams, useArticles } from '../hooks';
+import { ListArticleParams, ListArticleResult, useArticles } from '../hooks';
 import { FormWithSubmittingState, FormWithSubmittingStateProps } from '../presentational';
 import { ArticleSearchFormComponentProps } from '../presentational/ArticleSearchFormComponent';
 
 export type ArticleListSearchFormProps = {
-    onSubmit(result: Article[] | InputError<ListArticleParams>): Promise<void>;
-    skipPages?: number;
+    onSubmit(result: ListArticleResult): Promise<void>;
+    page?: number;
 } & Omit<ArticleSearchFormComponentProps, 'onSubmit'>;
 
 export function ArticleListSearchForm({
     onSubmit,
-    skipPages = 0,
+    page,
     textFieldProps,
     ...props
 }: ArticleListSearchFormProps) {
@@ -25,11 +23,11 @@ export function ArticleListSearchForm({
             e.preventDefault();
             const searchResult = await list({
                 q: searchFieldInputRef.current?.value,
-                skipPages,
+                page,
             });
             await onSubmit(searchResult);
         },
-        [list, onSubmit, skipPages]
+        [list, onSubmit, page]
     );
     return (
         <FormWithSubmittingState onSubmit={handleSubmit} {...props}>

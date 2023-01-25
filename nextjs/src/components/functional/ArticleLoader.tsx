@@ -17,7 +17,7 @@ export function ArticleLoader({ id, children }: ArticleLoaderProps) {
     React.useEffect(() => {
         setLoading(true);
         show(id)
-            .then((value) => setLoadResult(value))
+            .then((value) => setLoadResult(value.data))
             .finally(() => setLoading(false));
     }, [id, show]);
     const component = React.useMemo(

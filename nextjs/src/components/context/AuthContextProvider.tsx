@@ -17,8 +17,11 @@ export const AuthContext = React.createContext<AuthContext>({
     },
     async login(params: LoginParams) {
         return {
-            email: ['now is loading...'],
-            password: ['now is loading...'],
+            isSuccess: false,
+            data: {
+                email: ['now is loading...'],
+                password: ['now is loading...'],
+            },
         };
     },
     async logout() {
@@ -26,10 +29,13 @@ export const AuthContext = React.createContext<AuthContext>({
     },
     async signUp(params: SignUpParams) {
         return {
-            name: ['now is loading...'],
-            email: ['now is loading...'],
-            password: ['now is loading...'],
-            passwordConfirmation: ['now is loading...'],
+            isSuccess: false,
+            data: {
+                name: ['now is loading...'],
+                email: ['now is loading...'],
+                password: ['now is loading...'],
+                passwordConfirmation: ['now is loading...'],
+            },
         };
     },
 });

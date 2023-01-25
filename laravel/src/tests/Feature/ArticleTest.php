@@ -100,7 +100,10 @@ class ArticleTest extends TestCase
         })->create();
         $response = $this->getJson('/api/articles');
         $response->assertStatus(200);
-        $response->assertJsonCount(20);
+        $response->assertJson(function (AssertableJson $json) {
+            $json->count('data', 20);
+            $json->where('last_page', 3)->etc();
+        });
     }
 
     public function test_list_without_other_user()
@@ -128,11 +131,12 @@ class ArticleTest extends TestCase
         })->create();
         $response = $this->getJson('/api/articles');
         $response->assertStatus(200);
-        $response->assertJsonCount(1);
         $response->assertJson(function (AssertableJson $json) {
-            $json->has(0, function (AssertableJson $json) {
-                $json->where('title', 'article_1')->etc();
-            });
+            $json->has('data', function (AssertableJson $json) {
+                $json->has(0, function (AssertableJson $json) {
+                    $json->where('title', 'article_1')->etc();
+                });
+            })->etc();
         });
     }
     /**
@@ -173,25 +177,26 @@ class ArticleTest extends TestCase
         })->create();
         $response = $this->getJson('/api/articles');
         $response->assertStatus(200);
-        $response->assertJsonCount(3);
         $response->assertJson(function (AssertableJson $json) {
-            $json->has(0, function (AssertableJson $json) {
-                $json->where('title', 'article_3')->etc();
-            });
-            $json->has(1, function (AssertableJson $json) {
-                $json->where('title', 'article_2')->etc();
-            });
-            $json->has(2, function (AssertableJson $json) {
-                $json->where('title', 'article_1')->etc();
-            });
+            $json->has('data', function (AssertableJson $json) {
+                $json->has(0, function (AssertableJson $json) {
+                    $json->where('title', 'article_3')->etc();
+                });
+                $json->has(1, function (AssertableJson $json) {
+                    $json->where('title', 'article_2')->etc();
+                });
+                $json->has(2, function (AssertableJson $json) {
+                    $json->where('title', 'article_1')->etc();
+                });
+            })->etc();
         });
     }
     /**
-     * skipPagesを設定した場合、
-     * skipPages * 表示件数分件数が飛ぶ
+     * pageを設定した場合、
+     * (page-1) * 表示件数分件数が飛ぶ
      * ソート順は更新日時降順
      */
-    public function test_list_skip_page()
+    public function test_list_page()
     {
         $user = User::factory()->create();
         Sanctum::actingAs(
@@ -223,13 +228,14 @@ class ArticleTest extends TestCase
                 'updated_at' => Carbon::now()->addDays(2)
             ];
         })->create();
-        $response = $this->getJson('/api/articles?skip-pages=2');
+        $response = $this->getJson('/api/articles?page=2');
         $response->assertStatus(200);
-        $response->assertJsonCount(1);
         $response->assertJson(function (AssertableJson $json) {
-            $json->has(0, function (AssertableJson $json) {
-                $json->where('title', 'article_1')->etc();
-            });
+            $json->has('data', function (AssertableJson $json) {
+                $json->has(0, function (AssertableJson $json) {
+                    $json->where('title', 'article_2')->etc();
+                });
+            })->etc();
         });
     }
     
@@ -263,11 +269,12 @@ class ArticleTest extends TestCase
         })->create();
         $response = $this->getJson('/api/articles?q=rtic');
         $response->assertStatus(200);
-        $response->assertJsonCount(1);
         $response->assertJson(function (AssertableJson $json) {
-            $json->has(0, function (AssertableJson $json) {
-                $json->where('title', 'article_1')->etc();
-            });
+            $json->has('data', function(AssertableJson $json) {
+                $json->has(0, function (AssertableJson $json) {
+                    $json->where('title', 'article_1')->etc();
+                });
+            })->etc();
         });
     }
     /**
@@ -301,11 +308,12 @@ class ArticleTest extends TestCase
         })->create();
         $response = $this->getJson('/api/articles?q=cont');
         $response->assertStatus(200);
-        $response->assertJsonCount(1);
         $response->assertJson(function (AssertableJson $json) {
-            $json->has(0, function (AssertableJson $json) {
-                $json->where('content', 'this is content')->etc();
-            });
+            $json->has('data', function (AssertableJson $json) {
+                $json->has(0, function (AssertableJson $json) {
+                    $json->where('content', 'this is content')->etc();
+                });
+            })->etc();
         });
     }
     /**
@@ -343,21 +351,27 @@ class ArticleTest extends TestCase
         })->create();
         $response = $this->getJson('/api/articles?q=%');
         $response->assertJson(function (AssertableJson $json) {
-            $json->has(0, function (AssertableJson $json) {
-                $json->where('title', '100% orange juice')->etc();
-            });
+            $json->has('data', function (AssertableJson $json) {
+                $json->has(0, function (AssertableJson $json) {
+                    $json->where('title', '100% orange juice')->etc();
+                });
+            })->etc();
         });
         $response = $this->getJson('/api/articles?q=_');
         $response->assertJson(function (AssertableJson $json) {
-            $json->has(0, function (AssertableJson $json) {
-                $json->where('title', 'underscore_is_escaped')->etc();
-            });
+            $json->has('data', function (AssertableJson $json) {
+                $json->has(0, function (AssertableJson $json) {
+                    $json->where('title', 'underscore_is_escaped')->etc();
+                });
+            })->etc();
         });
         $response = $this->getJson('/api/articles?q=\\');
         $response->assertJson(function (AssertableJson $json) {
-            $json->has(0, function (AssertableJson $json) {
-                $json->where('title', 'backslash\\is escaped')->etc();
-            });
+            $json->has('data', function (AssertableJson $json) {
+                $json->has(0, function (AssertableJson $json) {
+                    $json->where('title', 'backslash\\is escaped')->etc();
+                });
+            })->etc();
         });
     }
     /**
@@ -389,15 +403,16 @@ class ArticleTest extends TestCase
         })->create();
         $response = $this->getJson('/api/articles?q=rt');
         $response->assertStatus(200);
-        $response->assertJsonCount(1);
         $response->assertJson(function (AssertableJson $json) {
-            $json->has(0, function (AssertableJson $json) {
-                $json->where('title', 'article_1')->etc();
-            });
+            $json->has('data', function (AssertableJson $json) {
+                $json->has(0, function (AssertableJson $json) {
+                    $json->where('title', 'article_1')->etc();
+                });
+            })->etc();
         });
     }
     /**
-     * skip-pagesがnullの時、ページ飛ばしは発生しない
+     * pageがnullの時、ページ飛ばしは発生しない
      * @return void
      */
     public function test_list_skip_page_with_null()
@@ -432,13 +447,14 @@ class ArticleTest extends TestCase
                 'updated_at' => Carbon::now()->addDays(2)
             ];
         })->create();
-        $response = $this->getJson('/api/articles?skip-pages=');
+        $response = $this->getJson('/api/articles?page=');
         $response->assertStatus(200);
-        $response->assertJsonCount(1);
         $response->assertJson(function (AssertableJson $json) {
-            $json->has(0, function (AssertableJson $json) {
-                $json->where('title', 'article_3')->etc();
-            });
+            $json->has('data', function (AssertableJson $json) {
+                $json->has(0, function (AssertableJson $json) {
+                    $json->where('title', 'article_3')->etc();
+                });
+            })->etc();
         });
     }
 

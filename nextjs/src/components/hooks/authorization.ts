@@ -3,13 +3,14 @@ import React from 'react';
 import { AuthStatus } from '../../domains/auth-status';
 import { ServerErrorFormat } from '../../errors';
 import { InputError } from '../../errors/input_error';
+import { ApiResponse } from './api-response';
 
 export type LoginParams = {
     email?: string;
     password?: string;
 };
 
-export type LoginResult = true | InputError<LoginParams>;
+export type LoginResult = ApiResponse<null, InputError<LoginParams>>;
 
 export type SignUpParams = {
     name?: string;
@@ -18,7 +19,7 @@ export type SignUpParams = {
     passwordConfirmation?: string;
 };
 
-export type SignUpResult = true | InputError<LoginParams>;
+export type SignUpResult = ApiResponse<null, InputError<SignUpParams>>;
 
 export type UseAuthStateFunctions = {
     setUnauthorized(): void;
@@ -62,13 +63,19 @@ export function useAuthState(): UseAuthStateItems {
                     ? AuthStatus.AuthorizedAsAdmin
                     : AuthStatus.AuthorizedAsNormal;
                 setCurrent(authStatus);
-                return true as true;
+                return {
+                    isSuccess: true as true,
+                    data: null,
+                };
             })
             .catch((error: AxiosError) => {
                 const errorData = error.response?.data as ServerErrorFormat;
                 return {
-                    email: errorData?.errors?.email,
-                    password: errorData?.errors?.password,
+                    isSuccess: false as false,
+                    data: {
+                        email: errorData?.errors?.email,
+                        password: errorData?.errors?.password,
+                    },
                 };
             });
         return result;
@@ -90,15 +97,21 @@ export function useAuthState(): UseAuthStateItems {
                 })
                 .then((_: AxiosResponse) => {
                     setCurrent(AuthStatus.AuthorizedAsNormal);
-                    return true as true;
+                    return {
+                        isSuccess: true as true,
+                        data: null,
+                    };
                 })
                 .catch((error: AxiosError) => {
                     const errorData = error.response?.data as ServerErrorFormat;
                     return {
-                        name: errorData?.errors?.name,
-                        email: errorData?.errors?.email,
-                        password: errorData?.errors?.password,
-                        passwordConfirmation: errorData?.errors?.password_confirmation,
+                        isSuccess: false as false,
+                        data: {
+                            name: errorData?.errors?.name,
+                            email: errorData?.errors?.email,
+                            password: errorData?.errors?.password,
+                            passwordConfirmation: errorData?.errors?.password_confirmation,
+                        },
                     };
                 });
             return result;

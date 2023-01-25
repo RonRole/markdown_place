@@ -15,7 +15,7 @@ export function OpenAuthDialogButton({ ...props }: OpenAuthDialogButtonProps) {
 
     return (
         <>
-            <Button onClick={handleOpen} variant="outlined" color="primary" {...props}>
+            <Button onClick={handleOpen} variant="contained" color="primary" {...props}>
                 log in / sign up
             </Button>
             <AuthDialog

@@ -13,7 +13,13 @@ export function LogoutButton(props: LogoutButtonProps) {
         setSubmitting(false);
     }, [logout]);
     return (
-        <Button variant="outlined" color="error" onClick={onClick} disabled={submitting} {...props}>
+        <Button
+            variant="contained"
+            color="error"
+            onClick={onClick}
+            disabled={submitting}
+            {...props}
+        >
             log out
         </Button>
     );

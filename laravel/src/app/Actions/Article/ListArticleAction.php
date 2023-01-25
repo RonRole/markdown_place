@@ -5,7 +5,6 @@ namespace App\Actions\Article;
 use App\Models\AppGlobalConfig;
 use App\Models\Article;
 use Error;
-use Illuminate\Database\Query\Builder;
 
 /**
  * Articleに対するselect句のインターフェース
@@ -66,11 +65,6 @@ function get_select_article_strategy(array $param)
     return new WhenSearchWordNotGivenOrEmpty();
 }
 
-function calc_offset(array $param, AppGlobalConfig $appGlobalConfig)
-{
-    return array_key_exists('skipPages', $param) ? $param['skipPages'] * $appGlobalConfig->list_article_count : 0;
-}
-
 class ListArticleAction
 {
     /**
@@ -78,11 +72,11 @@ class ListArticleAction
      * q: 
      *    指定されないor空文字の場合、抽出しない
      *    指定された場合、タイトルと文章から部分一致検索をする
-     * skipPages:
+     * page:
      *    指定されないor空文字の場合、offsetなし
-     *    指定された場合、「この値」*AppGlobalConfigのlist_article_count分offset
-     * @param array {authorId: int, q?: string, skipPages?: int } $param
-     * @return Article[]
+     *    指定された場合、(この値-1)*AppGlobalConfigのlist_article_count分offset
+     * @param array {authorId: int, q?: string, page?: int } $param
+     * @return {articles: Article[], page_count: int}
      */
     public function __invoke($param)
     {
@@ -90,13 +84,10 @@ class ListArticleAction
         if(empty($appGlobalConfig)) {
             throw new Error('AppGlobalConfig is not set');
         }
-        $offSet = calc_offset($param, $appGlobalConfig);
         return get_select_article_strategy($param)
-        ->get_article_select_query($param['authorId'])
-        ->orderBy('updated_at', 'desc')
-        ->offSet($offSet)
-        ->limit($appGlobalConfig->list_article_count)
-        ->get();
+            ->get_article_select_query($param['authorId'])
+            ->orderBy('updated_at', 'desc')
+            ->paginate($appGlobalConfig->list_article_count);
     }
 }
 

@@ -19,12 +19,12 @@ class ArticleController extends Controller
     public function index(Request $request, ListArticleAction $listArticleAction)
     {
         $request->validate([
-            'skip-pages' => ['int', 'nullable']
+            'page' => ['int', 'nullable', 'min:0']
         ]);
         return response()->json($listArticleAction([
             'authorId' => $request->user()->id,
             'q' => $request->input('q'),
-            'skipPages' => $request->input('skip-pages'),
+            'page' => $request->input('page'),
         ]));
     }
 

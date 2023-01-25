@@ -4,24 +4,38 @@ import Article from '../../domains/article';
 import { ServerErrorFormat } from '../../errors';
 import { InputError } from '../../errors/input_error';
 import { useAbortController } from './abort-controller';
+import { ApiResponse } from './api-response';
 
 export type CreateArticleParams = Partial<Pick<Article, 'title' | 'content'>>;
 export type CreateArticleResult = Article | InputError<CreateArticleParams>;
 export type ListArticleParams = {
     q?: string;
-    skipPages?: number;
+    page?: number;
 };
-export type ListArticleResult = Article[] | InputError<ListArticleParams>;
+export type ListArticleResult = ApiResponse<
+    { articles: Article[]; pageCount: number },
+    InputError<ListArticleParams>
+>;
 export type ShowArticleParams = Article['id'];
-export type ShowArticleResult = Article | InputError<Pick<Article, 'id'>>;
+export type ShowArticleResult = ApiResponse<Article, InputError<Pick<Article, 'id'>>>;
 export type UpdateArticleParams = Article;
-export type UpdateArticleResult = true | InputError<UpdateArticleParams>;
+export type UpdateArticleResult = ApiResponse<null, InputError<UpdateArticleParams>>;
 
 export type UseArticleFunctions = {
     create(props: CreateArticleParams): Promise<CreateArticleResult>;
     list(params: ListArticleParams): Promise<ListArticleResult>;
     show(id: Article['id']): Promise<ShowArticleResult>;
     update(article: Article): Promise<UpdateArticleResult>;
+};
+
+type ListArticleApiResponse = {
+    data: {
+        id: number;
+        author_id: string;
+        title: string;
+        content: string;
+    }[];
+    last_page: number;
 };
 
 export function useArticles(): UseArticleFunctions {
@@ -49,30 +63,38 @@ export function useArticles(): UseArticleFunctions {
     }, []);
     const { restartProcess, clearAbortSignal } = useAbortController();
     const list = React.useCallback(
-        async ({ q = '', skipPages = 0 }: ListArticleParams) => {
+        async ({ q = '', page = 1 }: ListArticleParams) => {
             const signal = restartProcess();
             const result: ListArticleResult = await axios
-                .get(`/api/articles?q=${q}&skip-pages=${skipPages}`, {
+                .get(`/api/articles?q=${q}&page=${page}`, {
                     signal,
                 })
                 .then((res: AxiosResponse) => {
-                    if (Array.isArray(res.data)) {
-                        return res.data.map(
-                            ({ id, title, content }) =>
-                                new Article({
-                                    id,
-                                    title,
-                                    content,
-                                })
-                        );
-                    }
-                    return [];
+                    const apiRes = res.data as ListArticleApiResponse;
+                    const articles = apiRes.data.map(
+                        ({ id, title, content }) =>
+                            new Article({
+                                id,
+                                title,
+                                content,
+                            })
+                    );
+                    return {
+                        isSuccess: true as true,
+                        data: {
+                            pageCount: apiRes.last_page,
+                            articles,
+                        },
+                    };
                 })
                 .catch((error: AxiosError) => {
                     const errorData = error.response?.data as ServerErrorFormat;
                     return {
-                        count: errorData?.errors?.count,
-                        skipPages: errorData?.errors?.['skip-pages'],
+                        isSuccess: false as false,
+                        data: {
+                            count: errorData?.errors?.count,
+                            page: errorData?.errors?.['page'],
+                        },
                     };
                 })
                 .finally(clearAbortSignal);
@@ -86,19 +108,26 @@ export function useArticles(): UseArticleFunctions {
             .then((res: AxiosResponse) => {
                 if (!Object.keys(res.data).length) {
                     return {
-                        id: ['データがありませんでした'],
+                        isSuccess: false as false,
+                        data: { id: ['データがありませんでした'] },
                     };
                 }
-                return new Article({
-                    id: res.data.id,
-                    title: res.data.title,
-                    content: res.data.content,
-                });
+                return {
+                    isSuccess: true as true,
+                    data: new Article({
+                        id: res.data.id,
+                        title: res.data.title,
+                        content: res.data.content,
+                    }),
+                };
             })
             .catch((error: AxiosError) => {
                 const errorData = error.response?.data as ServerErrorFormat;
                 return {
-                    id: errorData?.errors?.id,
+                    isSuccess: false as false,
+                    data: {
+                        id: errorData?.errors?.id,
+                    },
                 };
             });
         return result;
@@ -110,14 +139,20 @@ export function useArticles(): UseArticleFunctions {
                 content: article.content,
             })
             .then((_) => {
-                return true as true;
+                return {
+                    isSuccess: true as true,
+                    data: null,
+                };
             })
             .catch((error: AxiosError) => {
                 const errorData = error.response?.data as ServerErrorFormat;
                 return {
-                    id: errorData?.errors?.id,
-                    title: errorData?.errors?.title,
-                    content: errorData?.errors?.content,
+                    isSuccess: false as false,
+                    data: {
+                        id: errorData?.errors?.id,
+                        title: errorData?.errors?.title,
+                        content: errorData?.errors?.content,
+                    },
                 };
             });
         return result;

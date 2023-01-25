@@ -10,10 +10,10 @@ const parseQueryItemToNumber = (queryItem: string | string[] | undefined, defaul
 export default function Articles() {
     const router = useRouter();
     const q = router.query['q'] as string;
-    const skipPages = parseQueryItemToNumber(router.query['skip-pages']);
+    const page = parseQueryItemToNumber(router.query['page'], 1);
     const onSubmit = React.useCallback(
         async (value = '') => {
-            router.push(`/articles?q=${encodeURIComponent(value)}&skip-pages=0`);
+            router.push(`/articles?q=${encodeURIComponent(value)}&page=1`);
             return;
         },
         [router]
@@ -24,12 +24,19 @@ export default function Articles() {
         },
         [router]
     );
+    const onChangePage = React.useCallback(
+        async (page: number) => {
+            router.push(`/articles?q=${q || ''}&page=${page}`);
+        },
+        [q, router]
+    );
     return (
         <ListArticlePage
             onSubmit={onSubmit}
             query={q}
-            skipPages={skipPages}
+            page={page}
             onClickArticle={onClickArticle}
+            onChangePage={onChangePage}
         />
     );
 }

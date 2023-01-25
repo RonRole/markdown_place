@@ -5,20 +5,21 @@ import { ArticleListLoader } from '../functional/ArticleListLoader';
 import { ArticleSearchFormComponent } from '../presentational/ArticleSearchFormComponent';
 import { ArticlesArea } from '../presentational/ArticlesArea';
 import Article from '../../domains/article';
-import { ShowArticlePage } from './ShowArticlePage';
 
 export type ListArticlePageProps = {
     onSubmit: (q: string) => Promise<void>;
     onClickArticle: (article: Article) => Promise<void>;
     query?: string;
-    skipPages?: number;
+    page?: number;
+    onChangePage: (page: number) => Promise<void>;
 };
 
 export function ListArticlePage({
     onSubmit,
     onClickArticle,
     query = '',
-    skipPages = 0,
+    page,
+    onChangePage,
 }: ListArticlePageProps) {
     const handleSubmit = React.useCallback(
         async (q: string) => {
@@ -60,18 +61,25 @@ export function ListArticlePage({
                                 onSubmit={handleSubmit}
                             />
                         </Container>
-                        <ArticleListLoader q={query} skipPages={skipPages}>
+                        <ArticleListLoader q={query} page={page}>
                             {(loading, result) => {
-                                if (loading || !Array.isArray(result)) return <div>検索中...</div>;
                                 return (
                                     <ArticlesArea
                                         id="articles_area"
+                                        pageCount={
+                                            result.isSuccess ? result.data.pageCount : undefined
+                                        }
                                         sx={{
                                             flexGrow: 1,
                                             overflow: 'scroll',
                                             height: `calc(100vh - ${articleAreaOffsetY}px)`,
                                         }}
-                                        articles={result}
+                                        loading={loading || !result.isSuccess}
+                                        page={page}
+                                        onChangePage={onChangePage}
+                                        articles={
+                                            result.isSuccess ? result.data.articles : undefined
+                                        }
                                         onClickArticle={onClickArticle}
                                     />
                                 );

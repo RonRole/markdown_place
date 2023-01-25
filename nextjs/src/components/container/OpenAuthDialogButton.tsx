@@ -10,7 +10,7 @@ export function OpenAuthDialogButton({ ...props }: OpenAuthDialogButtonProps) {
     const handleOpen = React.useCallback(async () => setOpenDialog(true), []);
     const handleClose = React.useCallback(async () => setOpenDialog(false), []);
     const afterCallback = React.useCallback(async (result: LoginResult | SignUpResult) => {
-        if (result === true) setOpenDialog(false);
+        if (result.isSuccess) setOpenDialog(false);
     }, []);
 
     return (

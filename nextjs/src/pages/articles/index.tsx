@@ -11,13 +11,6 @@ export default function Articles() {
     const router = useRouter();
     const q = router.query['q'] as string;
     const page = parseQueryItemToNumber(router.query['page'], 1);
-    const onSubmit = React.useCallback(
-        async (value = '') => {
-            router.push(`/articles?q=${encodeURIComponent(value)}&page=1`);
-            return;
-        },
-        [router]
-    );
     const onClickArticle = React.useCallback(
         async (article: Article) => {
             router.push(`/articles/${encodeURIComponent(article.id)}`);
@@ -32,7 +25,6 @@ export default function Articles() {
     );
     return (
         <ListArticlePage
-            onSubmit={onSubmit}
             query={q}
             page={page}
             onClickArticle={onClickArticle}

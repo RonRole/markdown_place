@@ -19,7 +19,7 @@ export type ArticlesAreaProps = {
     page?: number;
     onChangePage: (page: number) => Promise<void>;
     onClickArticle?: (article: Article) => Promise<void>;
-    onEdit?: () => Promise<void>;
+    onEdit?: (article: Article) => Promise<void>;
 } & GridProps;
 
 type State = {
@@ -89,7 +89,7 @@ export function ArticlesArea({
     onClickArticle = async () => {},
     pageCount,
     page = 1,
-    onEdit,
+    onEdit = async () => {},
     onChangePage,
     ...props
 }: ArticlesAreaProps) {
@@ -123,7 +123,7 @@ export function ArticlesArea({
                                         payload: article,
                                     })
                                 }
-                                onEdit={onEdit}
+                                onEdit={() => onEdit(article)}
                             />
                         );
                     })}

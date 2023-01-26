@@ -85,11 +85,11 @@ export function ArticlesArea({
         <Grid container spacing={1} {...props}>
             <Grid xs={4} item sx={{ height: '100%', overflow: 'scroll' }}>
                 <List>
-                    {articles?.map((article: Article, i: number) => {
+                    {articles?.map((article: Article) => {
                         return (
                             <ListItemArticle
                                 disabled={disabled}
-                                key={i}
+                                key={article.id}
                                 article={article}
                                 fixed={state.fixedArticle?.id === article.id}
                                 onChangeChecking={async (checked) =>

@@ -1,9 +1,9 @@
 import React from 'react';
 import Article from '../../domains/article';
 import { InputError } from '../../errors';
-import { useArticles } from '../hooks';
+import { ShowArticleResult, useArticles } from '../hooks';
 
-export type LoadResult = Article | InputError<Pick<Article, 'id'>> | null;
+export type LoadResult = ShowArticleResult | null;
 
 export type ArticleLoaderProps = {
     id: Article['id'];
@@ -17,7 +17,7 @@ export function ArticleLoader({ id, children }: ArticleLoaderProps) {
     React.useEffect(() => {
         setLoading(true);
         show(id)
-            .then((value) => setLoadResult(value.data))
+            .then((value) => setLoadResult(value))
             .finally(() => setLoading(false));
     }, [id, show]);
     const component = React.useMemo(

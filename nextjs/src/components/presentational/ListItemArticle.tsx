@@ -15,8 +15,8 @@ export type ListItemArticleProps = {
     disabled?: boolean;
     fixed?: boolean;
     onChangeChecking?: (checked: boolean) => Promise<void>;
-    onFeatured?: () => Promise<void>;
-    onClicked?: () => Promise<void>;
+    onFeature?: () => Promise<void>;
+    onClick?: () => Promise<void>;
     onEdit?: () => Promise<void>;
 };
 
@@ -24,23 +24,23 @@ export function ListItemArticle({
     article,
     disabled = false,
     fixed = false,
-    onChangeChecking,
-    onFeatured,
-    onClicked,
+    onChangeChecking = async () => {},
+    onFeature,
+    onClick,
     onEdit,
 }: ListItemArticleProps) {
     return (
         <ListItemButton
             disabled={disabled}
-            onFocus={onFeatured}
-            onMouseOver={onFeatured}
+            onFocus={onFeature}
+            onMouseOver={onFeature}
             sx={{
                 padding: 0,
                 whiteSpace: 'nowrap',
             }}
         >
-            <Checkbox disableRipple />
-            <ListItem onClick={onClicked} sx={{ overflow: 'hidden' }}>
+            <Checkbox disableRipple onChange={(_, checked) => onChangeChecking(checked)} />
+            <ListItem onClick={onClick} sx={{ overflow: 'hidden' }}>
                 <ListItemText>{article.title}</ListItemText>
             </ListItem>
             {fixed && <Place />}

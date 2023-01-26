@@ -11,9 +11,9 @@ export default function Articles() {
     const router = useRouter();
     const q = router.query['q'] as string;
     const page = parseQueryItemToNumber(router.query['page'], 1);
-    const onClickArticle = React.useCallback(
+    const onEditArticle = React.useCallback(
         async (article: Article) => {
-            router.push(`/articles/${encodeURIComponent(article.id)}`);
+            router.push(`/articles/${encodeURIComponent(article.id)}/edit`);
         },
         [router]
     );
@@ -27,7 +27,7 @@ export default function Articles() {
         <ListArticlePage
             query={q}
             page={page}
-            onClickArticle={onClickArticle}
+            onEditArticle={onEditArticle}
             onChangePage={onChangePage}
         />
     );

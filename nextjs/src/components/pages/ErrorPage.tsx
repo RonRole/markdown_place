@@ -1,7 +1,7 @@
 import { NavBar } from '../container';
 
 export type ErrorPageProps = {
-    errorMessage: string | string[];
+    errorMessage?: string | string[];
 };
 
 export function ErrorPage({ errorMessage }: ErrorPageProps) {
@@ -10,7 +10,7 @@ export function ErrorPage({ errorMessage }: ErrorPageProps) {
     }
     return (
         <NavBar>
-            {errorMessage.map((e: string, i: number) => (
+            {errorMessage?.map((e: string, i: number) => (
                 <div key={i}>{e}</div>
             ))}
         </NavBar>

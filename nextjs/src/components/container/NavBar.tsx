@@ -17,6 +17,9 @@ export type NavBarProps = {
     children: React.ReactNode;
 } & Omit<AppBarProps, 'position'>;
 
+// ログイン済ユーザーの場合に表示されるリンク
+const authUsersLinks: LinkSrc[] = [{ path: '/articles', display: '一覧' }];
+
 // 管理者ユーザーの場合のみ表示されるリンク
 const adminLinks: LinkSrc[] = [{ path: '/admin', display: '管理' }];
 
@@ -24,7 +27,10 @@ export function NavBar({ children, ...props }: NavBarProps) {
     const { currentAuthStatus } = React.useContext(AuthContext);
     const router = useRouter();
     const links = React.useMemo(
-        () => [...(currentAuthStatus.isFixedAsAdmin ? adminLinks : [])],
+        () => [
+            ...(currentAuthStatus.isFixedAsAuthorized ? authUsersLinks : []),
+            ...(currentAuthStatus.isFixedAsAdmin ? adminLinks : []),
+        ],
         [currentAuthStatus]
     );
     const onSearch = React.useCallback(

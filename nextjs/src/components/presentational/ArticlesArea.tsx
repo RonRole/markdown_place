@@ -1,31 +1,25 @@
-import {
-    FormLabel,
-    Grid,
-    GridProps,
-    List,
-    ListItem,
-    ListItemButton,
-    Pagination,
-} from '@mui/material';
+import { FormLabel, Grid, GridProps, List, Pagination, PaginationProps } from '@mui/material';
 import React from 'react';
 import Article from '../../domains/article';
+import { ArticleMarkdown } from './ArticleMarkdown';
 import { ListItemArticle } from './ListItemArticle';
-import { ParsedMarkdown } from './ParsedMarkdown';
 
 export type ArticlesAreaProps = {
+    // general
     articles?: Article[];
-    loading?: boolean;
-    pageCount?: number;
-    page?: number;
-    onChangePage: (page: number) => Promise<void>;
-    onClickArticle?: (article: Article) => Promise<void>;
-    onEdit?: (article: Article) => Promise<void>;
+    disabled?: boolean;
+    // list article
+    onEditArticle?: (article: Article) => Promise<void>;
+    // pagination
+    page?: PaginationProps['page'];
+    pageCount?: PaginationProps['count'];
+    onChangePage?: (page: number) => Promise<void>;
 } & GridProps;
 
 type State = {
-    selectedArticle?: Article;
+    featuredArticle?: Article;
     fixedArticle?: Article;
-    checkedArticles: Article[];
+    checkedArticleIds: Set<Article['id']>;
 };
 
 type Actions =
@@ -34,14 +28,14 @@ type Actions =
           payload: State['fixedArticle'];
       }
     | {
-          type: 'selectArticle';
-          payload: State['selectedArticle'];
+          type: 'featureArticle';
+          payload: State['featuredArticle'];
       }
     | {
           type: 'changeArticleChecking';
           payload: {
               checked: boolean;
-              article: Article;
+              articleId: Article['id'];
           };
       };
 
@@ -58,39 +52,32 @@ const reducer = (state: State, action: Actions): State => {
                 ...state,
                 fixedArticle: action.payload,
             };
-        case 'selectArticle':
+        case 'featureArticle':
             return {
                 ...state,
-                selectedArticle: action.payload,
+                featuredArticle: action.payload,
             };
         case 'changeArticleChecking':
-            if (action.payload.checked) {
-                return {
-                    ...state,
-                    checkedArticles: [...state.checkedArticles, action.payload.article],
-                };
-            }
+            action.payload.checked
+                ? state.checkedArticleIds.add(action.payload.articleId)
+                : state.checkedArticleIds.delete(action.payload.articleId);
             return {
                 ...state,
-                checkedArticles: state.checkedArticles.filter(
-                    (article) => article.id !== action.payload.article.id
-                ),
             };
         default:
             return state;
     }
 };
 
-const initialState: State = { checkedArticles: [] };
+const initialState: State = { checkedArticleIds: new Set() };
 
 export function ArticlesArea({
     articles = [],
-    loading = false,
-    onClickArticle = async () => {},
+    disabled = false,
+    onEditArticle = async () => {},
+    page,
     pageCount,
-    page = 1,
-    onEdit = async () => {},
-    onChangePage,
+    onChangePage = async () => {},
     ...props
 }: ArticlesAreaProps) {
     const [state, dispatch] = React.useReducer(reducer, initialState);
@@ -98,11 +85,11 @@ export function ArticlesArea({
         <Grid container spacing={1} {...props}>
             <Grid xs={4} item sx={{ height: '100%', overflow: 'scroll' }}>
                 <List>
-                    {articles?.map((article: Article) => {
+                    {articles?.map((article: Article, i: number) => {
                         return (
                             <ListItemArticle
-                                disabled={loading}
-                                key={article.id}
+                                disabled={disabled}
+                                key={i}
                                 article={article}
                                 fixed={state.fixedArticle?.id === article.id}
                                 onChangeChecking={async (checked) =>
@@ -110,26 +97,29 @@ export function ArticlesArea({
                                         type: 'changeArticleChecking',
                                         payload: {
                                             checked,
-                                            article,
+                                            articleId: article.id,
                                         },
                                     })
                                 }
-                                onFeatured={async () =>
-                                    dispatch({ type: 'selectArticle', payload: article })
+                                onFeature={async () =>
+                                    dispatch({
+                                        type: 'featureArticle',
+                                        payload: article,
+                                    })
                                 }
-                                onClicked={async () =>
+                                onClick={async () =>
                                     dispatch({
                                         type: 'changeArticleFixing',
                                         payload: article,
                                     })
                                 }
-                                onEdit={() => onEdit(article)}
+                                onEdit={() => onEditArticle(article)}
                             />
                         );
                     })}
                 </List>
                 <Pagination
-                    disabled={loading}
+                    disabled={disabled}
                     count={pageCount}
                     page={page}
                     color="primary"
@@ -137,10 +127,7 @@ export function ArticlesArea({
                 />
             </Grid>
             <Grid xs={8} item sx={{ height: '100%', overflow: 'scroll' }}>
-                <FormLabel>{(state.fixedArticle || state.selectedArticle)?.title}</FormLabel>
-                <ParsedMarkdown
-                    markdownSrc={(state.fixedArticle || state.selectedArticle)?.content}
-                />
+                <ArticleMarkdown article={state.fixedArticle || state.featuredArticle} />
             </Grid>
         </Grid>
     );

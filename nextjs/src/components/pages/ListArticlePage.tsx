@@ -2,8 +2,8 @@ import { Box, Container } from '@mui/material';
 import React from 'react';
 import { NavBar, RequireAuthorized } from '../container';
 import { ArticleListLoader } from '../functional/ArticleListLoader';
-import { ArticlesArea } from '../presentational/ArticlesArea';
 import Article from '../../domains/article';
+import { ArticlesArea } from '../presentational/ArticlesArea';
 
 export type ListArticlePageProps = {
     query?: string;

@@ -1,6 +1,17 @@
-import { FormLabel, Grid, GridProps, List, Pagination, PaginationProps } from '@mui/material';
+import { Delete } from '@mui/icons-material';
+import {
+    Box,
+    FormLabel,
+    Grid,
+    GridProps,
+    IconButton,
+    List,
+    Pagination,
+    PaginationProps,
+} from '@mui/material';
 import React from 'react';
 import Article from '../../domains/article';
+import { DeleteArticleButton } from '../container/DeleteArticleButton';
 import { ArticleMarkdown } from './ArticleMarkdown';
 import { ListItemArticle } from './ListItemArticle';
 
@@ -81,9 +92,13 @@ export function ArticlesArea({
     ...props
 }: ArticlesAreaProps) {
     const [state, dispatch] = React.useReducer(reducer, initialState);
+    const checketArticleIdsRef = React.useRef<State['checkedArticleIds']>(state.checkedArticleIds);
     return (
         <Grid container spacing={1} {...props}>
             <Grid xs={4} item sx={{ height: '100%', overflow: 'scroll' }}>
+                <Box sx={{ display: 'flex' }}>
+                    <DeleteArticleButton targetArticleIdsRef={checketArticleIdsRef} />
+                </Box>
                 <List>
                     {articles?.map((article: Article) => {
                         return (

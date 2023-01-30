@@ -7,18 +7,12 @@ use App\Models\Traits\WhereLike;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Article extends Model
+class DeletedArticle extends Model
 {
     use HasFactory;
     use AuthoredBy;
     use WhereLike;
-    /**
-     * 複数代入可能な属性
-     * 
-     * @var array
-     */
-    protected $fillable = [
-        'title',
-        'content',
-    ];
+    
+    const CREATED_AT = 'deleted_at';
+    const UPDATED_AT = null;
 }

@@ -2,6 +2,7 @@ import { AppBar, Grid, GridProps, TextareaAutosize } from '@mui/material';
 import { before } from 'node:test';
 import React from 'react';
 import Article from '../../domains/article';
+import { ArticleMarkdown } from '../presentational/ArticleMarkdown';
 import { ParsedMarkdown } from '../presentational/ParsedMarkdown';
 import {
     EditArticleToolBar,
@@ -105,7 +106,11 @@ export function EditArticleForm({ mode, article, callbacks, ...props }: EditArti
                     />
                 </Grid>
                 <Grid item xs={8} sx={{ height: '100%', overflowY: 'scroll' }}>
-                    <ParsedMarkdown sx={{ height: '100%' }} markdownSrc={state.content} />
+                    <ArticleMarkdown
+                        sx={{ height: '100%' }}
+                        article={article}
+                        markdownSrc={state.content}
+                    />
                 </Grid>
             </Grid>
             <AppBar

@@ -22,7 +22,8 @@ Route::group([
     Route::get('/user', function (Request $request) {
        return $request->user();
     });
-    Route::resource('articles', ArticleController::class);
+    Route::resource('articles', ArticleController::class, ['except'=>['create', 'edit']]);
+    Route::delete('/articles', [ArticleController::class, 'destroy_multiple']);
 });
 
 /**

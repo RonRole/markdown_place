@@ -32,7 +32,7 @@ class WhenSearchWordGiven implements SelectArticleStrategy
 	 * @return mixed
 	 */
 	public function get_article_select_query(int $authorId) {
-        return Article::by($authorId)->where(function($query){
+        return Article::authoredBy($authorId)->where(function($query){
             $query
                 ->whereLike('title', $this->searchWord)
                 ->orWhereLike('content', $this->searchWord);
@@ -48,7 +48,7 @@ class WhenSearchWordNotGivenOrEmpty implements SelectArticleStrategy
      * author_idのみで抽出する
 	 */
     public function get_article_select_query(int $authorId) {
-        return Article::by($authorId);
+        return Article::authoredBy($authorId);
 	}
 }
 

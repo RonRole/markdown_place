@@ -2,10 +2,10 @@ import React from 'react';
 import { Edit } from '@mui/icons-material';
 import Article from '../../domains/article';
 import { NavBar, RequireAuthorized } from '../container';
-import { ParsedMarkdown } from '../presentational/ParsedMarkdown';
 import { EditArticleFormPage } from './EditArticleFormPage';
 import { Grid, List, ListItemButton, Box } from '@mui/material';
 import { ArticleLoader } from '../functional/ArticleLoader';
+import { ArticleMarkdown } from '../presentational/ArticleMarkdown';
 
 export type ShowArticlePageProps = {
     articleId: Article['id'];
@@ -20,9 +20,12 @@ export function ShowArticlePage({ articleId }: ShowArticlePageProps) {
         <RequireAuthorized>
             <ArticleLoader id={articleId}>
                 {(loading, loadResult) => {
-                    if (loadResult instanceof Article && editting)
+                    if (loadResult?.isSuccess && editting)
                         return (
-                            <EditArticleFormPage initialArticle={loadResult} initialMode="update" />
+                            <EditArticleFormPage
+                                initialArticle={loadResult.data}
+                                initialMode="update"
+                            />
                         );
                     return (
                         <Box sx={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
@@ -44,8 +47,8 @@ export function ShowArticlePage({ articleId }: ShowArticlePageProps) {
                                     </Grid>
                                     <Grid item xs={8} sx={{ height: '100%', overflow: 'scroll' }}>
                                         {loading && <div>読み込み中...</div>}
-                                        {loadResult instanceof Article && (
-                                            <ParsedMarkdown markdownSrc={loadResult.content} />
+                                        {loadResult?.isSuccess && (
+                                            <ArticleMarkdown article={loadResult.data} />
                                         )}
                                     </Grid>
                                     <Grid item xs={2}></Grid>

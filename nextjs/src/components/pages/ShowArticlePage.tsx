@@ -20,9 +20,12 @@ export function ShowArticlePage({ articleId }: ShowArticlePageProps) {
         <RequireAuthorized>
             <ArticleLoader id={articleId}>
                 {(loading, loadResult) => {
-                    if (loadResult instanceof Article && editting)
+                    if (loadResult?.isSuccess && editting)
                         return (
-                            <EditArticleFormPage initialArticle={loadResult} initialMode="update" />
+                            <EditArticleFormPage
+                                initialArticle={loadResult.data}
+                                initialMode="update"
+                            />
                         );
                     return (
                         <Box sx={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>

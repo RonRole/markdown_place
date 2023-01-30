@@ -1,7 +1,7 @@
 import { AppBar, Toolbar, ToolbarProps, Tooltip } from '@mui/material';
 import React from 'react';
 import Article from '../../../domains/article';
-import { AfterCreateCallback, BeforeCreateCallback } from '../ArticleSaveAsFormDialog';
+import { AfterCreateCallback, BeforeCreateCallback } from '../ArticleSaveAsDialog';
 import { SaveAsButton } from './SaveAsButton';
 import { AfterSaveCallback, BeforeSaveCallback, SaveButton, SaveButtonProps } from './SaveButton';
 

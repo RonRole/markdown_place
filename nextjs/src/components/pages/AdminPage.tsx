@@ -12,9 +12,9 @@ export function AdminPage() {
     const [config, setConfig] = React.useState<AppGlobalConfig | null>(null);
     const { load, update } = useAppGlobalConfig();
     React.useEffect(() => {
-        load().then((value) => {
-            if (value instanceof AppGlobalConfig) {
-                setConfig(value);
+        load().then((result) => {
+            if (result.isSuccess) {
+                setConfig(result.data);
             }
         });
     }, [load]);

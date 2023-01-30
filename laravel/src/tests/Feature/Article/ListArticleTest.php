@@ -1,9 +1,9 @@
 <?php
 
-namespace Tests\Feature;
+namespace Tests\Feature\Article;
 
-use App\Models\Article;
 use App\Models\AppGlobalConfig;
+use App\Models\Article;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Carbon;
 use Tests\TestCase;
@@ -11,76 +11,12 @@ use App\Models\User;
 use Laravel\Sanctum\Sanctum;
 use Illuminate\Testing\Fluent\AssertableJson;
 
-class ArticleTest extends TestCase
+/**
+ * 記事一覧機能テスト
+ */
+class ListArticleTest extends TestCase
 {
     use RefreshDatabase;
-    /**
-     * 記事作成のテスト
-     * 成功時
-     * 1. articleレコードが作成される
-     * 2. 作成されたArticleが返却される
-     * @return void
-     */
-    public function test_create_article()
-    {
-        $user = User::factory()->create();
-        Sanctum::actingAs(
-            $user
-        );
-        $response = $this->postJson('/api/articles', [
-            'title' => 'test_title',
-            'content' => 'test_content',
-        ]);
-        $response->assertStatus(200);
-        $this->assertDatabaseHas('articles', [
-            'author_id' => $user->id
-        ]);
-        $response->assertJson(function(AssertableJson $json) use ($user) {
-            $json->hasAll(['id', 'author_id', 'title', 'content', 'created_at', 'updated_at']);
-            $json->whereAll([
-                'author_id'=>$user->id,
-                'title'=>'test_title',
-                'content'=>'test_content',
-            ]);
-        });
-    }
-    /**
-     * タイトルが空の場合、422エラー
-     * @return void
-     */
-    public function test_create_empty_title_article()
-    {
-        Sanctum::actingAs(
-            User::factory()->create()
-        );
-        $response = $this->postJson('/api/articles', [
-            'title' => '',
-            'content' => 'test_content',
-        ]);
-        $response->assertStatus(422);
-        $response->assertJsonStructure([
-            'errors'=>[
-                'title'
-            ],
-            'message',
-        ]);
-    }
-
-    /**
-     * contentが空でも、エラーにならない
-     * @return void
-     */
-    public function test_create_empty_content_article()
-    {
-        Sanctum::actingAs(
-            User::factory()->create()
-        );
-        $response = $this->postJson('/api/articles', [
-            'title' => 'test_title',
-            'content' => '',
-        ]);
-        $response->assertStatus(200);
-    }
 
     public function test_list_article()
     {
@@ -458,62 +394,4 @@ class ArticleTest extends TestCase
         });
     }
 
-    public function test_show_article()
-    {
-        $user = User::factory()->create();
-        Sanctum::actingAs(
-            $user
-        );
-        $article = Article::factory()->state(function (array $attributes) use($user) {
-            return [
-                'author_id' => $user->id,
-            ];
-        })->create();
-        $response = $this->getJson('/api/articles/'.$article->id);
-        $response->assertStatus(200);
-        $response->assertJson(function (AssertableJson $json) use ($article) {
-            $json->where('id', $article->id)->etc();
-        });
-    }
-
-    public function test_update_article()
-    {
-        $user = User::factory()->create();
-        Sanctum::actingAs(
-            $user
-        );
-        $article = Article::factory()->state(function (array $attributes) use($user) {
-            return [
-                'author_id' => $user->id,
-            ];
-        })->create();
-        $response = $this->putJson('/api/articles/'.$article->id, [
-            'title' => 'updated_article',
-            'content' => 'updated_article_content',
-        ]);
-        $response->assertStatus(204);
-        $this->assertDatabaseHas('articles', [
-            'id' => $article->id,
-            'title' => 'updated_article',
-            'content' => 'updated_article_content',
-        ]);
-    }
-
-    public function test_empty_title_article()
-    {
-        $user = User::factory()->create();
-        Sanctum::actingAs(
-            $user
-        );
-        $article = Article::factory()->state(function (array $attributes) use($user) {
-            return [
-                'author_id' => $user->id,
-            ];
-        })->create();
-        $response = $this->putJson('/api/articles/'.$article->id, [
-            'title' => '',
-            'content' => 'updated_article_content',
-        ]);
-        $response->assertStatus(422);
-    }
 }

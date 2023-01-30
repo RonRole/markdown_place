@@ -2,11 +2,13 @@ import React from 'react';
 import axios, { Axios, AxiosError, AxiosResponse } from 'axios';
 import { AppGlobalConfig } from '../../domains/app-global-config';
 import { InputError, ServerErrorFormat } from '../../errors';
+import { ApiResponse } from './api-response';
 
-export type UpdateAppGlobalConfigResult = true | InputError<Partial<AppGlobalConfig>>;
+export type GetAppGlobalConfigResult = ApiResponse<AppGlobalConfig, Error>;
+export type UpdateAppGlobalConfigResult = ApiResponse<null, InputError<Partial<AppGlobalConfig>>>;
 
 export type UseAppGlobalConfigFunctions = {
-    load(): Promise<AppGlobalConfig | Error>;
+    load(): Promise<GetAppGlobalConfigResult>;
     update(params: Partial<AppGlobalConfig>): Promise<UpdateAppGlobalConfigResult>;
 };
 
@@ -15,12 +17,18 @@ export function useAppGlobalConfig(): UseAppGlobalConfigFunctions {
         return await axios
             .get('/api/admin/app-global-config')
             .then((res: AxiosResponse) => {
-                return new AppGlobalConfig({
-                    listArticleCount: res.data.list_article_count,
-                });
+                return {
+                    isSuccess: true as true,
+                    data: new AppGlobalConfig({
+                        listArticleCount: res.data.list_article_count,
+                    }),
+                };
             })
             .catch((error: AxiosError) => {
-                return new Error('予期しないエラー');
+                return {
+                    isSuccess: false as false,
+                    data: new Error('予期しないエラー'),
+                };
             });
     }, []);
     const update = React.useCallback(async (params: Partial<AppGlobalConfig>) => {
@@ -29,12 +37,18 @@ export function useAppGlobalConfig(): UseAppGlobalConfigFunctions {
                 list_article_count: params?.listArticleCount,
             })
             .then((res: AxiosResponse) => {
-                return true as true;
+                return {
+                    isSuccess: true as true,
+                    data: null,
+                };
             })
             .catch((error: AxiosError) => {
                 const errorData = error.response?.data as ServerErrorFormat;
                 return {
-                    listArticleCount: errorData?.errors?.list_article_count,
+                    isSuccess: false as false,
+                    data: {
+                        listArticleCount: errorData?.errors?.list_article_count,
+                    },
                 };
             });
     }, []);

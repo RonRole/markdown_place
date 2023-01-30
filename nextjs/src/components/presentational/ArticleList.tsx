@@ -15,7 +15,7 @@ export type ArticleListProps = {
 export function ArticleList({
     articles,
     fixedArticleId,
-    checkedArticleIdsSet = [],
+    checkedArticleIdsSet = new Set(),
     disabled,
     onChangeChecking,
     onClick,

@@ -4,7 +4,7 @@ export type ErrorPageProps = {
     errorMessage?: string | string[];
 };
 
-export function ErrorPage({ errorMessage }: ErrorPageProps) {
+export function ErrorPage({ errorMessage = 'エラーが発生しました' }: ErrorPageProps) {
     if (typeof errorMessage === 'string') {
         return <NavBar>{errorMessage}</NavBar>;
     }

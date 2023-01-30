@@ -15,8 +15,8 @@ export function EditArticleFormPage({ initialMode, initialArticle }: EditArticle
     const [article, setArticle] = React.useState<Article | undefined>(initialArticle);
     const [mode, setMode] = React.useState<EditArticleModeKey>(initialMode);
     const afterCreateCallback = React.useCallback(async (result: CreateArticleResult) => {
-        if (result instanceof Article) {
-            setArticle(result);
+        if (result.isSuccess) {
+            setArticle(result.data);
             setMode('update');
             alert('作成しました');
         } else {
@@ -24,7 +24,7 @@ export function EditArticleFormPage({ initialMode, initialArticle }: EditArticle
         }
     }, []);
     const afterUpdateCallback = React.useCallback(async (result: UpdateArticleResult) => {
-        if (result.isSuccess) {
+        if (!result.isSuccess) {
             alert('更新しました');
         } else {
             alert('更新に失敗しました');

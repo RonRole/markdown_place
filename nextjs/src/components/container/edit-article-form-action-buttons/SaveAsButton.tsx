@@ -3,7 +3,7 @@ import { ButtonProps, IconButton, IconButtonProps, Tooltip } from '@mui/material
 import React from 'react';
 import Article from '../../../domains/article';
 import { CreateArticleResult } from '../../hooks';
-import { ArticleSaveAsFormDialog, ArticleSaveAsFormDialogProps } from '../ArticleSaveAsFormDialog';
+import { ArticleSaveAsFormDialog, ArticleSaveAsFormDialogProps } from '../ArticleSaveAsDialog';
 
 export type SaveAsButtonProps = Omit<IconButtonProps, 'onClick'> & ArticleSaveAsFormDialogProps;
 
@@ -46,7 +46,7 @@ export const SaveAsButton = ({
         () => [
             ...afterCreateCallbacks,
             async (result: CreateArticleResult) => {
-                if (result instanceof Article) {
+                if (result.isSuccess) {
                     dispatch({ type: 'closeDialog' });
                 }
             },

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Actions\Article\DestroyArticleAction;
 use App\Models\Article;
 use Illuminate\Http\Request;
 use App\Actions\Article\CreateArticleAction;
@@ -19,23 +20,13 @@ class ArticleController extends Controller
     public function index(Request $request, ListArticleAction $listArticleAction)
     {
         $request->validate([
-            'page' => ['int', 'nullable', 'min:0']
+            'page' => ['int', 'nullable', 'min:1']
         ]);
         return response()->json($listArticleAction([
             'authorId' => $request->user()->id,
             'q' => $request->input('q'),
             'page' => $request->input('page'),
         ]));
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
     }
 
     /**
@@ -71,22 +62,10 @@ class ArticleController extends Controller
      */
     public function show(Request $request, int $id)
     {
-        $article = Article::where([
-            'id' => $id,
-            'author_id' => $request->user()->id
-        ])->first();
+        $article = Article::authoredBy($request->user()->id)
+            ->where('id', $id,)
+            ->first();
         return response()->json($article);
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
     }
 
     /**
@@ -117,11 +96,38 @@ class ArticleController extends Controller
     /**
      * Remove the specified resource from storage.
      *
+     * @param \Illuminate\Http\Request  $request
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Request $request, $id, DestroyArticleAction $destroyArticleAction)
     {
-        //
+        $result = $destroyArticleAction([
+            'authorId' => $request->user()->id,
+            'articleIds' => [$id]
+        ]);
+        if($result) {
+            return response()->noContent();
+        }
+        abort(500);
+    }
+    /**
+     * 服
+     * @param Request \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function destroy_multiple(Request $request, DestroyArticleAction $destroyArticleAction) {
+        $request->validate([
+            'article_ids' => 'required|array',
+            'article_ids.*' => 'int',
+        ]);
+        $result = $destroyArticleAction([
+            'authorId' => $request->user()->id,
+            'articleIds' => $request->input('article_ids'),
+        ]);
+        if($result) {
+            return response()->noContent();
+        }
+        abort(500);
     }
 }

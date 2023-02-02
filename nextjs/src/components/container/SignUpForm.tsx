@@ -9,7 +9,6 @@ import {
     TextFieldProps,
 } from '@mui/material';
 import React from 'react';
-import { InputError } from '../../errors';
 import { AuthContext } from '../context';
 import { SignUpParams, SignUpResult } from '../hooks';
 import { useFormWithValidation, Validate, ValidationRules } from '../hooks/form-with-validation';

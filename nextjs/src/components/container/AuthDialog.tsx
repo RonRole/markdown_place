@@ -66,15 +66,11 @@ const SignUpFormInDialog = ({
     );
 };
 
-export type LoginOrSignUpFormDialogProps = Pick<LoginFormInDialogProps, 'afterLoginCallback'> &
+export type AuthDialogProps = Pick<LoginFormInDialogProps, 'afterLoginCallback'> &
     Pick<SignUpFormInDialogProps, 'afterSignUpCallback'> &
     DialogProps;
 
-export function AuthDialog({
-    afterLoginCallback,
-    afterSignUpCallback,
-    ...props
-}: LoginOrSignUpFormDialogProps) {
+export function AuthDialog({ afterLoginCallback, afterSignUpCallback, ...props }: AuthDialogProps) {
     const [formType, setFormType] = React.useState<'login' | 'signup'>('login');
     const changeToSignUp = React.useCallback(async () => setFormType('signup'), []);
     const changeToLogin = React.useCallback(async () => setFormType('login'), []);

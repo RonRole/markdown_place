@@ -11,6 +11,7 @@ import {
 import React, { FormEvent } from 'react';
 import { AuthContext } from '../context/AuthContextProvider';
 import { LoginResult, UseAuthStateFunctions } from '../hooks';
+import { useFormWithValidation, Validate, ValidationRules } from '../hooks/form-with-validation';
 import {
     FormWithSubmittingState,
     FormWithSubmittingStateProps,
@@ -24,6 +25,14 @@ export type LoginFormProps = {
 } & Omit<FormWithSubmittingStateProps, 'onSubmit'> &
     Omit<CardProps, 'children' | 'onSubmit'>;
 
+type LoginFormValidationSettings = {
+    [key in 'email' | 'password']: Validate;
+};
+const loginFormValidations: LoginFormValidationSettings = {
+    email: ValidationRules.NO_CHECK,
+    password: ValidationRules.NO_CHECK,
+};
+
 export function LoginForm({
     children,
     emailFieldProps,
@@ -33,20 +42,44 @@ export function LoginForm({
     ...props
 }: LoginFormProps) {
     const { login } = React.useContext(AuthContext);
-    const emailInputRef = React.useRef<HTMLInputElement>(null);
-    const passwordInputRef = React.useRef<HTMLInputElement>(null);
+    const { refs, validate, validateResults, clearValidateResults, setValidateResults } =
+        useFormWithValidation(loginFormValidations);
     const onSubmit = React.useCallback(
         async (e: FormEvent<HTMLFormElement>) => {
             e.preventDefault();
+            clearValidateResults();
+            if (!validate()) {
+                return;
+            }
             const loginResult = await login({
-                email: emailInputRef.current?.value,
-                password: passwordInputRef.current?.value,
+                email: refs.email.current?.value,
+                password: refs.password.current?.value,
             });
+            if (!loginResult.isSuccess) {
+                setValidateResults({
+                    email: {
+                        isValid: false,
+                        messages: loginResult.data.email,
+                    },
+                    password: {
+                        isValid: false,
+                        messages: loginResult.data.password,
+                    },
+                });
+            }
             if (afterLoginCallback) {
                 await afterLoginCallback(loginResult);
             }
         },
-        [login, afterLoginCallback]
+        [
+            clearValidateResults,
+            validate,
+            login,
+            refs.email,
+            refs.password,
+            afterLoginCallback,
+            setValidateResults,
+        ]
     );
     return (
         <FormWithSubmittingState onSubmit={onSubmit}>
@@ -57,17 +90,21 @@ export function LoginForm({
                         <TextField
                             {...emailFieldProps}
                             disabled={submitting || emailFieldProps?.disabled}
-                            inputRef={emailInputRef}
+                            inputRef={refs.email}
                             label="email"
                             placeholder="sample@example.com"
+                            helperText={validateResults?.email.messages}
+                            error={!validateResults?.email.isValid}
                         />
                         <TextField
                             {...passwordFieldProps}
                             disabled={submitting || passwordFieldProps?.disabled}
-                            inputRef={passwordInputRef}
+                            inputRef={refs.password}
                             label="password"
                             type="password"
                             placeholder="password"
+                            helperText={validateResults?.password.messages}
+                            error={!validateResults?.password.isValid}
                         />
                     </CardContent>
                     <CardContent>

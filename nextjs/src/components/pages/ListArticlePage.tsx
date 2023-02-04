@@ -39,6 +39,7 @@ type State = {
 type Actions =
     | {
           type: 'initialize';
+          payload: Partial<State>;
       }
     | {
           type: 'setCheckedArticles';
@@ -77,7 +78,10 @@ const initialState: State = {
 const reducer = (state: State, action: Actions): State => {
     switch (action.type) {
         case 'initialize':
-            return initialState;
+            return {
+                ...initialState,
+                ...action.payload,
+            };
         case 'setCheckedArticles':
             return {
                 ...state,
@@ -132,12 +136,19 @@ export function ListArticlePage({
 }: ListArticlePageProps) {
     const [state, dispatch] = React.useReducer(reducer, initialState);
     React.useEffect(() => {
+        const articleAreaOffsetY = document.getElementById('article-area')?.offsetTop || 0;
         dispatch({
             type: 'initialize',
+            payload: {
+                articleAreaOffsetY,
+            },
         });
         return () => {
             dispatch({
                 type: 'initialize',
+                payload: {
+                    ...initialState,
+                },
             });
         };
     }, []);

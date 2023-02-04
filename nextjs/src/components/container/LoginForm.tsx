@@ -58,11 +58,11 @@ export function LoginForm({
             if (!loginResult.isSuccess) {
                 setValidateResults({
                     email: {
-                        isValid: false,
+                        isValid: !loginResult.data.email,
                         messages: loginResult.data.email,
                     },
                     password: {
-                        isValid: false,
+                        isValid: !loginResult.data.password,
                         messages: loginResult.data.password,
                     },
                 });

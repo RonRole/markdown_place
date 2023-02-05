@@ -29,7 +29,7 @@ export type ShowArticleParams = Article['id'];
 export type ShowArticleResult = ApiResponse<Article, InputError<Pick<Article, 'id'>>>;
 
 // update
-export type UpdateArticleParams = Article;
+export type UpdateArticleParams = Pick<Article, 'id' | 'title' | 'content'>;
 export type UpdateArticleResult = ApiResponse<null, InputError<UpdateArticleParams>>;
 
 // destroy

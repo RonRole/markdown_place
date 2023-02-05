@@ -2,6 +2,7 @@ import { AppBar, Toolbar, ToolbarProps, Tooltip } from '@mui/material';
 import React from 'react';
 import Article from '../../../domains/article';
 import { AfterCreateCallback, BeforeCreateCallback } from '../ArticleSaveAsDialog';
+import { AddLabelButton } from './AddLabelButton';
 import { SaveAsButton } from './SaveAsButton';
 import { AfterSaveCallback, BeforeSaveCallback, SaveButton, SaveButtonProps } from './SaveButton';
 
@@ -29,7 +30,7 @@ export type BottomBarActionCallbacks = Partial<{
 }>;
 
 export type ItemStates = Partial<{
-    [key in 'save' | 'saveAs']: Partial<{ hidden: boolean; disabled: boolean }>;
+    [key in 'save' | 'saveAs' | 'addLabel']: Partial<{ hidden: boolean; disabled: boolean }>;
 }>;
 
 export type EditArticleToolBarProps = {
@@ -92,6 +93,13 @@ export const EditArticleToolBar = ({
                             ]}
                             disabled={disabled || itemStates?.saveAs?.disabled}
                         />
+                    </span>
+                </Tooltip>
+            )}
+            {!itemStates?.addLabel?.hidden && (
+                <Tooltip title="ラベルをつける">
+                    <span>
+                        <AddLabelButton disabled={disabled || itemStates?.addLabel?.disabled} />
                     </span>
                 </Tooltip>
             )}

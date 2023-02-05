@@ -13,14 +13,17 @@ const EditArticleFormModes = {
     unauthorized: {
         isAbleSave: false,
         isAbleSaveAs: false,
+        isAbleAddLabel: false,
     },
     create: {
         isAbleSave: false,
         isAbleSaveAs: true,
+        isAbleAddLabel: false,
     },
     update: {
         isAbleSave: true,
         isAbleSaveAs: true,
+        isAbleAddLabel: true,
     },
 } as const;
 
@@ -137,6 +140,9 @@ export function EditArticleForm({ mode, article, callbacks, ...props }: EditArti
                         },
                         saveAs: {
                             disabled: !EditArticleFormModes[mode].isAbleSaveAs,
+                        },
+                        addLabel: {
+                            disabled: !EditArticleFormModes[mode].isAbleAddLabel,
                         },
                     }}
                 />

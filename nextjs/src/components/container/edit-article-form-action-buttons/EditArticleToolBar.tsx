@@ -2,7 +2,7 @@ import { AppBar, Toolbar, ToolbarProps, Tooltip } from '@mui/material';
 import React from 'react';
 import Article from '../../../domains/article';
 import { AfterCreateCallback, BeforeCreateCallback } from '../ArticleSaveAsDialog';
-import { AddLabelButton } from './AddLabelButton';
+import { AddArticleTagsButton } from './AddArticleTagsButton';
 import { SaveAsButton } from './SaveAsButton';
 import { AfterSaveCallback, BeforeSaveCallback, SaveButton, SaveButtonProps } from './SaveButton';
 
@@ -97,9 +97,11 @@ export const EditArticleToolBar = ({
                 </Tooltip>
             )}
             {!itemStates?.addLabel?.hidden && (
-                <Tooltip title="ラベルをつける">
+                <Tooltip title="タグをつける">
                     <span>
-                        <AddLabelButton disabled={disabled || itemStates?.addLabel?.disabled} />
+                        <AddArticleTagsButton
+                            disabled={disabled || itemStates?.addLabel?.disabled}
+                        />
                     </span>
                 </Tooltip>
             )}

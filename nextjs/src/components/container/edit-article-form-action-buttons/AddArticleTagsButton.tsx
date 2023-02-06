@@ -3,9 +3,9 @@ import { Autocomplete, IconButton, IconButtonProps, Stack, TextField } from '@mu
 import React from 'react';
 import { ConfirmDialog } from '../../presentational/ConfirmDialog';
 
-export type AddLabelButtonProps = Omit<IconButtonProps, 'onClick'>;
+export type AddArticleTagsButtonProps = Omit<IconButtonProps, 'onClick'>;
 
-export function AddLabelButton({ ...props }: AddLabelButtonProps) {
+export function AddArticleTagsButton({ ...props }: AddArticleTagsButtonProps) {
     const [open, setOpen] = React.useState(false);
     return (
         <>
@@ -13,7 +13,7 @@ export function AddLabelButton({ ...props }: AddLabelButtonProps) {
                 <Label />
             </IconButton>
             <ConfirmDialog
-                message="ラベルを選択してください"
+                message="タグを選択してください"
                 open={open}
                 onClose={() => setOpen(false)}
                 maxWidth="xs"
@@ -27,7 +27,7 @@ export function AddLabelButton({ ...props }: AddLabelButtonProps) {
                         sx={{ width: '100%' }}
                         options={['テスト1', 'テスト2', 'テスト3']}
                         renderInput={(params) => (
-                            <TextField {...params} label="ラベル" variant="standard" />
+                            <TextField {...params} label="タグ" variant="standard" />
                         )}
                     />
                 </Stack>

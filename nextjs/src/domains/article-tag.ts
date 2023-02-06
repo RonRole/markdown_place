@@ -1,13 +1,13 @@
-type LabelParams = {
+type ArticleTagParams = {
     id: number;
     name: string;
 };
 
-export default class Label {
+export default class ArticleTag {
     readonly id: number;
     readonly name: string;
 
-    constructor({ id, name }: LabelParams) {
+    constructor({ id, name }: ArticleTagParams) {
         this.id = id;
         this.name = name;
     }

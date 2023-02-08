@@ -32,33 +32,29 @@ export function EditArticleFormPage({ initialMode, initialArticle }: EditArticle
         return;
     }, []);
     return (
-        <AuthContext.Consumer>
-            {({ currentAuthStatus }) => (
-                <Box
-                    sx={{
-                        display: 'flex',
-                        flexDirection: 'column',
-                        height: '100vh',
-                        overflow: 'hidden',
+        <Box
+            sx={{
+                display: 'flex',
+                flexDirection: 'column',
+                height: '100vh',
+                overflow: 'hidden',
+            }}
+        >
+            <NavBar>
+                <EditArticleForm
+                    sx={{ flexGrow: 1, overflow: 'hidden' }}
+                    article={article}
+                    mode={mode}
+                    callbacks={{
+                        save: {
+                            after: afterUpdateCallback,
+                        },
+                        create: {
+                            after: afterCreateCallback,
+                        },
                     }}
-                >
-                    <NavBar>
-                        <EditArticleForm
-                            sx={{ flexGrow: 1, overflow: 'hidden' }}
-                            article={article}
-                            mode={currentAuthStatus.isFixedAsAuthorized ? mode : 'unauthorized'}
-                            callbacks={{
-                                save: {
-                                    after: afterUpdateCallback,
-                                },
-                                create: {
-                                    after: afterCreateCallback,
-                                },
-                            }}
-                        />
-                    </NavBar>
-                </Box>
-            )}
-        </AuthContext.Consumer>
+                />
+            </NavBar>
+        </Box>
     );
 }

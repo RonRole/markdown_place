@@ -11,14 +11,9 @@ export type AxiosInterceptorsSettingsProps = {
  * Axiosのinterceptors設定用のコンポーネント
  * interceptorsでコンテキストなどに触れたいので、コンポーネントとして作成
  *
- * コンポーネント描画後に設定を追加する関係で、useEffectやuseLayoutEffect、
+ * コンポーネント描画後に設定を追加する関係で、useLayoutEffect、
  * またはgetServerSidePropsでのaxiosには効果がないので注意
  *
- * これを利用して、React.useEffectでセッションロード
- * ->401エラーが出ても、アラートを発生させない
- * それ以降の401エラー
- * ->アラート発生
- * という実装をおこなっている
  * @param param0
  * @returns
  */
@@ -43,6 +38,8 @@ export function AxiosInterceptorsSettings({ children }: AxiosInterceptorsSetting
             }
             switch (error.response?.status) {
                 case 401:
+                    setUnauthorized();
+                    break;
                 case 419:
                     setUnauthorized();
                     open({

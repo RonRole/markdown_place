@@ -4,26 +4,29 @@ import { EditArticleFormPage } from '../../../components/pages/EditArticleFormPa
 import { ShowErrorPageIfArticleIdIsInvalid } from '../../../components/functional/ShowErrorPageIfArticleIdIsInvalid';
 import { LoadingPage } from '../../../components/pages';
 import { ErrorPage } from '../../../components/pages/ErrorPage';
+import { RequireAuthorized } from '../../../components/container';
 
 export default function EditArticle() {
     const { articleId } = useRouter().query;
     return (
-        <ShowErrorPageIfArticleIdIsInvalid articleId={articleId}>
-            {(validArticleId) => (
-                <ArticleLoader id={validArticleId}>
-                    {(loading, loadResult) => {
-                        if (loading) return <LoadingPage />;
-                        if (!loadResult?.isSuccess)
-                            return <ErrorPage errorMessage={loadResult?.data.id} />;
-                        return (
-                            <EditArticleFormPage
-                                initialArticle={loadResult.data}
-                                initialMode="update"
-                            />
-                        );
-                    }}
-                </ArticleLoader>
-            )}
-        </ShowErrorPageIfArticleIdIsInvalid>
+        <RequireAuthorized>
+            <ShowErrorPageIfArticleIdIsInvalid articleId={articleId}>
+                {(validArticleId) => (
+                    <ArticleLoader id={validArticleId}>
+                        {(loading, loadResult) => {
+                            if (loading) return <LoadingPage />;
+                            if (!loadResult?.isSuccess)
+                                return <ErrorPage errorMessage={loadResult?.data.id} />;
+                            return (
+                                <EditArticleFormPage
+                                    initialArticle={loadResult.data}
+                                    initialMode="update"
+                                />
+                            );
+                        }}
+                    </ArticleLoader>
+                )}
+            </ShowErrorPageIfArticleIdIsInvalid>
+        </RequireAuthorized>
     );
 }

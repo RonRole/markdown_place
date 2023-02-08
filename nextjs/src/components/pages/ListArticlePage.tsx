@@ -221,33 +221,31 @@ export function ListArticlePage({
         [state.featuredArticle, state.fixedArticle]
     );
     return (
-        <RequireAuthorized>
-            <Box
-                sx={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    height: '100vh',
-                    overflow: 'hidden',
-                }}
-            >
-                <NavBar>
-                    <Grid
-                        id="article-area"
-                        container
-                        spacing={1}
-                        sx={{ height: `calc(100% - ${state.articleAreaOffsetY}px)` }}
-                    >
-                        <Grid xs={4} item sx={{ height: '100%', overflow: 'scroll' }}>
-                            {DeleteArticleButtonMemo}
-                            {ListMemo}
-                            {PaginationMemo}
-                        </Grid>
-                        <Grid xs={8} item sx={{ height: '100%', overflow: 'scroll' }}>
-                            {ArticleMarkdownMemo}
-                        </Grid>
+        <Box
+            sx={{
+                display: 'flex',
+                flexDirection: 'column',
+                height: '100vh',
+                overflow: 'hidden',
+            }}
+        >
+            <NavBar>
+                <Grid
+                    id="article-area"
+                    container
+                    spacing={1}
+                    sx={{ height: `calc(100% - ${state.articleAreaOffsetY}px)` }}
+                >
+                    <Grid xs={4} item sx={{ height: '100%', overflow: 'scroll' }}>
+                        {DeleteArticleButtonMemo}
+                        {ListMemo}
+                        {PaginationMemo}
                     </Grid>
-                </NavBar>
-            </Box>
-        </RequireAuthorized>
+                    <Grid xs={8} item sx={{ height: '100%', overflow: 'scroll' }}>
+                        {ArticleMarkdownMemo}
+                    </Grid>
+                </Grid>
+            </NavBar>
+        </Box>
     );
 }

@@ -6,6 +6,7 @@ import {
     ProvideParams,
 } from '../../components/functional/ListArticlePageWrapper';
 import Article from '../../domains/article';
+import { RequireAuthorized } from '../../components/container';
 
 const parseQueryItemToNumber = (queryItem: string | string[] | undefined, defaultValue = 0) => {
     return Number.isNaN(Number(queryItem)) ? defaultValue : Number(queryItem);
@@ -30,18 +31,20 @@ export default function Articles() {
         ),
     ];
     return (
-        <ListArticlePageWrapper q={q} page={page}>
-            {({ articles, page, pageCount, loading, afterDeleteCallback }: ProvideParams) => (
-                <ListArticlePage
-                    articles={articles}
-                    page={page}
-                    pageCount={pageCount}
-                    disabled={loading}
-                    afterDeleteCallback={afterDeleteCallback}
-                    onEditArticle={onEditArticle}
-                    onChangePage={onChangePage}
-                />
-            )}
-        </ListArticlePageWrapper>
+        <RequireAuthorized>
+            <ListArticlePageWrapper q={q} page={page}>
+                {({ articles, page, pageCount, loading, afterDeleteCallback }: ProvideParams) => (
+                    <ListArticlePage
+                        articles={articles}
+                        page={page}
+                        pageCount={pageCount}
+                        disabled={loading}
+                        afterDeleteCallback={afterDeleteCallback}
+                        onEditArticle={onEditArticle}
+                        onChangePage={onChangePage}
+                    />
+                )}
+            </ListArticlePageWrapper>
+        </RequireAuthorized>
     );
 }

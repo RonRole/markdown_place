@@ -1,8 +1,10 @@
 <?php
 
+use App\Http\Controllers\TagController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ArticleController;
+use App\Http\Controllers\ArticleTAgController;
 use App\Http\Controllers\AppGlobalConfigController;
 
 /*
@@ -22,8 +24,14 @@ Route::group([
     Route::get('/user', function (Request $request) {
        return $request->user();
     });
+    // articles
     Route::resource('articles', ArticleController::class, ['except'=>['create', 'edit']]);
     Route::delete('/articles', [ArticleController::class, 'destroy_multiple']);
+    // article_tag
+    Route::get('articles/{id}/tags', [ArticleTagController::class, 'index']);
+    Route::post('articles/{id}/tags', [ArticleTagController::class, 'reset']);
+    // tags
+    Route::resource('tags', TagController::class, ['except'=>['create', 'edit']]);
 });
 
 /**

@@ -5,10 +5,11 @@ namespace App\Actions\Article;
 use App\Models\AppGlobalConfig;
 use App\Models\Article;
 use Error;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 /**
  * Articleに対するselect句のインターフェース
- * 「ListArticleActionでqが指定されていないときはselectしない」のように
+ * 「ListArticleActionでqが指定されていないときはwhere句で指定しない」のように
  * データベースからの取得箇所が条件分岐で複雑になるので、
  * インターフェースを噛ませておく
  */
@@ -76,9 +77,9 @@ class ListArticleAction
      *    指定されないor空文字の場合、offsetなし
      *    指定された場合、(この値-1)*AppGlobalConfigのlist_article_count分offset
      * @param array {authorId: int, q?: string, page?: int } $param
-     * @return {articles: Article[], page_count: int}
+     * @return LengthAwarePaginator
      */
-    public function __invoke($param)
+    public function __invoke(array $param) : LengthAwarePaginator
     {
         $appGlobalConfig = AppGlobalConfig::first();
         if(empty($appGlobalConfig)) {
@@ -86,6 +87,7 @@ class ListArticleAction
         }
         return get_select_article_strategy($param)
             ->get_article_select_query($param['authorId'])
+            ->with('tags')
             ->orderBy('updated_at', 'desc')
             ->paginate($appGlobalConfig->list_article_count);
     }

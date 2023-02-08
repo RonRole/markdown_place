@@ -4,6 +4,7 @@ namespace Tests\Feature\Article;
 
 use App\Models\AppGlobalConfig;
 use App\Models\Article;
+use App\Models\Tag;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Carbon;
 use Tests\TestCase;
@@ -17,6 +18,63 @@ use Illuminate\Testing\Fluent\AssertableJson;
 class ListArticleTest extends TestCase
 {
     use RefreshDatabase;
+
+    /**
+     * 返却されるjsonの形式テスト
+     * @return void
+     */
+    public function test_list_article_json_structure()
+    {
+        $user = User::factory()->create();
+        Sanctum::actingAs($user);
+        AppGlobalConfig::factory()->create();
+        $article = Article::factory()->state(function ($attributes) use ($user) {
+            return ['author_id' => $user->id];
+        })->create();
+        $tag = Tag::factory()->state(function ($attributes) use ($user) {
+            return ['user_id' => $user->id];
+        })->create();
+        $article->tags()->attach($tag);
+        $response = $this->getJson('/api/articles');
+        $response->assertJson(function (AssertableJson $json) {
+            $json->has('data', function (AssertableJson $json) {
+                $json->has('0', function (AssertableJson $json) {
+                    $json->hasAll([
+                        'id',
+                        'author_id',
+                        'title',
+                        'content',
+                        'created_at',
+                        'updated_at',
+                    ])->has('tags', function(AssertableJson $json) {
+                        $json->has('0', function (AssertableJson $json) {
+                            $json->hasAll([
+                                'id',
+                                'user_id',
+                                'name',
+                                'created_at',
+                                'updated_at',
+                                'pivot'
+                            ]);
+                        });
+                    });
+                });
+            })->hasAll([
+                'current_page',
+                'first_page_url',
+                'from',
+                'last_page',
+                'last_page_url',
+                'links',
+                'next_page_url',
+                'path',
+                'per_page',
+                'prev_page_url',
+                'to',
+                'total',
+            ]);
+        });
+    }
 
     public function test_list_article()
     {
@@ -393,5 +451,4 @@ class ListArticleTest extends TestCase
             })->etc();
         });
     }
-
 }

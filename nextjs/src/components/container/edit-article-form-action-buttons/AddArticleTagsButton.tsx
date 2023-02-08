@@ -2,36 +2,27 @@ import { Label } from '@mui/icons-material';
 import { Autocomplete, IconButton, IconButtonProps, Stack, TextField } from '@mui/material';
 import React from 'react';
 import { ConfirmDialog } from '../../presentational/ConfirmDialog';
+import { SetArticleTagsDialog, SetArticleTagsDialogProps } from '../SetArticleTagsDialog';
 
-export type AddArticleTagsButtonProps = Omit<IconButtonProps, 'onClick'>;
+export type AddArticleTagsButtonProps = {
+    article: SetArticleTagsDialogProps['article'];
+} & Omit<IconButtonProps, 'onClick'>;
 
-export function AddArticleTagsButton({ ...props }: AddArticleTagsButtonProps) {
+export function AddArticleTagsButton({ article, ...props }: AddArticleTagsButtonProps) {
     const [open, setOpen] = React.useState(false);
     return (
         <>
             <IconButton {...props} onClick={() => setOpen(true)}>
                 <Label />
             </IconButton>
-            <ConfirmDialog
-                message="タグを選択してください"
+            <SetArticleTagsDialog
+                article={article}
                 open={open}
                 onClose={() => setOpen(false)}
-                maxWidth="xs"
                 cancelButtonProps={{
                     onClick: () => setOpen(false),
                 }}
-            >
-                <Stack maxWidth={275}>
-                    <Autocomplete
-                        multiple
-                        sx={{ width: '100%' }}
-                        options={['テスト1', 'テスト2', 'テスト3']}
-                        renderInput={(params) => (
-                            <TextField {...params} label="タグ" variant="standard" />
-                        )}
-                    />
-                </Stack>
-            </ConfirmDialog>
+            />
         </>
     );
 }

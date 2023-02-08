@@ -15,7 +15,7 @@ use App\Models\Article;
  */
 class CreateArticleAction
 {
-    public function __invoke(array $params)
+    public function __invoke(array $params) : Article | false
     {
         $newArticle = new Article();
         $newArticle->author_id = $params['authorId'];

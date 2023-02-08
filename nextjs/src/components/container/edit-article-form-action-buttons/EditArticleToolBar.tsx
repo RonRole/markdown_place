@@ -100,6 +100,7 @@ export const EditArticleToolBar = ({
                 <Tooltip title="タグをつける">
                     <span>
                         <AddArticleTagsButton
+                            article={article}
                             disabled={disabled || itemStates?.addLabel?.disabled}
                         />
                     </span>

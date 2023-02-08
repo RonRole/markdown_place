@@ -13,11 +13,11 @@ use Illuminate\Support\Facades\DB;
  *     articleIds: int[]
  * } $params
  * 
- * @return boolean
+ * @return bool
  */
 class DestroyArticleAction
 {
-    public function __invoke(array $params)
+    public function __invoke(array $params) : bool
     {
         return DB::transaction(function () use ($params) {
             $query = Article::authoredBy($params['authorId'])->whereIn('id', $params['articleIds']);

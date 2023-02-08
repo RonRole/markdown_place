@@ -63,7 +63,8 @@ class ArticleController extends Controller
     public function show(Request $request, int $id)
     {
         $article = Article::authoredBy($request->user()->id)
-            ->where('id', $id,)
+            ->with('tags')
+            ->where('id', $id)
             ->first();
         return response()->json($article);
     }
@@ -84,6 +85,7 @@ class ArticleController extends Controller
         ]);
         $result = $updateArticleAction([
             'articleId' => $id,
+            'authorId' => $request->user()->id,
             'title' => $request->input('title'),
             'content' => $request->input('content'),
         ]);

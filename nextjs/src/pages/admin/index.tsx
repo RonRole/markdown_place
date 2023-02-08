@@ -1,5 +1,10 @@
+import { RequireAdmin } from '../../components/container/RequireAdmin';
 import { AdminPage } from '../../components/pages/AdminPage';
 
 export default function Admin() {
-    return <AdminPage />;
+    return (
+        <RequireAdmin>
+            <AdminPage />
+        </RequireAdmin>
+    );
 }

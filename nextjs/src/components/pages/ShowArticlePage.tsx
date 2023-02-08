@@ -17,47 +17,45 @@ export function ShowArticlePage({ articleId }: ShowArticlePageProps) {
         setEditting(true);
     }, []);
     return (
-        <RequireAuthorized>
-            <ArticleLoader id={articleId}>
-                {(loading, loadResult) => {
-                    if (loadResult?.isSuccess && editting)
-                        return (
-                            <EditArticleFormPage
-                                initialArticle={loadResult.data}
-                                initialMode="update"
-                            />
-                        );
+        <ArticleLoader id={articleId}>
+            {(loading, loadResult) => {
+                if (loadResult?.isSuccess && editting)
                     return (
-                        <Box sx={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
-                            <NavBar>
-                                <Grid
-                                    container
-                                    sx={{ flexGrow: 1, overflow: 'hidden', height: '100%' }}
-                                >
-                                    <Grid item xs={2} sx={{ height: '100%' }}>
-                                        <List>
-                                            <ListItemButton
-                                                onClick={handleStartEdit}
-                                                disabled={loading}
-                                            >
-                                                <Edit />
-                                                編集
-                                            </ListItemButton>
-                                        </List>
-                                    </Grid>
-                                    <Grid item xs={8} sx={{ height: '100%', overflow: 'scroll' }}>
-                                        {loading && <div>読み込み中...</div>}
-                                        {loadResult?.isSuccess && (
-                                            <ArticleMarkdown article={loadResult.data} />
-                                        )}
-                                    </Grid>
-                                    <Grid item xs={2}></Grid>
-                                </Grid>
-                            </NavBar>
-                        </Box>
+                        <EditArticleFormPage
+                            initialArticle={loadResult.data}
+                            initialMode="update"
+                        />
                     );
-                }}
-            </ArticleLoader>
-        </RequireAuthorized>
+                return (
+                    <Box sx={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
+                        <NavBar>
+                            <Grid
+                                container
+                                sx={{ flexGrow: 1, overflow: 'hidden', height: '100%' }}
+                            >
+                                <Grid item xs={2} sx={{ height: '100%' }}>
+                                    <List>
+                                        <ListItemButton
+                                            onClick={handleStartEdit}
+                                            disabled={loading}
+                                        >
+                                            <Edit />
+                                            編集
+                                        </ListItemButton>
+                                    </List>
+                                </Grid>
+                                <Grid item xs={8} sx={{ height: '100%', overflow: 'scroll' }}>
+                                    {loading && <div>読み込み中...</div>}
+                                    {loadResult?.isSuccess && (
+                                        <ArticleMarkdown article={loadResult.data} />
+                                    )}
+                                </Grid>
+                                <Grid item xs={2}></Grid>
+                            </Grid>
+                        </NavBar>
+                    </Box>
+                );
+            }}
+        </ArticleLoader>
     );
 }

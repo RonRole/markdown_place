@@ -28,7 +28,7 @@ export function AdminPage() {
         });
     }, [update]);
     return (
-        <RequireAdmin>
+        <>
             {!config ? (
                 <LoadingPage />
             ) : (
@@ -68,6 +68,6 @@ export function AdminPage() {
                     </FormWithSubmittingState>
                 </NavBar>
             )}
-        </RequireAdmin>
+        </>
     );
 }

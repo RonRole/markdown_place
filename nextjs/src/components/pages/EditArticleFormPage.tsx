@@ -6,13 +6,19 @@ import { AuthContext, AuthContextProvider } from '../context';
 import { EditArticleForm, EditArticleModeKey } from '../container/EditArticleForm';
 import { NavBar } from '../container';
 import { ResetArticleTagResult } from '../hooks/article-tag';
+import ArticleTag from '../../domains/article-tag';
 
 export type EditArticleFormPageProps = {
     initialMode: EditArticleModeKey;
     initialArticle?: Article;
+    tagOptions?: ArticleTag[];
 };
 
-export function EditArticleFormPage({ initialMode, initialArticle }: EditArticleFormPageProps) {
+export function EditArticleFormPage({
+    initialMode,
+    initialArticle,
+    tagOptions,
+}: EditArticleFormPageProps) {
     const [article, setArticle] = React.useState<Article | undefined>(initialArticle);
     const [mode, setMode] = React.useState<EditArticleModeKey>(initialMode);
     const afterCreateCallback = React.useCallback(async (result: CreateArticleResult) => {
@@ -61,6 +67,7 @@ export function EditArticleFormPage({ initialMode, initialArticle }: EditArticle
                 <EditArticleForm
                     sx={{ flexGrow: 1, overflow: 'hidden' }}
                     article={article}
+                    tagOptions={tagOptions}
                     mode={mode}
                     callbacks={{
                         save: {

@@ -11,15 +11,13 @@ export type AfterSetArticleTagsCallback = (result: ResetArticleTagResult) => Pro
 
 export type SetArticleTagsDialogProps = {
     article?: Article;
+    tagOptions?: ArticleTag[];
     beforeSetArticleTagsCallbacks?: (BeforeSetArticleTagsCallback | undefined)[];
     afterSetArticleTagsCallbacks?: (AfterSetArticleTagsCallback | undefined)[];
 } & Omit<ConfirmDialogProps, 'disabled' | 'okButtonProps' | 'cancelButtonProps'>;
 
 type State = {
     loading: boolean;
-    // ユーザーの持っているタグの一覧
-    // autocompleteのoptionとして使用
-    userTagOptions: ArticleTag[];
     // 編集前のタグ
     defaultTags: ArticleTag[];
     // 現在のタグ
@@ -29,7 +27,6 @@ type State = {
 type Actions =
     | {
           type: 'initialize';
-          payload: State;
       }
     | {
           type: 'startLoading';
@@ -44,10 +41,6 @@ type Actions =
           type: 'finishSubmitting';
       }
     | {
-          type: 'setUserTagOptions';
-          payload: ArticleTag[];
-      }
-    | {
           type: 'setDefaultTags';
           payload: ArticleTag[];
       }
@@ -60,7 +53,9 @@ const reducer = (state: State, action: Actions): State => {
     switch (action.type) {
         case 'initialize':
             return {
-                ...action.payload,
+                ...initialState,
+                defaultTags: state.defaultTags,
+                currentTags: state.defaultTags,
             };
         case 'startLoading':
             return {
@@ -82,15 +77,15 @@ const reducer = (state: State, action: Actions): State => {
                 ...state,
                 loading: false,
             };
-        case 'setUserTagOptions':
-            return {
-                ...state,
-                userTagOptions: action.payload,
-            };
         case 'setCurrentTags':
             return {
                 ...state,
                 currentTags: action.payload,
+            };
+        case 'setDefaultTags':
+            return {
+                ...state,
+                defaultTags: action.payload,
             };
         default:
             return state;
@@ -99,13 +94,13 @@ const reducer = (state: State, action: Actions): State => {
 
 const initialState: State = {
     loading: false,
-    userTagOptions: [],
     defaultTags: [],
     currentTags: [],
 };
 
 export function SetArticleTagsDialog({
     article,
+    tagOptions = [],
     beforeSetArticleTagsCallbacks = [],
     afterSetArticleTagsCallbacks = [],
     onClose = () => {},
@@ -113,28 +108,15 @@ export function SetArticleTagsDialog({
 }: SetArticleTagsDialogProps) {
     const { list, create } = useTags();
     const { reset } = useArticleRelatedTag();
-    const defaultState = {
-        ...initialState,
+    const [state, dispatch] = React.useReducer(reducer, {
+        loading: false,
+        defaultTags: article?.tags || [],
         currentTags: article?.tags || [],
-    };
-    const [state, dispatch] = React.useReducer(reducer, defaultState);
-    React.useEffect(() => {
-        dispatch({ type: 'startLoading' });
-        list({})
-            .then((result) => {
-                result.isSuccess && dispatch({ type: 'setUserTagOptions', payload: result.data });
-            })
-            .finally(() => dispatch({ type: 'finishLoading' }));
-        return () => {
-            dispatch({
-                type: 'initialize',
-                payload: defaultState,
-            });
-        };
-    }, [list]);
-
+    });
     const clearEditting = React.useCallback(() => {
-        dispatch({ type: 'initialize', payload: defaultState });
+        dispatch({
+            type: 'initialize',
+        });
     }, []);
 
     const handleClose: ConfirmDialogProps['onClose'] = React.useCallback(
@@ -165,6 +147,7 @@ export function SetArticleTagsDialog({
         });
         dispatch({ type: 'finishSubmitting' });
     }, [article, reset, state.currentTags]);
+
     return (
         <ConfirmDialog
             message="タグを選択してください"
@@ -188,7 +171,7 @@ export function SetArticleTagsDialog({
                         return option.id === value.id;
                     }}
                     sx={{ width: '100%' }}
-                    options={state.userTagOptions}
+                    options={tagOptions}
                     getOptionLabel={(option: string | ArticleTag) => {
                         if (typeof option === 'string') return option;
                         return option.name;

@@ -1,10 +1,10 @@
 import { useRouter } from 'next/router';
-import { ArticleLoader } from '../../../components/functional/ArticleLoader';
 import { EditArticleFormPage } from '../../../components/pages/EditArticleFormPage';
 import { ShowErrorPageIfArticleIdIsInvalid } from '../../../components/functional/ShowErrorPageIfArticleIdIsInvalid';
 import { LoadingPage } from '../../../components/pages';
 import { ErrorPage } from '../../../components/pages/ErrorPage';
 import { RequireAuthorized } from '../../../components/container';
+import { ArticleEditParamsLoader } from '../../../components/presentational/ArticleEditParamsLoader';
 
 export default function EditArticle() {
     const { articleId } = useRouter().query;
@@ -12,19 +12,20 @@ export default function EditArticle() {
         <RequireAuthorized>
             <ShowErrorPageIfArticleIdIsInvalid articleId={articleId}>
                 {(validArticleId) => (
-                    <ArticleLoader id={validArticleId}>
+                    <ArticleEditParamsLoader id={validArticleId}>
                         {(loading, loadResult) => {
                             if (loading) return <LoadingPage />;
-                            if (!loadResult?.isSuccess)
-                                return <ErrorPage errorMessage={loadResult?.data.id} />;
+                            if (!loadResult?.article.isSuccess || !loadResult.tags.isSuccess)
+                                return <ErrorPage />;
                             return (
                                 <EditArticleFormPage
-                                    initialArticle={loadResult.data}
+                                    initialArticle={loadResult.article.data}
                                     initialMode="update"
+                                    tagOptions={loadResult.tags.data}
                                 />
                             );
                         }}
-                    </ArticleLoader>
+                    </ArticleEditParamsLoader>
                 )}
             </ShowErrorPageIfArticleIdIsInvalid>
         </RequireAuthorized>

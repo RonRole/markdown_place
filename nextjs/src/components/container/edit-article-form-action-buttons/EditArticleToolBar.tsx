@@ -6,6 +6,7 @@ import { SetArticleTagsButton, SetArticleTagsButtonProps } from './SetArticleTag
 import { SaveAsButton } from './SaveAsButton';
 import { AfterSaveCallback, BeforeSaveCallback, SaveButton, SaveButtonProps } from './SaveButton';
 import { AfterSetArticleTagsCallback, BeforeSetArticleTagsCallback } from '../SetArticleTagsDialog';
+import ArticleTag from '../../../domains/article-tag';
 
 /**
  * ツールバー共通のコールバック
@@ -41,6 +42,7 @@ export type ItemStates = Partial<{
 export type EditArticleToolBarProps = {
     contentTextAreaRef: React.RefObject<HTMLTextAreaElement>;
     article?: Article;
+    tagOptions?: ArticleTag[];
     disabled?: boolean;
     commonCallbacks?: ToolBarCommonCallbacks;
     itemCallbacks?: BottomBarActionCallbacks;
@@ -50,6 +52,7 @@ export type EditArticleToolBarProps = {
 export const EditArticleToolBar = ({
     contentTextAreaRef,
     article,
+    tagOptions,
     disabled = false,
     commonCallbacks,
     itemCallbacks,
@@ -106,6 +109,7 @@ export const EditArticleToolBar = ({
                     <span>
                         <SetArticleTagsButton
                             article={article}
+                            tagOptions={tagOptions}
                             beforeSetArticleTagsCallbacks={[
                                 commonCallbacks?.before,
                                 itemCallbacks?.setTags?.before,

@@ -13,18 +13,24 @@ export type SetArticleTagsDialogProps = {
     article?: Article;
     beforeSetArticleTagsCallbacks?: (BeforeSetArticleTagsCallback | undefined)[];
     afterSetArticleTagsCallbacks?: (AfterSetArticleTagsCallback | undefined)[];
-} & Omit<ConfirmDialogProps, 'disabled'>;
+} & Omit<ConfirmDialogProps, 'disabled' | 'okButtonProps' | 'cancelButtonProps'>;
 
 type State = {
     loading: boolean;
     // ユーザーの持っているタグの一覧
     // autocompleteのoptionとして使用
     userTagOptions: ArticleTag[];
+    // 編集前のタグ
+    defaultTags: ArticleTag[];
     // 現在のタグ
     currentTags: ArticleTag[];
 };
 
 type Actions =
+    | {
+          type: 'initialize';
+          payload: State;
+      }
     | {
           type: 'startLoading';
       }
@@ -52,6 +58,10 @@ type Actions =
 
 const reducer = (state: State, action: Actions): State => {
     switch (action.type) {
+        case 'initialize':
+            return {
+                ...action.payload,
+            };
         case 'startLoading':
             return {
                 ...state,
@@ -90,6 +100,7 @@ const reducer = (state: State, action: Actions): State => {
 const initialState: State = {
     loading: false,
     userTagOptions: [],
+    defaultTags: [],
     currentTags: [],
 };
 
@@ -97,15 +108,16 @@ export function SetArticleTagsDialog({
     article,
     beforeSetArticleTagsCallbacks = [],
     afterSetArticleTagsCallbacks = [],
-    onClose,
+    onClose = () => {},
     ...props
 }: SetArticleTagsDialogProps) {
     const { list, create } = useTags();
     const { reset } = useArticleRelatedTag();
-    const [state, dispatch] = React.useReducer(reducer, {
+    const defaultState = {
         ...initialState,
         currentTags: article?.tags || [],
-    });
+    };
+    const [state, dispatch] = React.useReducer(reducer, defaultState);
     React.useEffect(() => {
         dispatch({ type: 'startLoading' });
         list({})
@@ -113,8 +125,25 @@ export function SetArticleTagsDialog({
                 result.isSuccess && dispatch({ type: 'setUserTagOptions', payload: result.data });
             })
             .finally(() => dispatch({ type: 'finishLoading' }));
+        return () => {
+            dispatch({
+                type: 'initialize',
+                payload: defaultState,
+            });
+        };
     }, [list]);
 
+    const clearEditting = React.useCallback(() => {
+        dispatch({ type: 'initialize', payload: defaultState });
+    }, []);
+
+    const handleClose: ConfirmDialogProps['onClose'] = React.useCallback(
+        (event: {}, reason: 'backdropClick' | 'escapeKeyDown') => {
+            clearEditting();
+            onClose(event, reason);
+        },
+        []
+    );
     const onSubmit = React.useCallback(async () => {
         if (!article) return;
         dispatch({ type: 'startSubmitting' });
@@ -142,7 +171,11 @@ export function SetArticleTagsDialog({
             okButtonProps={{
                 onClick: onSubmit,
             }}
+            cancelButtonProps={{
+                onClick: () => handleClose({}, 'backdropClick'),
+            }}
             disabled={state.loading}
+            onClose={handleClose}
             {...props}
         >
             <Stack maxWidth={275}>

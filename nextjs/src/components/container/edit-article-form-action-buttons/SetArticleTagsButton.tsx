@@ -28,9 +28,6 @@ export function SetArticleTagsButton({
                 afterSetArticleTagsCallbacks={afterSetArticleTagsCallbacks}
                 open={open}
                 onClose={() => setOpen(false)}
-                cancelButtonProps={{
-                    onClick: () => setOpen(false),
-                }}
             />
         </>
     );

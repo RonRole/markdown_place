@@ -2,9 +2,10 @@ import { AppBar, Toolbar, ToolbarProps, Tooltip } from '@mui/material';
 import React from 'react';
 import Article from '../../../domains/article';
 import { AfterCreateCallback, BeforeCreateCallback } from '../ArticleSaveAsDialog';
-import { AddArticleTagsButton } from './AddArticleTagsButton';
+import { SetArticleTagsButton, SetArticleTagsButtonProps } from './SetArticleTagsButton';
 import { SaveAsButton } from './SaveAsButton';
 import { AfterSaveCallback, BeforeSaveCallback, SaveButton, SaveButtonProps } from './SaveButton';
+import { AfterSetArticleTagsCallback, BeforeSetArticleTagsCallback } from '../SetArticleTagsDialog';
 
 /**
  * ツールバー共通のコールバック
@@ -26,6 +27,10 @@ export type BottomBarActionCallbacks = Partial<{
     create: Partial<{
         before: BeforeCreateCallback;
         after: AfterCreateCallback;
+    }>;
+    setTags: Partial<{
+        before: BeforeSetArticleTagsCallback;
+        after: AfterSetArticleTagsCallback;
     }>;
 }>;
 
@@ -99,8 +104,16 @@ export const EditArticleToolBar = ({
             {!itemStates?.addLabel?.hidden && (
                 <Tooltip title="タグをつける">
                     <span>
-                        <AddArticleTagsButton
+                        <SetArticleTagsButton
                             article={article}
+                            beforeSetArticleTagsCallbacks={[
+                                commonCallbacks?.before,
+                                itemCallbacks?.setTags?.before,
+                            ]}
+                            afterSetArticleTagsCallbacks={[
+                                commonCallbacks?.after,
+                                itemCallbacks?.setTags?.after,
+                            ]}
                             disabled={disabled || itemStates?.addLabel?.disabled}
                         />
                     </span>

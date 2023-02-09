@@ -2,13 +2,18 @@ import { Autocomplete, AutocompleteProps, Stack, TextField } from '@mui/material
 import React from 'react';
 import Article from '../../domains/article';
 import ArticleTag from '../../domains/article-tag';
-import { useArticleRelatedTag } from '../hooks/article-tag';
+import { ResetArticleTagResult, useArticleRelatedTag } from '../hooks/article-tag';
 import { ListArticleTagResult, useTags } from '../hooks/tags';
 import { ConfirmDialog, ConfirmDialogProps } from '../presentational/ConfirmDialog';
 
+export type BeforeSetArticleTagsCallback = () => Promise<void>;
+export type AfterSetArticleTagsCallback = (result: ResetArticleTagResult) => Promise<void>;
+
 export type SetArticleTagsDialogProps = {
     article?: Article;
-} & ConfirmDialogProps;
+    beforeSetArticleTagsCallbacks?: (BeforeSetArticleTagsCallback | undefined)[];
+    afterSetArticleTagsCallbacks?: (AfterSetArticleTagsCallback | undefined)[];
+} & Omit<ConfirmDialogProps, 'disabled'>;
 
 type State = {
     loading: boolean;
@@ -25,6 +30,12 @@ type Actions =
       }
     | {
           type: 'finishLoading';
+      }
+    | {
+          type: 'startSubmitting';
+      }
+    | {
+          type: 'finishSubmitting';
       }
     | {
           type: 'setUserTagOptions';
@@ -51,6 +62,16 @@ const reducer = (state: State, action: Actions): State => {
                 ...state,
                 loading: false,
             };
+        case 'startSubmitting':
+            return {
+                ...state,
+                loading: true,
+            };
+        case 'finishSubmitting':
+            return {
+                ...state,
+                loading: false,
+            };
         case 'setUserTagOptions':
             return {
                 ...state,
@@ -72,38 +93,48 @@ const initialState: State = {
     currentTags: [],
 };
 
-export function SetArticleTagsDialog({ article, onClose, ...props }: SetArticleTagsDialogProps) {
+export function SetArticleTagsDialog({
+    article,
+    beforeSetArticleTagsCallbacks = [],
+    afterSetArticleTagsCallbacks = [],
+    onClose,
+    ...props
+}: SetArticleTagsDialogProps) {
     const { list, create } = useTags();
     const { reset } = useArticleRelatedTag();
-    const [state, dispatch] = React.useReducer(reducer, initialState);
-
+    const [state, dispatch] = React.useReducer(reducer, {
+        ...initialState,
+        currentTags: article?.tags || [],
+    });
     React.useEffect(() => {
         dispatch({ type: 'startLoading' });
-        dispatch({ type: 'setCurrentTags', payload: article?.tags || [] });
         list({})
             .then((result) => {
                 result.isSuccess && dispatch({ type: 'setUserTagOptions', payload: result.data });
             })
             .finally(() => dispatch({ type: 'finishLoading' }));
-    }, [article?.tags, list]);
+    }, [list]);
 
     const onSubmit = React.useCallback(async () => {
-        if (!article) {
-            alert('記事が未設定です');
-            return;
-        }
+        if (!article) return;
+        dispatch({ type: 'startSubmitting' });
+        beforeSetArticleTagsCallbacks.forEach(async (callback) => {
+            if (callback) await callback();
+        });
         const result = await reset({
             articleId: article.id,
-            tagIds: state.currentTags.map((tag) => tag.id),
+            tags: state.currentTags,
         });
         if (result.isSuccess) {
-            alert('タグを設定しました');
             dispatch({
                 type: 'setDefaultTags',
                 payload: state.currentTags,
             });
-            return;
         }
+        afterSetArticleTagsCallbacks.forEach(async (callback) => {
+            if (callback) await callback(result);
+        });
+        dispatch({ type: 'finishSubmitting' });
     }, [article, reset, state.currentTags]);
     return (
         <ConfirmDialog
@@ -111,6 +142,7 @@ export function SetArticleTagsDialog({ article, onClose, ...props }: SetArticleT
             okButtonProps={{
                 onClick: onSubmit,
             }}
+            disabled={state.loading}
             {...props}
         >
             <Stack maxWidth={275}>

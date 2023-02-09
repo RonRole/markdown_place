@@ -5,6 +5,7 @@ import Article from '../../domains/article';
 import { AuthContext, AuthContextProvider } from '../context';
 import { EditArticleForm, EditArticleModeKey } from '../container/EditArticleForm';
 import { NavBar } from '../container';
+import { ResetArticleTagResult } from '../hooks/article-tag';
 
 export type EditArticleFormPageProps = {
     initialMode: EditArticleModeKey;
@@ -24,13 +25,29 @@ export function EditArticleFormPage({ initialMode, initialArticle }: EditArticle
         }
     }, []);
     const afterUpdateCallback = React.useCallback(async (result: UpdateArticleResult) => {
-        if (!result.isSuccess) {
+        if (result.isSuccess) {
             alert('更新しました');
         } else {
             alert('更新に失敗しました');
         }
-        return;
     }, []);
+    const afterSetArticleTagsCallback = React.useCallback(
+        async (result: ResetArticleTagResult) => {
+            if (result.isSuccess) {
+                alert('タグを設定しました');
+                article &&
+                    setArticle(
+                        new Article({
+                            ...article,
+                            tags: result.data,
+                        })
+                    );
+            } else {
+                alert('タグの設定に失敗しました');
+            }
+        },
+        [article]
+    );
     return (
         <Box
             sx={{
@@ -51,6 +68,9 @@ export function EditArticleFormPage({ initialMode, initialArticle }: EditArticle
                         },
                         create: {
                             after: afterCreateCallback,
+                        },
+                        setTags: {
+                            after: afterSetArticleTagsCallback,
                         },
                     }}
                 />

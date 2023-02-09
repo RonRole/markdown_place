@@ -15,9 +15,12 @@ type ListArticleRelatedTagsApiResponse = { id: number; name: string }[];
 
 export type ResetArticleRelatedTagParams = {
     articleId: Article['id'];
-    tagIds: ArticleTag['id'][];
+    tags: ArticleTag[];
 };
-export type ResetArticleTagResult = ApiResponse<null, InputError<ResetArticleRelatedTagParams>>;
+export type ResetArticleTagResult = ApiResponse<
+    ArticleTag[],
+    InputError<ResetArticleRelatedTagParams>
+>;
 
 export type UseArticleRelatedTagFunctions = {
     list(params: ListArticleTagParams): Promise<ListArticleRelatedTags>;
@@ -59,15 +62,15 @@ export function useArticleRelatedTag(): UseArticleRelatedTagFunctions {
                 };
             });
     }, []);
-    const reset = React.useCallback(async ({ articleId, tagIds }: ResetArticleRelatedTagParams) => {
+    const reset = React.useCallback(async ({ articleId, tags }: ResetArticleRelatedTagParams) => {
         return await axios
             .post(`/api/articles/${encodeURIComponent(articleId)}/tags`, {
-                tag_ids: tagIds,
+                tag_ids: tags.map(({ id }) => id),
             })
             .then((_: AxiosResponse) => {
                 return {
                     isSuccess: true as true,
-                    data: null,
+                    data: tags,
                 };
             })
             .catch((error: AxiosError) => {
@@ -76,7 +79,7 @@ export function useArticleRelatedTag(): UseArticleRelatedTagFunctions {
                     isSuccess: false as false,
                     data: {
                         articleId: errorData?.errors?.article_id,
-                        tagIds: errorData?.errors?.tag_ids,
+                        tags: errorData?.errors?.tag_ids,
                     },
                 };
             });

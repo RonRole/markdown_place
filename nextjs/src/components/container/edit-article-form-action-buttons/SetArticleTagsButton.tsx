@@ -4,11 +4,18 @@ import React from 'react';
 import { ConfirmDialog } from '../../presentational/ConfirmDialog';
 import { SetArticleTagsDialog, SetArticleTagsDialogProps } from '../SetArticleTagsDialog';
 
-export type AddArticleTagsButtonProps = {
-    article: SetArticleTagsDialogProps['article'];
-} & Omit<IconButtonProps, 'onClick'>;
+export type SetArticleTagsButtonProps = Pick<
+    SetArticleTagsDialogProps,
+    'article' | 'beforeSetArticleTagsCallbacks' | 'afterSetArticleTagsCallbacks'
+> &
+    Omit<IconButtonProps, 'onClick'>;
 
-export function AddArticleTagsButton({ article, ...props }: AddArticleTagsButtonProps) {
+export function SetArticleTagsButton({
+    article,
+    beforeSetArticleTagsCallbacks,
+    afterSetArticleTagsCallbacks,
+    ...props
+}: SetArticleTagsButtonProps) {
     const [open, setOpen] = React.useState(false);
     return (
         <>
@@ -17,6 +24,8 @@ export function AddArticleTagsButton({ article, ...props }: AddArticleTagsButton
             </IconButton>
             <SetArticleTagsDialog
                 article={article}
+                beforeSetArticleTagsCallbacks={beforeSetArticleTagsCallbacks}
+                afterSetArticleTagsCallbacks={afterSetArticleTagsCallbacks}
                 open={open}
                 onClose={() => setOpen(false)}
                 cancelButtonProps={{

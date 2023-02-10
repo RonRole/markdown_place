@@ -4,8 +4,8 @@ import Article from '../../domains/article';
 import { NavBar, RequireAuthorized } from '../container';
 import { EditArticleFormPage } from './EditArticleFormPage';
 import { Grid, List, ListItemButton, Box } from '@mui/material';
-import { ArticleLoader } from '../functional/ArticleLoader';
 import { ArticleMarkdown } from '../presentational/ArticleMarkdown';
+import { ArticleLoader } from '../functional/loaders/ArticleLoader';
 
 export type ShowArticlePageProps = {
     articleId: Article['id'];

@@ -4,7 +4,7 @@ import { ShowErrorPageIfArticleIdIsInvalid } from '../../../components/functiona
 import { LoadingPage } from '../../../components/pages';
 import { ErrorPage } from '../../../components/pages/ErrorPage';
 import { RequireAuthorized } from '../../../components/container';
-import { ArticleEditParamsLoader } from '../../../components/presentational/ArticleEditParamsLoader';
+import { ArticleEditParamsLoader } from '../../../components/functional/loaders/ArticleEditParamsLoader';
 
 export default function EditArticle() {
     const { articleId } = useRouter().query;

@@ -9,6 +9,7 @@ import { ResetArticleTagResult } from '../hooks/article-tag';
 import ArticleTag from '../../domains/article-tag';
 
 export type EditArticleFormPageProps = {
+    // 初期の
     initialMode: EditArticleModeKey;
     initialArticle?: Article;
     tagOptions?: ArticleTag[];
@@ -19,6 +20,7 @@ export function EditArticleFormPage({
     initialArticle,
     tagOptions,
 }: EditArticleFormPageProps) {
+    const { currentAuthStatus } = React.useContext(AuthContext);
     const [article, setArticle] = React.useState<Article | undefined>(initialArticle);
     const [mode, setMode] = React.useState<EditArticleModeKey>(initialMode);
     const afterCreateCallback = React.useCallback(async (result: CreateArticleResult) => {
@@ -54,6 +56,7 @@ export function EditArticleFormPage({
         },
         [article]
     );
+
     return (
         <Box
             sx={{
@@ -68,7 +71,7 @@ export function EditArticleFormPage({
                     sx={{ flexGrow: 1, overflow: 'hidden' }}
                     article={article}
                     tagOptions={tagOptions}
-                    mode={mode}
+                    mode={currentAuthStatus.isFixedAsAuthorized ? mode : 'unauthorized'}
                     callbacks={{
                         save: {
                             after: afterUpdateCallback,

@@ -20,20 +20,20 @@ class ResetArticleTagTest extends TestCase
      */
     public function test_append_tags_to_article()
     {
-        $user = User::factory()->create();
+        $user = User::factory()->createOne();
         $article = Article::factory()->state(function ($attributes) use ($user) {
             return ['author_id' => $user->id];
-        })->create();
+        })->createOne();
         Sanctum::actingAs($user);
         $tag_1 = Tag::factory()->state(function($attributes) use ($user) {
             return ['user_id' => $user->id];
-        })->create();
+        })->createOne();
         $tag_2 = Tag::factory()->state(function($attributes) use ($user) {
             return ['user_id' => $user->id];
-        })->create();
+        })->createOne();
         $tag_3 = Tag::factory()->state(function($attributes) use ($user) {
             return ['user_id' => $user->id];
-        })->create();
+        })->createOne();
         $response = $this->postJson('/api/articles/'.$article->id.'/tags', [
             'tag_ids'=>[$tag_1->id,$tag_2->id,$tag_3->id]
         ]);
@@ -58,18 +58,18 @@ class ResetArticleTagTest extends TestCase
      */
     public function test_replace_old_tags()
     {
-        $user = User::factory()->create();
+        $user = User::factory()->createOne();
         $article = Article::factory()->state(function ($attributes) use ($user) {
             return ['author_id' => $user->id];
-        })->create();
+        })->createOne();
         Sanctum::actingAs($user);
         $oldTag = Tag::factory()->state(function($attributes) use ($user) {
             return ['user_id' => $user->id];
-        })->create();
+        })->createOne();
         $article->tags()->attach($oldTag);
         $newTag = Tag::factory()->state(function($attributes) use ($user) {
             return ['user_id' => $user->id];
-        })->create();
+        })->createOne();
         $response = $this->postJson('/api/articles/'.$article->id.'/tags', [
             'tag_ids'=>[$newTag->id]
         ]);
@@ -89,14 +89,14 @@ class ResetArticleTagTest extends TestCase
      */
     public function test_set_empty_tag_ids()
     {
-        $user = User::factory()->create();
+        $user = User::factory()->createOne();
         $article = Article::factory()->state(function ($attributes) use ($user) {
             return ['author_id' => $user->id];
-        })->create();
+        })->createOne();
         Sanctum::actingAs($user);
         $tags = Tag::factory()->count(10)->state(function($attributes) use ($user) {
             return ['user_id' => $user->id];
-        })->create();
+        })->createOne();
         $article->tags()->attach($tags);
         $response = $this->postJson('/api/articles/'.$article->id.'/tags', [
             'tag_ids'=>[]

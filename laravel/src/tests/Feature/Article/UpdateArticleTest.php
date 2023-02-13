@@ -15,7 +15,7 @@ class UpdateArticleTest extends TestCase
 
     public function test_update_article()
     {
-        $user = User::factory()->create();
+        $user = User::factory()->createOne();
         Sanctum::actingAs(
             $user
         );
@@ -23,7 +23,7 @@ class UpdateArticleTest extends TestCase
             return [
                 'author_id' => $user->id,
             ];
-        })->create();
+        })->createOne();
         $response = $this->putJson('/api/articles/'.$article->id, [
             'title' => 'updated_article',
             'content' => 'updated_article_content',
@@ -38,7 +38,7 @@ class UpdateArticleTest extends TestCase
 
     public function test_empty_title_article()
     {
-        $user = User::factory()->create();
+        $user = User::factory()->createOne();
         Sanctum::actingAs(
             $user
         );
@@ -46,7 +46,7 @@ class UpdateArticleTest extends TestCase
             return [
                 'author_id' => $user->id,
             ];
-        })->create();
+        })->createOne();
         $response = $this->putJson('/api/articles/'.$article->id, [
             'title' => '',
             'content' => 'updated_article_content',

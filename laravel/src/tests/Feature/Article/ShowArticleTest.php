@@ -23,14 +23,14 @@ class ShowArticleTest extends TestCase
      */
     public function test_show_article_json_structure()
     {
-        $user = User::factory()->create();
+        $user = User::factory()->createOne();
         Sanctum::actingAs($user);
         $article = Article::factory()->state(function (array $attributes) use ($user) {
             return ['author_id' => $user->id];
-        })->create();
+        })->createOne();
         $tag = Tag::factory()->state(function (array $attributes) use ($user) {
             return ['user_id' => $user->id];
-        })->create();
+        })->createOne();
         $article->tags()->attach($tag);
         $response = $this->getJson('/api/articles/' . $article->id);
         $response->assertStatus(200);
@@ -59,7 +59,7 @@ class ShowArticleTest extends TestCase
 
     public function test_show_article()
     {
-        $user = User::factory()->create();
+        $user = User::factory()->createOne();
         Sanctum::actingAs(
             $user
         );
@@ -67,7 +67,7 @@ class ShowArticleTest extends TestCase
             return [
                 'author_id' => $user->id,
             ];
-        })->create();
+        })->createOne();
         $response = $this->getJson('/api/articles/'.$article->id);
         $response->assertStatus(200);
         $response->assertJson(function (AssertableJson $json) use ($article) {

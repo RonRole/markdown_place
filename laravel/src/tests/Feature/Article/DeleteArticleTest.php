@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Feature;
+namespace Tests\Feature\DeleteArticleTest;
 
 use App\Models\Article;
 use App\Models\DeletedArticle;
@@ -22,7 +22,7 @@ class DeleteArticleTest extends TestCase
      */
     public function test_delete_article()
     {
-        $user = User::factory()->create();
+        $user = User::factory()->createOne();
         Sanctum::actingAs(
             $user
         );
@@ -30,7 +30,7 @@ class DeleteArticleTest extends TestCase
             return [
                 'author_id' => $user->id
             ];
-        })->create();
+        })->createOne();
         $response = $this->deleteJson('/api/articles/'.$article->id);
         $response->assertStatus(204);
         $this->assertDeleted($article);
@@ -41,7 +41,7 @@ class DeleteArticleTest extends TestCase
 
     public function test_delete_multiple()
     {
-        $user = User::factory()->create();
+        $user = User::factory()->createOne();
         Sanctum::actingAs(
             $user
         );
@@ -49,12 +49,12 @@ class DeleteArticleTest extends TestCase
             return [
                 'author_id' => $user->id
             ];
-        })->create();
+        })->createOne();
         $article_2 = Article::factory()->state(function ($attributes) use ($user) {
             return [
                 'author_id' => $user->id
             ];
-        })->create();
+        })->createOne();
         $response = $this->deleteJson('/api/articles', [
             'article_ids' => [$article_1->id, $article_2->id]
         ]);
@@ -75,7 +75,7 @@ class DeleteArticleTest extends TestCase
      */
     public function test_delete_multiple_without_article_ids()
     {
-        $user = User::factory()->create();
+        $user = User::factory()->createOne();
         Sanctum::actingAs(
             $user
         );
@@ -89,7 +89,7 @@ class DeleteArticleTest extends TestCase
      */
     public function test_delete_multiple_with_unarray_article_ids()
     {
-        $user = User::factory()->create();
+        $user = User::factory()->createOne();
         Sanctum::actingAs(
             $user
         );
@@ -97,7 +97,7 @@ class DeleteArticleTest extends TestCase
             return [
                 'author_id' => $user->id
             ];
-        })->create();
+        })->createOne();
         $response = $this->deleteJson('/api/articles', [
             'article_ids' => $article->id
         ]);
@@ -112,7 +112,7 @@ class DeleteArticleTest extends TestCase
      */
     public function test_delete_multiple_with_array_unint_element()
     {
-        $user = User::factory()->create();
+        $user = User::factory()->createOne();
         Sanctum::actingAs(
             $user
         );
@@ -120,7 +120,7 @@ class DeleteArticleTest extends TestCase
             return [
                 'author_id' => $user->id
             ];
-        })->create();
+        })->createOne();
         $response = $this->deleteJson('/api/articles', [
             'article_ids' => [$article->id, 'invalid']
         ]);
@@ -135,8 +135,8 @@ class DeleteArticleTest extends TestCase
      */
     public function test_delete_multiple_with_other_users_article_is_fail()
     {
-        $user = User::factory()->create();
-        $other_user = User::factory()->create();
+        $user = User::factory()->createOne();
+        $other_user = User::factory()->createOne();
         Sanctum::actingAs(
             $user
         );
@@ -144,12 +144,12 @@ class DeleteArticleTest extends TestCase
             return [
                 'author_id' => $user->id
             ];
-        })->create();
+        })->createOne();
         $other_users_article = Article::factory()->state(function ($attributes) use ($other_user) {
             return [
                 'author_id' => $other_user->id
             ];
-        })->create();
+        })->createOne();
         $response = $this->deleteJson('/api/articles', [
             'article_ids' => [$article->id, $other_users_article->id]
         ]);

@@ -20,11 +20,15 @@ class ArticleController extends Controller
     public function index(Request $request, ListArticleAction $listArticleAction)
     {
         $request->validate([
-            'page' => ['int', 'nullable', 'min:1']
+            'page' => ['int', 'nullable', 'min:1'],
+            'q' => ['string', 'nullable'],
+            'tag_ids' => ['array', 'nullable'],
+            'tag_ids.*' => ['int'],
         ]);
         return response()->json($listArticleAction([
             'authorId' => $request->user()->id,
             'q' => $request->input('q'),
+            'tagIds' => $request->input('tag_ids'),
             'page' => $request->input('page'),
         ]));
     }

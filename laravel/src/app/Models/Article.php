@@ -37,9 +37,10 @@ class Article extends Model
      * タイトル,内容で曖昧検索
      */
     public function scopeWhereTitleOrContentLike($query, string $searchWord) : Builder {
-        return $query
-                ->whereLike('title', $searchWord)
+        return $query->where(function($query) use ($searchWord) {
+            $query->whereLike('title', $searchWord)
                 ->orWhereLike('content', $searchWord);
+        });
     }
 
     /**

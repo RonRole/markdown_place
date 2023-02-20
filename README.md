@@ -23,10 +23,29 @@ Markdownのプレビューや保存ができるアプリケーションです
 - 自動タグ付け機能(保存時、文章が特定のワードを含む場合にタグを付与する)
 - 下書きの保存機能
 
+# 使用技術
+## フロントエンド
+- 言語: TypeScript
+- フレームワーク、ライブラリ: Next.js, React.js, Material-UI
+
+## サーバーサイド
+- 言語: PHP
+- フレームワーク、ライブラリ: Laravel
+- データベース: PostgreSQL
+
+## インフラ
+- GCP
+
+## その他
+- ソースコード管理: Github
+- 開発/ビルド環境構築: Docker
+- CI: Github Actions
+- CD: GCP Cloud Deploy
+
 # 開発環境構築手順
 ## 前提
 - gitがインストール済み
-- dockerがインストール済み
+- Dockerがインストール済み
 ## ソースのダウンロード
 git cloneなどでソースコードを取得
 

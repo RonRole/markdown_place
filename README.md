@@ -93,3 +93,6 @@ docker-compose up -d
 
 ## 確認
 http://localhost:3000にアクセスし、画面が表示されれば完了
+
+# インフラ構成
+![インフラ構成図](./markdown-place.drawio.svg)

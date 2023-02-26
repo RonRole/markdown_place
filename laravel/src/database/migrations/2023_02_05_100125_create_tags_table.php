@@ -19,6 +19,7 @@ class CreateTagsTable extends Migration
             $table->string('name');
             $table->timestamps();
             $table->index('user_id');
+            $table->unique(['user_id', 'name']);
         });
     }
 

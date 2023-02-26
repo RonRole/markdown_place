@@ -30,9 +30,10 @@ class TagController extends Controller
     public function store(Request $request, CreateTagAction $createTagAction)
     {
         $request->validate([
-            'name' => 'required|string'
+            'name' => 'required|array',
+            'name.*' => 'string'
         ]);
-       $result = $createTagAction([
+        $result = $createTagAction([
             'userId' => $request->user()->id,
             'name' => $request->input('name')
         ]);

@@ -3,10 +3,16 @@ import { AppBar, Box } from '@mui/material';
 import { CreateArticleResult, UpdateArticleResult } from '../hooks';
 import Article from '../../domains/article';
 import { AuthContext, AuthContextProvider } from '../context';
-import { EditArticleForm, EditArticleModeKey } from '../container/EditArticleForm';
+import {
+    EditArticleForm,
+    EditArticleFormProps,
+    EditArticleModeKey,
+} from '../container/EditArticleForm';
 import { NavBar } from '../container';
 import { ResetArticleTagResult } from '../hooks/article-tag';
 import ArticleTag from '../../domains/article-tag';
+import { SetArticleTagsButtonProps } from '../container/edit-article-form-action-buttons/SetArticleTagsButton';
+import { CreateArticleTagResult } from '../hooks/tags';
 
 export type EditArticleFormPageProps = {
     // 初期の
@@ -40,7 +46,7 @@ export function EditArticleFormPage({
         }
     }, []);
     const afterSetArticleTagsCallback = React.useCallback(
-        async (result: ResetArticleTagResult) => {
+        async (result: CreateArticleTagResult | ResetArticleTagResult) => {
             if (result.isSuccess) {
                 alert('タグを設定しました');
                 article &&

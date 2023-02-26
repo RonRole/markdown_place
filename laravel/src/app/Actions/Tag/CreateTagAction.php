@@ -3,6 +3,8 @@
 namespace App\Actions\Tag;
 
 use App\Models\Tag;
+use App\Models\User;
+use Illuminate\Database\Eloquent\Collection;
 
 class CreateTagAction
 {
@@ -11,18 +13,16 @@ class CreateTagAction
      * 成功した場合、作成したタグが返却される
      * @param array $params {
      *      userId: int,
-     *      name: string
+     *      name: string[]
      * }
-     * @return Tag | false
+     * @return \Illuminate\Database\Eloquent\Collection;
      */
-    public function __invoke(array $params) : Tag | false
+    public function __invoke(array $params) : Collection
     {
-        $newTag = new Tag();
-        $newTag->user_id = $params['userId'];
-        $newTag->name = $params['name'];
-        if($newTag->save()) {
-            return $newTag;
-        }
-        return false;
+        $newTagNames = array_map(fn($name)=>['name'=>$name], $params['name']);
+        $tags = User::find($params['userId'])
+                    ->tags()
+                    ->createMany($newTagNames);
+        return $tags;
     }
 }

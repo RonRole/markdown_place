@@ -4,8 +4,8 @@ import { ApiResponse } from './api-response';
 import React from 'react';
 import axios, { AxiosError, AxiosResponse } from 'axios';
 
-export type CreateArticleTagParams = Partial<{ name: string }>;
-export type CreateArticleTagResult = ApiResponse<ArticleTag, InputError<CreateArticleTagParams>>;
+export type CreateArticleTagParams = Partial<{ name: string[] }>;
+export type CreateArticleTagResult = ApiResponse<ArticleTag[], InputError<CreateArticleTagParams>>;
 
 type ListTagsApiResponse = {
     id: number;
@@ -20,16 +20,27 @@ export type UseArticleTagFunctions = {
 };
 
 export function useTags(): UseArticleTagFunctions {
-    const create = React.useCallback(async ({ name }: CreateArticleTagParams) => {
+    const create = React.useCallback(async ({ name = [] }: CreateArticleTagParams) => {
+        // 長さ0の場合、そのまま空配列を返す
+        // apiでエラーが発生するため
+        if (name.length === 0) {
+            return {
+                isSuccess: true as true,
+                data: [],
+            };
+        }
         return await axios
             .post('/api/tags', { name })
             .then((response: AxiosResponse) => {
                 return {
                     isSuccess: true as true,
-                    data: new ArticleTag({
-                        id: response.data.id,
-                        name: response.data.name,
-                    }),
+                    data: response.data.map(
+                        (datum: { id: any; name: any }) =>
+                            new ArticleTag({
+                                id: datum.id,
+                                name: datum.name,
+                            })
+                    ),
                 };
             })
             .catch((error: AxiosError) => {

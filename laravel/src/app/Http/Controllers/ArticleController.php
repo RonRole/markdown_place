@@ -20,11 +20,15 @@ class ArticleController extends Controller
     public function index(Request $request, ListArticleAction $listArticleAction)
     {
         $request->validate([
-            'page' => ['int', 'nullable', 'min:1']
+            'page' => ['int', 'nullable', 'min:1'],
+            'q' => ['string', 'nullable'],
+            'tag_ids' => ['array', 'nullable'],
+            'tag_ids.*' => ['int'],
         ]);
         return response()->json($listArticleAction([
             'authorId' => $request->user()->id,
             'q' => $request->input('q'),
+            'tagIds' => $request->input('tag_ids'),
             'page' => $request->input('page'),
         ]));
     }
@@ -63,7 +67,8 @@ class ArticleController extends Controller
     public function show(Request $request, int $id)
     {
         $article = Article::authoredBy($request->user()->id)
-            ->where('id', $id,)
+            ->with('tags')
+            ->where('id', $id)
             ->first();
         return response()->json($article);
     }
@@ -84,6 +89,7 @@ class ArticleController extends Controller
         ]);
         $result = $updateArticleAction([
             'articleId' => $id,
+            'authorId' => $request->user()->id,
             'title' => $request->input('title'),
             'content' => $request->input('content'),
         ]);

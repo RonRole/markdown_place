@@ -22,7 +22,7 @@ class CreateArticleTest extends TestCase
      */
     public function test_create_article()
     {
-        $user = User::factory()->create();
+        $user = User::factory()->createOne();
         Sanctum::actingAs(
             $user
         );

@@ -1,6 +1,7 @@
 import axios, { AxiosError, AxiosResponse } from 'axios';
 import React from 'react';
 import Article from '../../domains/article';
+import ArticleTag from '../../domains/article-tag';
 import { ServerErrorFormat } from '../../errors';
 import { InputError } from '../../errors/input_error';
 import { useAbortController } from './abort-controller';
@@ -29,7 +30,7 @@ export type ShowArticleParams = Article['id'];
 export type ShowArticleResult = ApiResponse<Article, InputError<Pick<Article, 'id'>>>;
 
 // update
-export type UpdateArticleParams = Article;
+export type UpdateArticleParams = Pick<Article, 'id' | 'title' | 'content'>;
 export type UpdateArticleResult = ApiResponse<null, InputError<UpdateArticleParams>>;
 
 // destroy
@@ -37,7 +38,7 @@ export type DestroyArticleParams = Article['id'] | Article['id'][];
 export type DestroyArticleResult = ApiResponse<null, InputError<Pick<Article, 'id'>>>;
 
 export type UseArticleFunctions = {
-    create(props: CreateArticleParams): Promise<CreateArticleResult>;
+    create(params: CreateArticleParams): Promise<CreateArticleResult>;
     list(params: ListArticleParams): Promise<ListArticleResult>;
     listAsObject(params: ListArticleParams): Promise<ListArticleAsObjectResult>;
     show(params: ShowArticleParams): Promise<ShowArticleResult>;
@@ -51,8 +52,23 @@ type ListArticleApiResponse = {
         author_id: string;
         title: string;
         content: string;
+        tags: {
+            id: number;
+            name: string;
+        }[];
     }[];
     last_page: number;
+};
+
+type ShowArticleApiResponse = {
+    id: number;
+    author_id: string;
+    title: string;
+    content: string;
+    tags: {
+        id: number;
+        name: string;
+    }[];
 };
 
 export function useArticles(): UseArticleFunctions {
@@ -95,11 +111,12 @@ export function useArticles(): UseArticleFunctions {
                 .then((res: AxiosResponse) => {
                     const apiRes = res.data as ListArticleApiResponse;
                     const articles = apiRes.data.map(
-                        ({ id, title, content }) =>
+                        ({ id, title, content, tags }) =>
                             new Article({
                                 id,
                                 title,
                                 content,
+                                tags: tags.map(({ id, name }) => new ArticleTag({ id, name })),
                             })
                     );
                     return {
@@ -148,7 +165,8 @@ export function useArticles(): UseArticleFunctions {
         const result: ShowArticleResult = await axios
             .get(`/api/articles/${encodeURIComponent(id)}`)
             .then((res: AxiosResponse) => {
-                if (!Object.keys(res.data).length) {
+                const apiRes = res.data as ShowArticleApiResponse;
+                if (!apiRes) {
                     return {
                         isSuccess: false as false,
                         data: { id: ['データがありませんでした'] },
@@ -157,9 +175,10 @@ export function useArticles(): UseArticleFunctions {
                 return {
                     isSuccess: true as true,
                     data: new Article({
-                        id: res.data.id,
-                        title: res.data.title,
-                        content: res.data.content,
+                        id: apiRes.id,
+                        title: apiRes.title,
+                        content: apiRes.content,
+                        tags: apiRes.tags.map(({ id, name }) => new ArticleTag({ id, name })),
                     }),
                 };
             })

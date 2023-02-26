@@ -2,8 +2,11 @@ import { AppBar, Toolbar, ToolbarProps, Tooltip } from '@mui/material';
 import React from 'react';
 import Article from '../../../domains/article';
 import { AfterCreateCallback, BeforeCreateCallback } from '../ArticleSaveAsDialog';
+import { SetArticleTagsButton, SetArticleTagsButtonProps } from './SetArticleTagsButton';
 import { SaveAsButton } from './SaveAsButton';
 import { AfterSaveCallback, BeforeSaveCallback, SaveButton, SaveButtonProps } from './SaveButton';
+import { AfterSetArticleTagsCallback, BeforeSetArticleTagsCallback } from '../SetArticleTagsDialog';
+import ArticleTag from '../../../domains/article-tag';
 
 /**
  * ツールバー共通のコールバック
@@ -26,15 +29,20 @@ export type BottomBarActionCallbacks = Partial<{
         before: BeforeCreateCallback;
         after: AfterCreateCallback;
     }>;
+    setTags: Partial<{
+        before: BeforeSetArticleTagsCallback;
+        after: AfterSetArticleTagsCallback;
+    }>;
 }>;
 
 export type ItemStates = Partial<{
-    [key in 'save' | 'saveAs']: Partial<{ hidden: boolean; disabled: boolean }>;
+    [key in 'save' | 'saveAs' | 'addLabel']: Partial<{ hidden: boolean; disabled: boolean }>;
 }>;
 
 export type EditArticleToolBarProps = {
     contentTextAreaRef: React.RefObject<HTMLTextAreaElement>;
     article?: Article;
+    tagOptions?: ArticleTag[];
     disabled?: boolean;
     commonCallbacks?: ToolBarCommonCallbacks;
     itemCallbacks?: BottomBarActionCallbacks;
@@ -44,6 +52,7 @@ export type EditArticleToolBarProps = {
 export const EditArticleToolBar = ({
     contentTextAreaRef,
     article,
+    tagOptions,
     disabled = false,
     commonCallbacks,
     itemCallbacks,
@@ -91,6 +100,25 @@ export const EditArticleToolBar = ({
                                 commonCallbacks?.after,
                             ]}
                             disabled={disabled || itemStates?.saveAs?.disabled}
+                        />
+                    </span>
+                </Tooltip>
+            )}
+            {!itemStates?.addLabel?.hidden && (
+                <Tooltip title="タグをつける">
+                    <span>
+                        <SetArticleTagsButton
+                            article={article}
+                            tagOptions={tagOptions}
+                            beforeSetArticleTagsCallbacks={[
+                                commonCallbacks?.before,
+                                itemCallbacks?.setTags?.before,
+                            ]}
+                            afterSetArticleTagsCallbacks={[
+                                commonCallbacks?.after,
+                                itemCallbacks?.setTags?.after,
+                            ]}
+                            disabled={disabled || itemStates?.addLabel?.disabled}
                         />
                     </span>
                 </Tooltip>

@@ -9,17 +9,20 @@ class UpdateArticleAction
     /**
      * Summary of __invoke
      * @param array {
-     *     articleId: string,
+     *     articleId: int,
+     *     authorId: int
      *     title: string,
      *     content?: string
      * } $param
      * @return bool
      */
-    public function __invoke($param)
+    public function __invoke($param) : bool
     {
-        return Article::find($param['articleId'])->update([
-            'title' => $param['title'],
-            'content' => $param['content'],
-        ]);
+        return Article::authoredBy($param['authorId'])
+            ->find($param['articleId'])
+            ->update([
+                'title' => $param['title'],
+                'content' => $param['content'],
+            ]);
     }
 }

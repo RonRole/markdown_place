@@ -2,6 +2,7 @@ import { AppBar, Grid, GridProps, TextareaAutosize } from '@mui/material';
 import { before } from 'node:test';
 import React from 'react';
 import Article from '../../domains/article';
+import ArticleTag from '../../domains/article-tag';
 import { ArticleMarkdown } from '../presentational/ArticleMarkdown';
 import { ParsedMarkdown } from '../presentational/ParsedMarkdown';
 import {
@@ -13,14 +14,17 @@ const EditArticleFormModes = {
     unauthorized: {
         isAbleSave: false,
         isAbleSaveAs: false,
+        isAbleAddLabel: false,
     },
     create: {
         isAbleSave: false,
         isAbleSaveAs: true,
+        isAbleAddLabel: false,
     },
     update: {
         isAbleSave: true,
         isAbleSaveAs: true,
+        isAbleAddLabel: true,
     },
 } as const;
 
@@ -71,10 +75,17 @@ const reducer = (
 export type EditArticleFormProps = {
     mode: EditArticleModeKey;
     article?: Article;
+    tagOptions?: ArticleTag[];
     callbacks?: BottomBarActionCallbacks;
 } & GridProps;
 
-export function EditArticleForm({ mode, article, callbacks, ...props }: EditArticleFormProps) {
+export function EditArticleForm({
+    mode,
+    article,
+    tagOptions,
+    callbacks,
+    ...props
+}: EditArticleFormProps) {
     const contentInputRef = React.useRef<HTMLTextAreaElement>(null);
     const [state, dispatch] = React.useReducer(reducer, {
         content: article?.content,
@@ -123,6 +134,7 @@ export function EditArticleForm({ mode, article, callbacks, ...props }: EditArti
             >
                 <EditArticleToolBar
                     article={article}
+                    tagOptions={tagOptions}
                     sx={{ justifyContent: 'end' }}
                     contentTextAreaRef={contentInputRef}
                     disabled={state.submitting}
@@ -137,6 +149,9 @@ export function EditArticleForm({ mode, article, callbacks, ...props }: EditArti
                         },
                         saveAs: {
                             disabled: !EditArticleFormModes[mode].isAbleSaveAs,
+                        },
+                        addLabel: {
+                            disabled: !EditArticleFormModes[mode].isAbleAddLabel,
                         },
                     }}
                 />

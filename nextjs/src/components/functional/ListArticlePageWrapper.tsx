@@ -69,7 +69,7 @@ const initialState: State = {
  *     1. ListArticlePageに渡すarticlesを読み込み直す
  *     2. articlesのチェック状態はリセットする
  */
-export function ListArticlePageWrapper({ children, q, page }: ListArticlePageWrapperProps) {
+export function ListArticlePageWrapper({ children, tagIds, q, page }: ListArticlePageWrapperProps) {
     const [state, dispatch] = React.useReducer(reducer, initialState);
     const { list } = useArticles();
     const loadList = React.useCallback(() => {
@@ -80,6 +80,7 @@ export function ListArticlePageWrapper({ children, q, page }: ListArticlePageWra
         list({
             q,
             page,
+            tagIds,
         })
             .then((listResult) => {
                 if (!listResult.isSuccess) {
@@ -99,7 +100,7 @@ export function ListArticlePageWrapper({ children, q, page }: ListArticlePageWra
                     payload: false,
                 });
             });
-    }, [list, page, q]);
+    }, [list, page, q, tagIds]);
     const afterDeleteCallback: ListArticlePageProps['afterDeleteCallback'] = React.useCallback(
         async (result: DestroyArticleResult, currentCheckedArticles) => {
             if (!result.isSuccess) {

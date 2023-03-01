@@ -3,6 +3,7 @@ import { InputError, ServerErrorFormat } from '../../errors';
 import { ApiResponse } from './api-response';
 import React from 'react';
 import axios, { AxiosError, AxiosResponse } from 'axios';
+import { useAbortController } from './abort-controller';
 
 export type CreateArticleTagParams = Partial<{ name: string[] }>;
 export type CreateArticleTagResult = ApiResponse<ArticleTag[], InputError<CreateArticleTagParams>>;
@@ -53,29 +54,37 @@ export function useTags(): UseArticleTagFunctions {
                 };
             });
     }, []);
-    const list = React.useCallback(async (params: ListArticleTagParams) => {
-        return await axios
-            .get('/api/tags')
-            .then((response: AxiosResponse) => {
-                const apiRes = response.data as ListTagsApiResponse;
-                return {
-                    isSuccess: true as true,
-                    data: apiRes.map(
-                        ({ id, name }) =>
-                            new ArticleTag({
-                                id,
-                                name,
-                            })
-                    ),
-                };
-            })
-            .catch((_: AxiosError) => {
-                return {
-                    isSuccess: false as false,
-                    data: {},
-                };
-            });
-    }, []);
+    const { restartProcess, clearAbortSignal } = useAbortController();
+    const list = React.useCallback(
+        async (params: ListArticleTagParams) => {
+            const signal = restartProcess();
+            return await axios
+                .get('/api/tags', {
+                    signal,
+                })
+                .then((response: AxiosResponse) => {
+                    const apiRes = response.data as ListTagsApiResponse;
+                    return {
+                        isSuccess: true as true,
+                        data: apiRes.map(
+                            ({ id, name }) =>
+                                new ArticleTag({
+                                    id,
+                                    name,
+                                })
+                        ),
+                    };
+                })
+                .catch((_: AxiosError) => {
+                    return {
+                        isSuccess: false as false,
+                        data: {},
+                    };
+                })
+                .finally(clearAbortSignal);
+        },
+        [clearAbortSignal, restartProcess]
+    );
     return {
         create,
         list,

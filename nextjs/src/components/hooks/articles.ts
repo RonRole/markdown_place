@@ -13,6 +13,7 @@ export type CreateArticleResult = ApiResponse<Article, InputError<CreateArticleP
 
 // list
 export type ListArticleParams = {
+    tagIds?: string[];
     q?: string;
     page?: number;
 };
@@ -102,10 +103,13 @@ export function useArticles(): UseArticleFunctions {
     }, []);
     const { restartProcess, clearAbortSignal } = useAbortController();
     const list = React.useCallback(
-        async ({ q = '', page = 1 }: ListArticleParams) => {
+        async ({ tagIds = [], q = '', page = 1 }: ListArticleParams) => {
+            const tagIdParams = tagIds
+                .map((tagId, index) => `tag_ids[${index}]=${tagId}`)
+                .join('&');
             const signal = restartProcess();
             const result: ListArticleResult = await axios
-                .get(`/api/articles?q=${q}&page=${page}`, {
+                .get(`/api/articles?q=${q}&page=${page}&${tagIdParams}`, {
                     signal,
                 })
                 .then((res: AxiosResponse) => {

@@ -27,9 +27,6 @@ type ResetCurrentTagResult = {
 
 type State = {
     loading: boolean;
-    // タグを新しく作る可能性があるので、
-    // tagOptionsをステートにする
-    tagOptions: ArticleTag[];
     // 編集前のタグ
     defaultTags: ArticleTag[];
     // 現在のタグ
@@ -54,10 +51,6 @@ type Actions =
           type: 'finishSubmitting';
       }
     | {
-          type: 'addTagOptions';
-          payload: ArticleTag[];
-      }
-    | {
           type: 'setDefaultTags';
           payload: ArticleTag[];
       }
@@ -71,7 +64,6 @@ const reducer = (state: State, action: Actions): State => {
         case 'initialize':
             return {
                 ...initialState,
-                tagOptions: state.tagOptions,
                 defaultTags: state.defaultTags,
                 currentTags: state.defaultTags,
             };
@@ -95,11 +87,6 @@ const reducer = (state: State, action: Actions): State => {
                 ...state,
                 loading: false,
             };
-        case 'addTagOptions':
-            return {
-                ...state,
-                tagOptions: [...state.tagOptions, ...action.payload],
-            };
         case 'setCurrentTags':
             return {
                 ...state,
@@ -117,7 +104,6 @@ const reducer = (state: State, action: Actions): State => {
 
 const initialState: State = {
     loading: false,
-    tagOptions: [],
     defaultTags: [],
     currentTags: [],
 };
@@ -140,7 +126,6 @@ export function SetArticleTagsDialog({
     const { reset } = useArticleRelatedTag();
     const [state, dispatch] = React.useReducer(reducer, {
         loading: false,
-        tagOptions: tagOptions || initialState.tagOptions,
         defaultTags: article?.tags || initialState.defaultTags,
         currentTags: article?.tags || initialState.currentTags,
     });
@@ -158,8 +143,14 @@ export function SetArticleTagsDialog({
     );
     const resetCurrentTags = React.useCallback(
         async (article: Article, currentTags: CurrentTag[]): Promise<ResetCurrentTagResult> => {
+            const existsTags = currentTags.filter((tag): tag is ArticleTag => {
+                return tag instanceof ArticleTag;
+            });
             const newTagNames = currentTags.filter((tag): tag is string => {
-                return typeof tag === 'string';
+                return (
+                    typeof tag === 'string' &&
+                    !existsTags.some((existsTag) => existsTag.name === tag)
+                );
             });
             const createNewTagsResult = await create({ name: newTagNames });
             if (!createNewTagsResult.isSuccess) {
@@ -168,9 +159,6 @@ export function SetArticleTagsDialog({
                     newTags: [],
                 };
             }
-            const existsTags = currentTags.filter((tag): tag is ArticleTag => {
-                return tag instanceof ArticleTag;
-            });
             const tags = [...createNewTagsResult.data, ...existsTags];
             const result = await reset({
                 articleId: article.id,
@@ -193,7 +181,6 @@ export function SetArticleTagsDialog({
         if (result.isSuccess) {
             dispatch({ type: 'setDefaultTags', payload: result.data });
             dispatch({ type: 'setCurrentTags', payload: result.data });
-            dispatch({ type: 'addTagOptions', payload: newTags });
         }
         afterSetArticleTagsCallbacks.forEach(async (callback) => {
             if (callback) await callback(result);
@@ -230,7 +217,7 @@ export function SetArticleTagsDialog({
                         return isEqualCurrentTag(option, value);
                     }}
                     sx={{ width: '100%' }}
-                    options={state.tagOptions}
+                    options={tagOptions}
                     getOptionLabel={(option: CurrentTag) => {
                         return option instanceof ArticleTag ? option.name : option;
                     }}

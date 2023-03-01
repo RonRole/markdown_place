@@ -1,38 +1,36 @@
 import { Search } from '@mui/icons-material';
 import { IconButton, InputAdornment, TextField, TextFieldProps } from '@mui/material';
 import React from 'react';
-import { ListArticleParams, ListArticleResult, useArticles } from '../hooks';
-import { FormWithSubmittingState, FormWithSubmittingStateProps } from '../presentational';
-import { ArticleSearchFormComponentProps } from '../presentational/ArticleSearchFormComponent';
+import { FormWithSubmittingState, FormWithSubmittingStateProps } from '../FormWithSubmittingState';
 
-export type ArticleListSearchFormProps = {
-    onSubmit(result: ListArticleResult): Promise<void>;
-    page?: number;
-} & Omit<ArticleSearchFormComponentProps<'titleOrContent'>, 'onSubmit'>;
+type SearchByTitleOrContentComponentProps = Omit<
+    TextFieldProps,
+    'InputProps' | 'placeholder' | 'inputRef' | 'onSubmit'
+>;
 
-export function ArticleListSearchForm({
+export type SearchByTitleOrContentProps = {
+    onSubmit(value?: string): Promise<void>;
+    componentProps?: SearchByTitleOrContentComponentProps;
+} & Omit<FormWithSubmittingStateProps, 'onSubmit'>;
+
+export function SearchByTitleOrContent({
     onSubmit,
-    page,
     componentProps,
     ...props
-}: ArticleListSearchFormProps) {
-    const { list } = useArticles();
+}: SearchByTitleOrContentProps) {
     const searchFieldInputRef = React.useRef<HTMLInputElement>(null);
     const handleSubmit = React.useCallback(
         async (e: React.FormEvent<HTMLFormElement>) => {
             e.preventDefault();
-            const searchResult = await list({
-                q: searchFieldInputRef.current?.value,
-                page,
-            });
-            await onSubmit(searchResult);
+            await onSubmit(searchFieldInputRef.current?.value);
         },
-        [list, onSubmit, page]
+        [onSubmit]
     );
     return (
         <FormWithSubmittingState onSubmit={handleSubmit} {...props}>
             {(submitting) => (
                 <TextField
+                    {...componentProps}
                     InputProps={{
                         endAdornment: (
                             <InputAdornment disablePointerEvents={submitting} position="end">
@@ -42,10 +40,9 @@ export function ArticleListSearchForm({
                             </InputAdornment>
                         ),
                     }}
-                    disabled={submitting}
-                    placeholder="タイトル,内容で検索"
+                    disabled={componentProps?.disabled || submitting}
+                    placeholder="タイトル、内容で検索"
                     inputRef={searchFieldInputRef}
-                    {...componentProps}
                 />
             )}
         </FormWithSubmittingState>

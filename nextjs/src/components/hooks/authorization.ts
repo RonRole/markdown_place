@@ -23,6 +23,7 @@ export type SignUpResult = ApiResponse<null, InputError<SignUpParams>>;
 
 export type UseAuthStateFunctions = {
     setUnauthorized(): void;
+    setAuthStatusIfSessionExists(): Promise<boolean>;
     login(params: LoginParams): Promise<LoginResult>;
     logout(): Promise<void>;
     signUp(params: SignUpParams): Promise<SignUpResult>;
@@ -38,19 +39,19 @@ axios.defaults.withCredentials = true;
  */
 export function useAuthState(): UseAuthStateItems {
     const [current, setCurrent] = React.useState<AuthStatus>(AuthStatus.Loading);
-    React.useEffect(() => {
-        axios
-            .get('/api/user')
-            .then((res: AxiosResponse) => {
-                const authStatus = res.data?.is_admin
-                    ? AuthStatus.AuthorizedAsAdmin
-                    : AuthStatus.AuthorizedAsNormal;
-                setCurrent(authStatus);
-                return;
-            })
-            .catch((error: AxiosError) => setCurrent(AuthStatus.Unauthorized));
-    }, []);
     const setUnauthorized = React.useCallback(() => setCurrent(AuthStatus.Unauthorized), []);
+    const setAuthStatusIfSessionExists = React.useCallback(async () => {
+        const response = await axios.get('/api/user').catch(() => false as false);
+        if (!response) {
+            setCurrent(AuthStatus.Unauthorized);
+            return false;
+        }
+        const authStatus = response.data?.is_admin
+            ? AuthStatus.AuthorizedAsAdmin
+            : AuthStatus.AuthorizedAsNormal;
+        setCurrent(authStatus);
+        return true;
+    }, []);
     const login = React.useCallback(async ({ email, password }: LoginParams) => {
         await axios.get('/sanctum/csrf-cookie');
         const result: LoginResult = await axios
@@ -122,6 +123,7 @@ export function useAuthState(): UseAuthStateItems {
         current,
         {
             setUnauthorized,
+            setAuthStatusIfSessionExists,
             login,
             logout,
             signUp,

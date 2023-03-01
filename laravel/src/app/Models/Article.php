@@ -7,6 +7,7 @@ use App\Models\Traits\WhereLike;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 
 class Article extends Model
 {
@@ -48,10 +49,11 @@ class Article extends Model
      */
     public function scopeHasTags($query, array $tagIds) : Builder
     {
-        return $query->whereIn('id', function($query) use ($tagIds) {
-            $query->select('article_id')
+        return $query->whereExists(function($query) use ($tagIds) {
+            $query->select(DB::raw(1))
                     ->from('article_tag')
-                    ->whereIn('tag_id', $tagIds);
+                    ->whereColumn('articles.id', 'article_tag.article_id')
+                    ->whereIn('article_tag.tag_id', $tagIds);
         });
     }
 }
